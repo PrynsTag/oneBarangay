@@ -29,7 +29,7 @@ LICENSE
 .github
 .circleci
 static
-!home/static
+!**/static
 templates
-!home/templates
+!**/templates
 app.yaml.sh
