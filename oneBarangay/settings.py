@@ -156,7 +156,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "templates"),
@@ -165,7 +164,7 @@ DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-STATIC_URL = "https://storage.googleapis.com/stackit-2022/"
+STATIC_URL = "https://storage.googleapis.com/onebarangay-malanday/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
