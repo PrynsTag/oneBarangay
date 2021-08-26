@@ -124,19 +124,13 @@ There are two things you need to have in order to run this project:
    ```
 5. Copy the environment variables [here](https://console.cloud.google.com/security/secret-manager/secret/oneBarangay-ENV-Variables/versions?project=onebarangay-malanday)
 6. Create an `.env` File and paste the values in step 3
-7. Create another settings.py called `local-settings.py` in oneBarangay directory. Now you have two settings.
-8. In local-settings.py, change this line:
+7. In local-settings.py, change this line:
     ```sh
-    decodedBytes = base64.b64decode(os.getenv("GOOGLE_STORAGE_CREDENTIALS"))
+    decodedBytes = base64.b64decode("<your-env-value>")
     ```
-   To the value of `GOOGLE_STORAGE_CREDENTIALS` in the .env file likes this:
-    ```sh
-    decodedBytes = base64.b64decode("<the-env-value>")
-    ```
-9.  In line 61, turn debug into `True`: `DEBUG = True`
-10. Lastly, run `./manage.py runserver` to run the application.
+   To the value of `GOOGLE_STORAGE_CREDENTIALS` in the .env file.
 
-
+8. Lastly, run `./manage.py runserver` to run the application.
 
 <!-- USAGE EXAMPLES -->
 ## Tools Installation
