@@ -43,7 +43,7 @@ elif os.environ.get("GOOGLE_PROJECT_ID", None):
     project_id = os.environ.get("GOOGLE_PROJECT_ID")
 
     client = secretmanager.SecretManagerServiceClient(credentials=GS_CREDENTIALS)
-    settings_name = os.environ.get("SETTINGS_NAME", "django_env")
+    settings_name = os.environ.get("SETTINGS_NAME", "oneBarangay-ENV-Variables")
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
 
@@ -176,13 +176,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 sentry_sdk.init(
     dsn="https://c8349ef8bcd74193a46472e19e629f47@o947343.ingest.sentry.io/5931305",
     integrations=[DjangoIntegration()],
-
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
     traces_sample_rate=1.0,
-
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True
 )
