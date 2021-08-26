@@ -1,0 +1,118 @@
+---
+version: 2.1
+
+orbs:
+  python: circleci/python@1.4
+
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.9
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    parallelism: 4
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+      - run:
+          name: Run Django Migration
+          command: |
+            python manage.py makemigrations
+            python manage.py migrate
+  test:
+    docker:
+      - image: cimg/python:3.9
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    parallelism: 4
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+      - run:
+          name: Run Django Test
+          command: |
+            coverage run ./manage.py test -v 2 --parallel
+            coverage run ./manage.py check --deploy
+      - run:
+          name: Run Coverage Report
+          command: |
+            mkdir -p test-results
+            coverage report
+            coverage html -d test-results/coverage.html
+            coverage xml -o test-results/unittest/unittest.xml
+
+  deploy-to-staging:
+    docker:
+      - image: google/cloud-sdk
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: Collect Static Files
+          command: ./manage.py collectstatic
+      - run:
+          name: Copy across app.yaml config
+          command: ./app.yaml.sh > ./app.yaml
+      - run:
+          name: Set up gcloud config
+          command: |
+            echo $GOOGLE_APPLICATION_CREDENTIALS | base64 -di | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+      - run:
+          name: Deploying to App Engine Staging
+          command: gcloud app deploy --no-promote app.yaml
+
+  deploy-to-prod:
+    docker:
+      - image: google/cloud-sdk
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: Deploying to App Engine Production
+          command: gcloud app deploy app.yaml
+
+workflows:
+  build-test-deploy:
+    jobs:
+      - build:
+          context:
+            - docker
+      - test:
+          context:
+            - docker
+      - deploy-to-staging:
+          context:
+            - docker
+          requires:
+            - build
+            - test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - approve-prod-deployment:
+          type: approval
+          filters:
+            branches:
+              only: master
+          requires:
+            - deploy-to-staging
+      - deploy-to-prod:
+          context:
+            - docker
+          requires:
+            - approve-prod-deployment
+          filters:
+            branches:
+              only: master
