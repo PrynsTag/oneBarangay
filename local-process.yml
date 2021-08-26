@@ -1,0 +1,120 @@
+# Orb 'circleci/python@1.4' resolved to 'circleci/python@1.4.0'
+version: 2
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.9
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          command: "pip install -r requirements.txt \n"
+          name: Install dependencies with pip using project requirements.txt
+          working_directory: .
+      - run:
+          name: Collect Static
+          command: |
+            base64 -di <<< $CLOUD_STORAGE_KEY >> /home/circleci/project/key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/project/key.json
+            ./manage.py collectstatic --no-input
+            ./manage.py makemigrations
+            ./manage.py migrate
+
+  test:
+    docker:
+      - image: cimg/python:3.9
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    parallelism: 4
+    steps:
+      - checkout
+      - run:
+          command: "pip install -r requirements.txt \n"
+          name: Install dependencies with pip using project requirements.txt
+          working_directory: .
+      - run:
+          name: Collect Static and Run Django Test
+          command: |
+            base64 -di <<< $CLOUD_STORAGE_KEY >> /home/circleci/project/key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/project/key.json
+            coverage run ./manage.py test -v 2 --parallel
+            coverage run ./manage.py check --deploy
+      - run:
+          name: Run Coverage Report
+          command: |
+            mkdir -p test-results
+            coverage report
+            coverage html -d test-results/coverage.html
+            coverage xml -o test-results/unittest/unittest.xml
+
+  deploy-to-staging:
+    docker:
+      - image: google/cloud-sdk
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: Copy across app.yaml config
+          command: ./app.yaml.sh > ./app.yaml
+      - run:
+          name: Set up gcloud config
+          command: |
+            echo $GCLOUD_AUTH_KEY | base64 -di | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+      - run:
+          name: Deploying to App Engine Staging
+          command: gcloud app deploy --no-promote app.yaml
+
+  deploy-to-prod:
+    docker:
+      - image: google/cloud-sdk
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: Deploying to App Engine Production
+          command: gcloud app deploy app.yaml
+workflows:
+  build-test-deploy:
+    jobs:
+      - build:
+          context:
+            - docker
+      - test:
+          context:
+            - docker
+      - deploy-to-staging:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+          requires:
+            - build
+            - test
+          context:
+            - docker
+      - approve-prod-deployment:
+          filters:
+            branches:
+              only: master
+          type: approval
+          requires:
+            - deploy-to-staging
+      - deploy-to-prod:
+          filters:
+            branches:
+              only: master
+          requires:
+            - approve-prod-deployment
+          context:
+            - docker
+  version: 2
