@@ -33,3 +33,4 @@ static
 templates
 !**/templates
 app.yaml.sh
+!manage.py
