@@ -25,6 +25,7 @@ jobs:
       - run:
           name: Run Coverage Report
           command: |
+            ./.coveralls.yml.sh > ./.coveralls.yml
             mkdir -p test-results
             coverage report
             coverage html -d test-results/coverage.html
@@ -52,7 +53,7 @@ jobs:
           command: |
             ./manage.py collectstatic --no-input
       - run:
-          name: Collect Static and Make Migration
+          name: Make Migration
           command: |
             ./manage.py makemigrations
             ./manage.py migrate
@@ -66,10 +67,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Copy across app.yaml & .coveralls.yml config
+          name: Copy across app.yaml
           command: |
             ./app.yaml.sh > ./app.yaml
-            ./.coveralls.yml.sh > ./.coveralls.yml
       - run:
           name: Set up gcloud config
           command: |
