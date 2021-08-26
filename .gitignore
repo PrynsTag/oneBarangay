@@ -144,3 +144,4 @@ cython_debug/
 process.yml
 .circleci/local-config.yml
 test-results/
+oneBarangay/local-settings.py
