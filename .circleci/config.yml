@@ -71,14 +71,12 @@ jobs:
           command: |
             ./app.yaml.sh > ./app.yaml
       - run:
-          name: Set up gcloud config
+          name: Set up GCloud Auth and Deploy to Staging
           command: |
             echo $GCLOUD_AUTH_KEY | base64 -di | gcloud auth activate-service-account --key-file=-
             gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
             gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
-      - run:
-          name: Deploying to App Engine Staging
-          command: gcloud app deploy --no-promote app.yaml
+            gcloud app deploy --no-promote app.yaml
 
   deploy-to-prod:
     docker:

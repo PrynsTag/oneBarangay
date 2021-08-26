@@ -1,3 +1,3 @@
-from stackit.wsgi import application
+from oneBarangay.wsgi import application
 
 app = application
