@@ -14,11 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from oneBarangay import settings
 
-urlpatterns = []
+urlpatterns = [path("", include("ocr.urls"))]
 
 if settings.PRODUCTION_ENABLED:
     urlpatterns.append(path(r"admin/(.*)", admin.site.urls))
