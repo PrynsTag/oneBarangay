@@ -18,7 +18,10 @@ from django.urls import include, path
 
 from oneBarangay import settings
 
-urlpatterns = [path("", include("ocr.urls"))]
+urlpatterns = [
+    # path("", include("ocr.urls")),
+    path("", include("appointment.urls"))
+]
 
 if settings.PRODUCTION_ENABLED:
     urlpatterns.append(path(r"admin/(.*)", admin.site.urls))
