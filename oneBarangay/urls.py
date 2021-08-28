@@ -16,12 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+
 from oneBarangay import settings
 
 urlpatterns = [
     # path("", include("ocr.urls")),
-    path("", include("appointment.urls"))
+    # path("", ),
+    # path("", include("appointment.urls"))
+    path("", include("app.urls"))
 ]
 
-if settings.PRODUCTION_ENABLED:
-    urlpatterns.append(path(r"admin/(.*)", admin.site.urls))
