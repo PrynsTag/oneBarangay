@@ -165,7 +165,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "templates"),
-    os.path.join(BASE_DIR, "oneBarangay", "static")
+    os.path.join(BASE_DIR, "oneBarangay", "static"),
 ]
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")

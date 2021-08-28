@@ -4,11 +4,12 @@
 
 .breadcrumb-item {
   font-size: $font-size-xs;
-  &, a {
+  &,
+  a {
     color: $breadcrumb-item-color;
     font-weight: $breadcrumb-font-weight;
     font-size: $font-size-xs;
-    @include media-breakpoint-up(sm){
+    @include media-breakpoint-up(sm) {
       font-size: $font-size-sm;
     }
   }
@@ -16,7 +17,6 @@
   &.active {
     font-weight: $breadcrumb-active-font-weight;
   }
-
 }
 
 .breadcrumb-transparent {
@@ -25,27 +25,28 @@
 }
 
 @each $color, $value in $theme-colors {
-  .breadcrumb-#{$color}  {
-      background: $value;
-      .breadcrumb-item{
-          &.active {
-              color: $white;
-          }
+  .breadcrumb-#{$color} {
+    background: $value;
+    .breadcrumb-item {
+      &.active {
+        color: $white;
       }
-      &.breadcrumb-transparent {
-        background: transparent;
-        .breadcrumb-item {
-          &.active {
-            color: $value;
-          }
+    }
+    &.breadcrumb-transparent {
+      background: transparent;
+      .breadcrumb-item {
+        &.active {
+          color: $value;
         }
       }
+    }
   }
 }
 
 .breadcrumb-text-light {
   .breadcrumb-item {
-    &, a {
+    &,
+    a {
       color: $breadcrumb-item-light-color;
     }
 
