@@ -139,6 +139,7 @@ Before pushing to the develop branch, always test the code locally.
 In order for this to happen, a set of tools are available for you.
 
 ### Pre-commit
+
 After you have coded the business logic, run pre-commit in the project root using the code below:
 
 ```sh
@@ -148,6 +149,7 @@ pre-commit run --all-files
 And then fix any issues that might occur.
 
 ### CircleCI
+
 Another tool is also available to automatically test and deploy the application in just one push
 using the CI/CD tool known as `CircleCI`.
 
@@ -213,8 +215,9 @@ circleci local execute -c local-process.yml -e GOOGLE_PROJECT_ID=<the-env-value>
 ```
 
 > **_Note_**: Replace the `<the-env-value>` and `<your-docker-credentials>` with the actual value without quotations.
-> >> **_Note_**: You can get your `DOCKER_USERNAME` and `DOCKER_PASSWORD` in [Docker Hub](https://hub.docker.com/).
-> All the other values are available in `.env` file mentioned above.
+>
+> > > **_Note_**: You can get your `DOCKER_USERNAME` and `DOCKER_PASSWORD` in [Docker Hub](https://hub.docker.com/).
+> > > All the other values are available in `.env` file mentioned above.
 
 2. Fix any issues that might occur before proceeding.
 
@@ -222,9 +225,11 @@ circleci local execute -c local-process.yml -e GOOGLE_PROJECT_ID=<the-env-value>
 4. Repeat the process until you don't see the error.
 
 #### GitKraken
+
 To lessen the git problems when working on the project, use `GitKraken` as a Git UI.
 
 #### Codacy Sentry.io Deepsource
+
 For Error Tracking and Static Code Analyzers,
 use [Codacy](https://codacy.com), [Sentry.io](http://sentry.io/) and [Deepsource](https://deepsource.io/)
 
