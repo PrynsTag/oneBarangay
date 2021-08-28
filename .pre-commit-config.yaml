@@ -27,11 +27,6 @@ repos:
       - id: commitlint
         stages: [commit-msg]
 
-  - repo: https://github.com/markdownlint/markdownlint
-    rev: v0.11.0
-    hooks:
-      - id: markdownlint
-
   - repo: https://github.com/pycqa/isort
     rev: 5.8.0
     hooks:
