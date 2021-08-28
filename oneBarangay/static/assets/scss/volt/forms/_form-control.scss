@@ -1,25 +1,22 @@
-.form-control{
-
-    @include media-breakpoint-up(lg) {
-        &.form-control-lg{
-            padding: $inpu-lg-padding-y $input-padding-x;
-        }
+.form-control {
+  @include media-breakpoint-up(lg) {
+    &.form-control-lg {
+      padding: $inpu-lg-padding-y $input-padding-x;
     }
-
+  }
 }
 
 .search-bar {
-    .form-control {
-        width: 280px;
-        transition: width .2s ease-in-out;
+  .form-control {
+    width: 280px;
+    transition: width 0.2s ease-in-out;
 
-        @include media-breakpoint-down(sm) {
-            width: 120px;
+    @include media-breakpoint-down(sm) {
+      width: 120px;
 
-            &:focus {
-                width: 150px;
-            }
-        }
+      &:focus {
+        width: 150px;
+      }
     }
+  }
 }
-
