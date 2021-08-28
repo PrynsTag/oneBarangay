@@ -290,8 +290,8 @@ Project Link: [https://github.com/PrynsTag/oneBarangay](https://github.com/Pryns
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
+[issues-shield]: https://img.shields.io/github/issues/PrynsTag/oneBarangay.svg?style=for-the-badge
+[issues-url]: https://github.com/PrynsTag/oneBarangay/issues
 [license-shield]: https://img.shields.io/github/license/prynstag/oneBarangay?style=for-the-badge
 [license-url]: https://github.com/PrynsTag/oneBarangay/blob/develop/LICENSE
 [ci-shield]: https://img.shields.io/circleci/build/github/PrynsTag/oneBarangay/develop?label=CircleCI&style=for-the-badge
