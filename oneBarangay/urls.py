@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-
 from oneBarangay import settings
 
 urlpatterns = [
@@ -25,4 +24,3 @@ urlpatterns = [
     # path("", include("appointment.urls"))
     path("", include("app.urls"))
 ]
-
