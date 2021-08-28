@@ -4,4 +4,4 @@ from django.shortcuts import render
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Hello! This is Appointments!")
+    return render(request, "appointment/admin_apt.html")
