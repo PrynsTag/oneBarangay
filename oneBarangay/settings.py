@@ -66,6 +66,8 @@ ALLOWED_HOSTS = ["127.0.0.1", os.getenv("APP_ENGINE_ALLOWED_HOST")]
 # Application definition
 
 INSTALLED_APPS = [
+    "oneBarangay",
+    "app",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.messages",
@@ -89,11 +91,14 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "oneBarangay.urls"
+TEMPLATE_DIR = os.path.join(
+    BASE_DIR, "oneBarangay", "templates"
+)  # ROOT dir for templates
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [TEMPLATE_DIR],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -156,9 +161,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "templates"),
+    os.path.join(BASE_DIR, "oneBarangay", "static")
 ]
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")
