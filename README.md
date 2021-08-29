@@ -140,11 +140,20 @@ In order for this to happen, a set of tools are available for you.
 
 ### Pre-commit
 
-After you have coded the business logic, run pre-commit in the project root using the code below:
+Once you have run `pip install -r requirements.txt`, you now have pre-commit. All you have to do now is run two
+commands.
+
+```sh
+pre-commit install
+```
+
+After that, you can run pre-commit by running the command bellow:
 
 ```sh
 pre-commit run --all-files
 ```
+
+> > Note: Once you have done `pre-commit install`, GitKraken will automatically run pre-commit every commit you do.
 
 And then fix any issues that might occur.
 
