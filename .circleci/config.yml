@@ -23,9 +23,6 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
       - run:
-          name: Run Pre-Commit
-          command: pre-commit run --all-files
-      - run:
           name: Run Django Test
           command: |
             coverage run ./manage.py test -v 2 --parallel
