@@ -54,10 +54,6 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
       - run:
-          name: Collect Static
-          command: |
-            ./manage.py collectstatic --no-input
-      - run:
           name: Make Migration
           command: |
             ./manage.py makemigrations
