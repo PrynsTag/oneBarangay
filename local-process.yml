@@ -37,7 +37,7 @@ jobs:
           name: Install dependencies with pip using project requirements.txt
           working_directory: .
       - run:
-          name: Collect Static and Run Django Test
+          name: Run Django Test
           command: |
             base64 -di <<< $CLOUD_STORAGE_KEY >> /home/circleci/project/key.json
             export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/project/key.json
