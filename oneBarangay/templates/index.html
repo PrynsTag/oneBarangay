@@ -96,7 +96,7 @@
                 </div>
                 <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
                     <li class="nav-item me-2">
-                        <a href="{%  include "dashboard.html" %}" class="nav-link">Dashboard</a>
+                        <a href="{% include "dashboard.html" %}" class="nav-link">Dashboard</a>
                     </li>
                     <li class="nav-item me-2">
                         <a href="{% static "page-sign-in.html" %}" class="nav-link">Login</a>
@@ -147,7 +147,8 @@
                     </h2>
                     <!-- Button Modal -->
                     <div class="d-flex align-items-center justify-content-center mb-5">
-                        <a href="{% static "dashboard.html" %}" class="btn btn-secondary d-inline-flex align-items-center me-4">
+                        <a href="{% static "dashboard.html" %}"
+                           class="btn btn-secondary d-inline-flex align-items-center me-4">
                             <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
@@ -159,7 +160,8 @@
                     </div>
                     <div class="d-flex justify-content-center flex-column mb-6 mb-lg-5">
                         <a href="https://themesberg.com" target="_blank">
-                            <img src="{% static "/assets/img/themesberg.svg" %}" class="d-block mx-auto mb-3" height="25"
+                            <img src="{% static "/assets/img/themesberg.svg" %}" class="d-block mx-auto mb-3"
+                                 height="25"
                                  width="25" alt="Themesberg Logo">
                             <span class="text-muted font-small">
                                     &copy; Themesberg
@@ -240,7 +242,8 @@
                             Javascript for everything including the plugins</p>
                     </div>
                     <div class="col-lg-6 order-lg-1">
-                        <img src="{% static "/assets/img/illustrations/bs5-illustrations.svg" %}" alt="Front pages overview">
+                        <img src="{% static "/assets/img/illustrations/bs5-illustrations.svg" %}"
+                             alt="Front pages overview">
                     </div>
                 </div>
                 <div class="col-lg-5 mb-5 mb-lg-0">
@@ -284,7 +287,7 @@
                     </a>
                 </div>
                 <div class="col-lg-6 order-lg-1">
-                    <img src="{%  static "/assets/img/mockup-map-presentation.png" %}"
+                    <img src="{% static "/assets/img/mockup-map-presentation.png" %}"
                          alt="MapBox Leaflet.js Custom Integration Mockup">
                 </div>
             </div>
@@ -326,7 +329,8 @@
             <div class="row mb-5">
                 <div class="col-6 mb-5">
                     <a href="/dashboard.html" class="page-preview scale-up-2">
-                        <img class="shadow-lg rounded scale" src={% static "/assets/img/themesberg.svg" %} alt="Dashboard page preview>
+                        <img class="shadow-lg rounded scale" src="{% static "/assets/img/themesberg.svg" %}"
+                             alt="Dashboard page preview">
                         <div class="text-center show-on-hover rounded-bottom">
                             <h6 class="m-0 text-center d-inline-flex align-items-center text-white">Overview
                                 <svg class="icon icon-xs ms-1" fill="currentColor" viewBox="0 0 20 20"
@@ -341,7 +345,7 @@
                 <div class="col-6 mb-5">
                     <a href="{% static "transactions.html" %}" class="page-preview scale-up-2">
                         <img class="shadow-lg rounded scale" src={% static "/assets/img/pages/transactions.jpg" %}
-                             alt="Transactions page preview>
+                                alt="Transactions page preview>
                         <div class="text-center show-on-hover rounded-bottom">
                             <h6 class="m-0 text-center d-inline-flex align-items-center text-white">Transactions
                                 <svg class="icon icon-xs ms-1" fill="currentColor" viewBox="0 0 20 20"
@@ -1068,7 +1072,8 @@
                         <a class="me-3 card-link"
                            href="https://themesberg.com/product/admin-dashboard/volt-bootstrap-5-dashboard"
                            target="_blank">
-                            <img src="{% static "/assets/img/technologies/bootstrap-5-logo.svg" %}" class="image image-sm">
+                            <img src="{% static "/assets/img/technologies/bootstrap-5-logo.svg" %}"
+                                 class="image image-sm">
                         </a>
                         <a class="me-3 card-link" href="https://demo.themesberg.com/volt-react-dashboard/#/"
                            target="_blank">
@@ -1174,7 +1179,8 @@
                 </a>
                 <div class="d-flex text-center justify-content-center align-items-center" role="contentinfo">
                     <p class="fw-normal font-small mb-0">
-                        &copy; Themesberg 2019-<span class="current-year">2020</span> - coded by <a target="_blank" href="https://appseed.us">AppSeed</a>.
+                        &copy; Themesberg 2019-<span class="current-year">2020</span> - coded by <a target="_blank"
+                                                                                                    href="https://appseed.us">AppSeed</a>.
                     </p>
                 </div>
             </div>
