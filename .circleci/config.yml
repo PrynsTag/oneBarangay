@@ -111,6 +111,11 @@ workflows:
             - jira/notify
           requires:
             - test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
       - deploy-to-staging:
           context:
             - docker
