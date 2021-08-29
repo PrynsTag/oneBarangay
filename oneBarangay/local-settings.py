@@ -75,7 +75,6 @@ INSTALLED_APPS = [
 ]
 PRODUCTION_ENABLED = DEBUG
 
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -94,7 +93,7 @@ TEMPLATE_DIR = os.path.join(
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [TEMPLATE_DIR],
+        "DIRS": [os.path.join(BASE_DIR, "ocr", "templates", "ocr"), TEMPLATE_DIR],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -158,6 +157,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "templates"),
     os.path.join(BASE_DIR, "oneBarangay", "static"),
+    os.path.join(BASE_DIR, "ocr", "static"),
 ]
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")
