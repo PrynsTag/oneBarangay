@@ -16,7 +16,7 @@
     <img src="https://storage.googleapis.com/onebarangay-media/alpha-logo-red.png" alt="Logo">
   </a>
 
-  <h3 align="center">oneBarangay</h3>
+<h3 align="center">oneBarangay</h3>
 
   <p align="center">
     An e-Government System for Online Transaction Processing
@@ -75,16 +75,14 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-The manual way of processing transactions in the barangay is still prevalent today. Filling
-out necessary records by using pen and paper that are stored in log books and folders in the
-barangay. There are records which have been distorted, some records are incomplete and there
-has been a loss of data.
+The manual way of processing transactions in the barangay is still prevalent today. Filling out necessary records by
+using pen and paper that are stored in log books and folders in the barangay. There are records which have been
+distorted, some records are incomplete and there has been a loss of data.
 
-Web application systems and mobile applications have helped in the tasks that we
-perform on a daily basis. These applications assisted us to make our lives easier in making
-transactions. With the emergence of technology in the Philippines, the proposed system, which is
-the oneBarangay system, will handle the main office of the barangay to provide a systematic,
-efficient, and technological way of handling online document issuing and more secure data.
+Web application systems and mobile applications have helped in the tasks that we perform on a daily basis. These
+applications assisted us to make our lives easier in making transactions. With the emergence of technology in the
+Philippines, the proposed system, which is the oneBarangay system, will handle the main office of the barangay to
+provide a systematic, efficient, and technological way of handling online document issuing and more secure data.
 
 ### Built With
 
@@ -97,8 +95,8 @@ efficient, and technological way of handling online document issuing and more se
 
 ## Getting Started
 
-The steps are organized to `Run`, `Develop` and `Test` the application.
-Make sure you followed the installation steps properly before asking for help.
+The steps are organized to `Run`, `Develop` and `Test` the application. Make sure you followed the installation steps
+properly before asking for help.
 
 ### Prerequisites
 
@@ -119,7 +117,8 @@ There are two things you need to have in order to run this project:
    ```sh
    pip install -r requirements.txt
    ```
-5. Copy the environment variables [here](https://console.cloud.google.com/security/secret-manager/secret/oneBarangay-ENV-Variables/versions?project=onebarangay-malanday)
+5. Copy the environment
+   variables [here](https://console.cloud.google.com/security/secret-manager/secret/oneBarangay-ENV-Variables/versions?project=onebarangay-malanday)
 6. Create an `.env` File and paste the values in step 3
 7. In local-settings.py, change this line:
 
@@ -135,8 +134,8 @@ There are two things you need to have in order to run this project:
 
 ## Tools Installation
 
-Before pushing to the develop branch, always test the code locally.
-In order for this to happen, a set of tools are available for you.
+Before pushing to the develop branch, always test the code locally. In order for this to happen, a set of tools are
+available for you.
 
 ### Pre-commit
 
@@ -159,8 +158,8 @@ And then fix any issues that might occur.
 
 ### CircleCI
 
-Another tool is also available to automatically test and deploy the application in just one push
-using the CI/CD tool known as `CircleCI`.
+Another tool is also available to automatically test and deploy the application in just one push using the CI/CD tool
+known as `CircleCI`.
 
 To run it locally, install the CLI using the steps quoted in the
 [CircleCI Docs](https://circleci.com/docs/2.0/local-cli/).
@@ -194,7 +193,8 @@ circleci update
 
 #### Configuring the CLI
 
-Before using the CLI you need to generate a CircleCI API Token from the Personal API Token tab. After you get your token, configure the CLI by running:
+Before using the CLI you need to generate a CircleCI API Token from the Personal API Token tab. After you get your
+token, configure the CLI by running:
 
 ```sh
 circleci setup
@@ -230,7 +230,8 @@ circleci local execute -c local-process.yml -e GOOGLE_PROJECT_ID=<the-env-value>
 
 2. Fix any issues that might occur before proceeding.
 
-3. After that, repeat the steps on Running the Local CLI but this time, change the code at the end from `--job test` to `--job build`
+3. After that, repeat the steps on Running the Local CLI but this time, change the code at the end from `--job test`
+   to `--job build`
 4. Repeat the process until you don't see the error.
 
 #### GitKraken
@@ -239,8 +240,8 @@ To lessen the git problems when working on the project, use `GitKraken` as a Git
 
 #### Codacy Sentry.io Deepsource
 
-For Error Tracking and Static Code Analyzers,
-use [Codacy](https://codacy.com), [Sentry.io](http://sentry.io/) and [Deepsource](https://deepsource.io/)
+For Error Tracking and Static Code Analyzers, use [Codacy](https://codacy.com), [Sentry.io](http://sentry.io/)
+and [Deepsource](https://deepsource.io/)
 
 > **_Note_**: You can use Sentry.io to keep track of unexpected errors in **Production**.
 >
@@ -250,14 +251,15 @@ use [Codacy](https://codacy.com), [Sentry.io](http://sentry.io/) and [Deepsource
 
 ## Roadmap
 
-See the [open issues](https://github.com/PrynsTag/oneBarangay/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/PrynsTag/oneBarangay/issues) for a list of proposed features (and known issues)
+.
 
 <!-- CONTRIBUTING -->
 
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create.
-Any contributions you make are **greatly appreciated**.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any
+contributions you make are **greatly appreciated**.
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -300,23 +302,43 @@ Project Link: [https://github.com/PrynsTag/oneBarangay](https://github.com/Pryns
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 [issues-shield]: https://img.shields.io/github/issues/PrynsTag/oneBarangay.svg?style=for-the-badge
+
 [issues-url]: https://github.com/PrynsTag/oneBarangay/issues
+
 [license-shield]: https://img.shields.io/github/license/prynstag/oneBarangay?style=for-the-badge
+
 [license-url]: https://github.com/PrynsTag/oneBarangay/blob/develop/LICENSE
+
 [ci-shield]: https://img.shields.io/circleci/build/github/PrynsTag/oneBarangay/develop?label=CircleCI&style=for-the-badge
+
 [ci-url]: https://circleci.com/gh/PrynsTag/oneBarangay/tree/develop
+
 [coverage-shield]: https://img.shields.io/coveralls/github/PrynsTag/oneBarangay?label=Coveralls&style=for-the-badge
+
 [coverage-url]: https://coveralls.io/github/PrynsTag/oneBarangay?branch=develop
+
 [codacy-shield]: https://img.shields.io/codacy/grade/7a9e9a1402a14005ae4a14b5cffdb1ee?label=Codacy&style=for-the-badge
+
 [codacy-url]: https://www.codacy.com/gh/PrynsTag/oneBarangay/dashboard?utm_source=github.com&utm_medium=referral&utm_content=PrynsTag/oneBarangay&utm_campaign=Badge_Grade
+
 [requires-shield]: https://img.shields.io/requires/github/PrynsTag/oneBarangay/develop?style=for-the-badge
+
 [requires-url]: https://requires.io/github/PrynsTag/oneBarangay/requirements/?branch=develop
+
 [deepsource-shield]: https://deepsource.io/gh/PrynsTag/oneBarangay.svg/?label=active+issues&token=QI2m-XNk586t3GYXw6YhzOn6
+
 [deepsource-url]: https://deepsource.io/gh/PrynsTag/oneBarangay/?ref=repository-badge
+
 [deepsource-resolved-shield]: https://deepsource.io/gh/PrynsTag/oneBarangay.svg/?label=resolved+issues&token=QI2m-XNk586t3GYXw6YhzOn6
+
 [deepsource-resolved-url]: https://deepsource.io/gh/PrynsTag/oneBarangay/?ref=repository-badge
+
 [black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg
+
 [black-url]: https://github.com/psf/black
+
 [isort-shield]: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
+
 [isort-url]: https://pycqa.github.io/isort/
+
 [product-screenshot]: https://storage.googleapis.com/onebarangay-media/scan-document.png
