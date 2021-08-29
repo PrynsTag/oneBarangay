@@ -8,3 +8,5 @@ firebase-admin==5.0.2
 django-storages==1.11.1
 google-cloud-storage==1.42.0
 google-cloud-secret-manager==2.7.0
+selenium==3.141.0
+browserstack-local==1.2.3
