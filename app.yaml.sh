@@ -6,6 +6,19 @@ instance_class: F1
 inbound_services:
   - warmup
 
+handlers:
+  - url: /favicon.ico
+    static_files: oneBarangay/static/favicon/favicon.ico
+    upload: oneBarangay/static/favicon/favicon.ico
+
+  - url: /robots.txt
+    static_files: oneBarangay/templates/robots.txt
+    upload: oneBarangay/templates/robots.txt
+
+  - url: /humans.txt
+    static_files: oneBarangay/templates/humans.txt
+    upload: oneBarangay/templates/humans.txt
+
 env_variables:
   APP_ENGINE_ALLOWED_HOST: \"$APP_ENGINE_ALLOWED_HOST\"
   GOOGLE_STORAGE_CREDENTIALS: \"$GOOGLE_STORAGE_CREDENTIALS\"
