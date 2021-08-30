@@ -62,21 +62,32 @@
             property="twitter:image"
             content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/volt-pro-bootstrap-5-dashboard/volt-pro-preview.jpg"
     />
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="120x120" href="{% static "/assets/img/favicon/apple-touch-icon.png" %}">
-    <link
-            rel="icon" type="image/png" sizes="32x32" href="{% static "/assets/img/favicon/favicon-32x32.png" %}">
-    <link
-            rel="icon" type="image/png" sizes="16x16" href="{% static "/assets/img/favicon/favicon-16x16.png" %}">
-    <link
-            rel="manifest" href="{% static "/assets/img/favicon/site.webmanifest" %}">
-    <link rel="mask-icon" href="{% static "/assets/img/favicon/safari-pinned-tab.svg" %}" color="#ffffff">
-    <meta name="msapplication-TileColor" content="#ffffff"/>
-    <meta name="theme-color" content="#ffffff"/>
 
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static "favicon/apple-icon-57x57.png" %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static "favicon/apple-icon-60x60.png" %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static "favicon/apple-icon-72x72.png" %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static "favicon/apple-icon-76x76.png" %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static "favicon/apple-icon-114x114.png" %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static "favicon/apple-icon-120x120.png" %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static "favicon/apple-icon-144x144.png" %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static "favicon/apple-icon-152x152.png" %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static "favicon/apple-icon-180x180.png" %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static "favicon/android-icon-192x192.png" %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static "favicon/favicon-32x32.png" %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static "favicon/favicon-96x96.png" %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static "favicon/favicon-16x16.png" %}">
+    <link rel="manifest" href="{% static "favicon/manifest.json" %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{% static "favicon/ms-icon-144x144.png" %}">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Vendors -->
     <link href="{% static "/assets/vendor/sweetalert2/dist/sweetalert2.min.css" %}" rel="block stylesheets"
           type="text/css">
     <link href="{% static "/assets/vendor/notyf/notyf.min.css" %}" rel="stylesheet" type="text/css">
+
+    <!-- Stylesheets -->
     <link href="{% static "/assets/css/volt.css" %}" rel="stylesheet" type="text/css">
     {% block stylesheets %}{% endblock stylesheets %}
 </head>
