@@ -15,11 +15,9 @@ import io
 import os
 from pathlib import Path
 
-import sentry_sdk
 from dotenv import load_dotenv
 from google.cloud import secretmanager
 from google.oauth2 import service_account
-from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -169,11 +167,3 @@ STATIC_URL = "https://storage.googleapis.com/onebarangay-malanday/"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Sentry SDK
-sentry_sdk.init(
-    dsn="https://c8349ef8bcd74193a46472e19e629f47@o947343.ingest.sentry.io/5931305",
-    integrations=[DjangoIntegration()],
-    traces_sample_rate=1.0,
-    send_default_pii=True,
-)
