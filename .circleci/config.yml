@@ -28,14 +28,22 @@ jobs:
             coverage run ./manage.py test -v 2 --parallel
             coverage run ./manage.py check --deploy
       - run:
-          name: Run Coverage Report
+          name: Generate Coverage Reort
           command: |
-            ./.coveralls.yml.sh > ./.coveralls.yml
             mkdir -p test-results
             coverage report
             coverage html -d test-results/coverage.html
             coverage xml -o test-results/unittest/unittest.xml
-            coveralls
+      - run:
+          name: Report results to Coveralls
+          command: |
+            ./.coveralls.yml.sh > ./.coveralls.yml
+            coveralls -v
+      - run:
+          name: Report results to DeepSource
+          command: |
+            curl https://deepsource.io/cli | sh
+            ./bin/deepsource report --analyzer test-coverage --key python --value-file test-results/unittest/unittest.xml
       - store_test_results:
           path: test-results/unittest
       - store_artifacts:
