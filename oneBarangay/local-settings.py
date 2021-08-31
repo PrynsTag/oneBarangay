@@ -65,7 +65,6 @@ ALLOWED_HOSTS = ["127.0.0.1", os.getenv("APP_ENGINE_ALLOWED_HOST")]
 INSTALLED_APPS = [
     "oneBarangay",
     "app",
-    "django.contrib.sessions",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.messages",
@@ -85,8 +84,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "oneBarangay.urls"
 TEMPLATE_DIR = os.path.join(
-    BASE_DIR, "oneBarangay", "templates"
-)  # ROOT dir for templates
+    BASE_DIR, "oneBarangay", "templates"  # ROOT dir for templates
+)
 
 TEMPLATES = [
     {
