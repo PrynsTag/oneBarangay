@@ -27,6 +27,9 @@ additional_builtins = ["_", "pretty_output"]
 name = "shell"
 enabled = true
 
+[analyzers.meta]
+dialect = "bash"
+
 [[transformers]]
 name = "isort"
 enabled = true
