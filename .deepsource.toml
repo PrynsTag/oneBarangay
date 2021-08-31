@@ -1,5 +1,23 @@
 version = 1
 
+test_patterns = [
+    "tests/**",
+    "test_*.py",
+    "*/test/**",
+    "test*.py",
+    "integration_tests/test_*.py",
+]
+
+exclude_patterns = [
+    "migrations/**",
+    "/dist/*min.js",
+    "bin/**",
+    "**/node_modules/",
+    "js/**/*.min.js",
+    "public/**,",
+    "dist/**"
+]
+
 [[analyzers]]
 name = "javascript"
 enabled = true
