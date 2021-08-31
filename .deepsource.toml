@@ -4,6 +4,25 @@ version = 1
 name = "javascript"
 enabled = true
 
+[analyzers.meta]
+plugins = [
+    "react",
+    "angularjs",
+    "angular",
+    "vue",
+    "ember",
+    "meteor"
+]
+environment = ["nodejs", "browser", "jest"]
+module_system = "es-modules"
+style_guide = "airbnb"
+dialect = "typescript"
+dependency_file_paths = [
+    "src/client/package.json",
+    "src/server/package.json",
+    "app/package.json"
+]
+
 [[analyzers]]
 name = "test-coverage"
 enabled = true
