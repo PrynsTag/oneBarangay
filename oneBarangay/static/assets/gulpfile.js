@@ -35,7 +35,7 @@ const rename = require('gulp-rename')
 const paths = {
   dist: {
     base: './dist/',
-    css: './dist/css',
+        css: "./dist/css",
     html: './dist/pages',
     assets: './dist/assets',
     img: './dist/assets/img',
