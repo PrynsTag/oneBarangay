@@ -67,7 +67,7 @@ const paths = {
     base: './.temp/',
     css: './.temp/css',
     html: './.temp/pages',
-        assets: "./.temp/assets",
+    assets: './.temp/assets',
     vendor: './.temp/vendor'
   }
 }
