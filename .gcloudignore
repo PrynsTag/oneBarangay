@@ -29,8 +29,9 @@ LICENSE
 .github
 .circleci
 static
-!**/static
 templates
 !**/templates
 app.yaml.sh
 !manage.py
+local-process.yml
+.gitattributes
