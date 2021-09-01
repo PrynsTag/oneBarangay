@@ -18,7 +18,7 @@
 
 const autoprefixer = require('gulp-autoprefixer')
 const browserSync = require('browser-sync').create()
-const cleanCss = require("gulp-clean-css")
+const cleanCss = require('gulp-clean-css')
 const del = require('del')
 const htmlmin = require('gulp-htmlmin')
 const cssbeautify = require('gulp-cssbeautify')
