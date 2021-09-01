@@ -66,7 +66,6 @@ jobs:
           command: |
             base64 -di \<<< $CLOUD_STORAGE_KEY >> /home/circleci/project/key.json
             export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/project/key.json
-            ./manage.py collectstatic --no-input
             ./manage.py makemigrations
             ./manage.py migrate
       - run:
