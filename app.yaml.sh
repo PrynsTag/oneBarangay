@@ -9,8 +9,8 @@ entrypoint: gunicorn main:app -w 1 -k uvicorn.workers.UvicornWorker
 
 handlers:
   - url: /favicon.ico
-    static_files: oneBarangay/static/favicon/favicon.ico
-    upload: oneBarangay/static/favicon/favicon.ico
+    static_files: oneBarangay/templates/favicon.ico
+    upload: oneBarangay/templates/favicon.ico
 
   - url: /robots.txt
     static_files: oneBarangay/templates/robots.txt
