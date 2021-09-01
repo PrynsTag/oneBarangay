@@ -1,0 +1,119 @@
+{% extends "layouts/base.html" %} {% block title %} OCR Index {% endblock %} {% load static %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <link href="{% static " /assets/vendor/fontawesome/css/fontawesome.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static " /assets/vendor/fontawesome/css/brands.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static " /assets/vendor/fontawesome/css/solid.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static " ocr/file-card.css" %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="div main-container">
+        <div class="container pt-5">
+            <main>
+                <section class="vh-lg-800 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
+                    <div class="container">
+                        <div class="row justify-content-center form-bg-image" data-background-lg="{% static "
+                            /assets/img/illustrations/signin.svg" %}">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                                    <div class="text-center text-md-center mb-4 mt-md-0">
+                                        <h1 class="mb-0 h3">Add Bulk Schedule </h1>
+                                    </div>
+                                    <form action="#" class="mt-4">
+                                        <!-- Form -->
+
+                                        <!-- Event Types -->
+                                        <div class="form-group mb-4">
+                                            <label for="event">Event Type</label>
+                                            <select class="form-select" aria-label=".form-select-lg example">
+                                                <option selected disabled>-Select Event-</option>
+                                                <option value="sap">(SAP) Social Amelioration Program</option>
+                                                <option value="vaccination">Vaccination</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Number of Residents -->
+                                        <div class="form-group mb-4">
+                                            <label for="no-residents">Number of Residents</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="no-residents" autofocus
+                                                    required>
+                                            </div>
+                                        </div>
+
+                                        <!-- Relationship Type -->
+                                        <div class="form-group mb-4">
+                                            <label for="event">Relationship Type</label>
+                                            <select class="form-select" aria-label=".form-select-lg example">
+                                                <option selected disabled>-Select Relationship-</option>
+                                                <option value="fam-head">Head of the Family</option>
+                                                <option value="fam-mother">Mother</option>
+                                                <option value="fam-father">Father</option>
+                                                <option value="fam-mem">Household Member</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Street or Areas -->
+                                        <div class="form-group mb-4">
+                                            <label for="event">Street</label>
+                                            <select class="form-select" aria-label=".form-select-lg example">
+                                                <option selected disabled>-Areas-</option>
+                                                <option value="street-1">Street 1</option>
+                                                <option value="street-2">Street 2</option>
+                                                <option value="street-3">Street 3</option>
+                                                <option value="street-4">Street 4</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Time Interval -->
+                                        <div class="form-group mb-4">
+                                            <label for="event">Time Interval</label>
+                                            <select class="form-select" aria-label=".form-select-lg example">
+                                                <option selected disabled>-Select Time-</option>
+                                                <option value="08:00">08:00</option>
+                                                <option value="08:15">08:15</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Notification Type -->
+                                        <div class="form-group mb-4">
+                                            <label for="event"> Notification Type</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="push-notif"
+                                                    id="flexCheckDefault">
+                                                <label class="form-check-label" for="flexCheckDefault">
+                                                    Push
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="email-notif"
+                                                    id="flexCheckDefault">
+                                                <label class="form-check-label" for="flexCheckDefault">
+                                                    Email
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="app-notif"
+                                                    id="flexCheckChecked">
+                                                <label class="form-check-label" for="flexCheckChecked">
+                                                    App
+                                                </label>
+                                            </div>
+
+
+                                            <!-- Buttons -->
+                                            <div class="d-grid gap-2 d-md-block">
+                                                <button type="button" class="btn btn-gray-800" id="cancel">Cancel</button>
+                                                <button type="submit" class="btn btn-gray-800" id="save">Save</button>
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+
+{% endblock content %}
