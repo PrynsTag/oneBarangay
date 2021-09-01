@@ -1,17 +1,21 @@
-# Create your views here.
+"""Routing Request to Views of OCR."""
 from django.http import HttpResponse
 from django.template import loader
 
 
-def index(request):
-    return HttpResponse("hello")
+def ocr_pages(request):
+    """Fetch OCR HTML Pages.
 
+    Args:
+      request: The requested URL.
 
-def ocr(request):
-    context = {}
+    Returns:
+      : The necessary OCR page requested in the URL.
+
+    """
     # Pick out the html file name from the url. And load that template.
+    # ex. barangay-admin/ocr/file-upload = file-upload
     load_template = request.path.split("/")[-1]
-    context["segment"] = load_template
-
     html_template = loader.get_template(load_template)
-    return HttpResponse(html_template.render(context, request))
+
+    return HttpResponse(html_template.render({"segment": load_template}, request))
