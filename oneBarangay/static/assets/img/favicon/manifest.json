@@ -1,5 +1,8 @@
 {
   "name": "oneBarangay",
+  "description": "An Online Document Issuing Application",
+  "display_override": ["window-control-overlay", "minimal-ui"],
+  "display": "standalone",
   "icons": [
     {
       "src": "assets/img/favicon/android-icon-36x36.png",
