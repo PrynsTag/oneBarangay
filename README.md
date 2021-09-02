@@ -51,7 +51,7 @@
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#application-installation">Application Installation</a></li>
         <li>
-            <a href="#tools-installation">Tools Installation</a>
+            <a href="#tools-installation">For Contributors</a>
             <ol>
                <li><a href="#pre-commit">Pre-commit</a></li>
                <li><a href="#circleci">CircleCI</a></li>
@@ -137,7 +137,7 @@ There are two things you need to have in order to run this project:
 
 8. Lastly, run `./manage.py runserver` to run the application.
 
-<!-- USAGE EXAMPLES -->
+<!-- FOR CONTRIBUTORS -->
 
 ## Tools Installation
 
@@ -226,14 +226,14 @@ After the set-up, there are two things you need to test using CircleCI, the `tes
 
 1. To do this use the code below to run the `test` job:
 
-```sh
-circleci local execute -c local-process.yml -e GOOGLE_PROJECT_ID=<the-env-value> -e GOOGLE_COMPUTE_ZONE=<the-env-value> -e GS_BUCKET_NAME=<the-env-value> -e DJANGO_SECRET_KEY=<the-env-value> -e DJANGO_SETTINGS_MODULE=<the-env-value> -e DOCKERHUB_USERNAME=<your-docker-username> -e DOCKERHUB_PASSWORD=<your-docker-username> -e CLOUD_STORAGE_KEY=<the-env-value> -e GCLOUD_AUTH_KEY=<the-env-value> -e  --job test
-```
-
-> **_Note_**: Replace the `<the-env-value>` and `<your-docker-credentials>` with the actual value without quotations.
->
-> > > **_Note_**: You can get your `DOCKER_USERNAME` and `DOCKER_PASSWORD` in [Docker Hub](https://hub.docker.com/).
-> > > All the other values are available in `.env` file mentioned above.
+   ```sh
+   circleci local execute -c local-process.yml -e GOOGLE_PROJECT_ID=<the-env-value> -e GOOGLE_COMPUTE_ZONE=<the-env-value> -e GS_BUCKET_NAME=<the-env-value> -e DJANGO_SECRET_KEY=<the-env-value> -e SERVICE_ACCOUNT=<the-env-value> -e DJANGO_SETTINGS_MODULE=<the-env-value> -e DOCKERHUB_USERNAME=<your-docker-username> -e APP_ENGINE_ALLOWED_HOST=<the-env-value> -e DOCKERHUB_PASSWORD=<your-docker-username> -e BROWSERSTACK_USERNAME=<your-username> -e BROWSERSTACK_ACCESS_KEY=<your-access-key> -e CLOUD_STORAGE_KEY=<the-env-value> -e GCLOUD_AUTH_KEY=<the-env-value> -e  --job <job-id>
+   ```
+   Replace the <job-id> with `test`. Once successful, do it again with `build`.
+   > **_Note_**: Replace the `<the-env-value>` and `<your-docker-credentials>` with the actual value without quotations.
+   >
+   > > > **_Note_**: You can get your `DOCKER_USERNAME` and `DOCKER_PASSWORD` in [Docker Hub](https://hub.docker.com/).
+   > > > All the other values are available in `.env` file mentioned above.
 
 2. Fix any issues that might occur before proceeding.
 
