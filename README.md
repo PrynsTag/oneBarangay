@@ -422,6 +422,10 @@ Project Link: [https://github.com/PrynsTag/oneBarangay](https://github.com/Pryns
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
+[contributor-shield]: https://img.shields.io/github/contributors/PrynsTag/oneBarangay?style=for-the-badge
+
+[contributor-url]: https://github.com/PrynsTag/oneBarangay/graphs/contributors
+
 [issues-shield]: https://img.shields.io/github/issues/PrynsTag/oneBarangay.svg?style=for-the-badge
 [issues-url]: https://github.com/PrynsTag/oneBarangay/issues
 [license-shield]: https://img.shields.io/github/license/prynstag/oneBarangay?style=for-the-badge
