@@ -339,6 +339,35 @@ For more examples, please refer to the [commit message examples](https://regex10
 commit examples, refer to
 the [Jira Smart Commit Documentation](https://support.atlassian.com/jira-software-cloud/docs/process-issues-with-smart-commits/)
 
+## Workflow
+Once you are done coding the business logic, this workflow will guide you on what to do first before doing a commit.
+1. Run pre-commit.
+   ```sh
+   pre-commit run --all-files
+   ```
+   Fix the necessary errors that pops up after running this command and after that, proceed to the next step.
+2. Upload the static files you have in Google Cloud Storage.
+   ```sh
+   python manage.py collectstatic
+   ```
+   The above command will collect all your static files given that you specify your **app's static directory** in
+   `STATICFILES_DIRS`.
+3. Run the Django Application.
+
+   **For linux**
+   ```sh
+   gunicorn main:app --reload -w 1 -k uvicorn.workers.UvicornWorker
+   ```
+
+   **For Windows**
+   ```sh
+   python manage.py runserver
+   ```
+4. Run CircleCI **(For Linux Users Only)**.
+   ```sh
+   circleci local execute -c local-process.yml -e GOOGLE_PROJECT_ID=<the-env-value> -e GOOGLE_COMPUTE_ZONE=<the-env-value> -e GS_BUCKET_NAME=<the-env-value> -e DJANGO_SECRET_KEY=<the-env-value> -e SERVICE_ACCOUNT=<the-env-value> -e DJANGO_SETTINGS_MODULE=<the-env-value> -e DOCKERHUB_USERNAME=<your-docker-username> -e APP_ENGINE_ALLOWED_HOST=<the-env-value> -e DOCKERHUB_PASSWORD=<your-docker-username> -e BROWSERSTACK_USERNAME=<your-username> -e BROWSERSTACK_ACCESS_KEY=<your-access-key> -e CLOUD_STORAGE_KEY=<the-env-value> -e GCLOUD_AUTH_KEY=<the-env-value> --job <job-id>
+   ```
+   Replace <job-id> with `test` first and when successful, run it again with `build`.
 <!-- ROADMAP -->
 
 ## Roadmap
