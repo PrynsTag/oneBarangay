@@ -427,23 +427,43 @@ Project Link: [https://github.com/PrynsTag/oneBarangay](https://github.com/Pryns
 [contributor-url]: https://github.com/PrynsTag/oneBarangay/graphs/contributors
 
 [issues-shield]: https://img.shields.io/github/issues/PrynsTag/oneBarangay.svg?style=for-the-badge
+
 [issues-url]: https://github.com/PrynsTag/oneBarangay/issues
+
 [license-shield]: https://img.shields.io/github/license/prynstag/oneBarangay?style=for-the-badge
+
 [license-url]: https://github.com/PrynsTag/oneBarangay/blob/develop/LICENSE
+
 [ci-shield]: https://img.shields.io/circleci/build/github/PrynsTag/oneBarangay/develop?label=CircleCI&style=for-the-badge
+
 [ci-url]: https://circleci.com/gh/PrynsTag/oneBarangay/tree/develop
+
 [coverage-shield]: https://img.shields.io/coveralls/github/PrynsTag/oneBarangay?label=Coveralls&style=for-the-badge
+
 [coverage-url]: https://coveralls.io/github/PrynsTag/oneBarangay?branch=develop
+
 [codacy-shield]: https://img.shields.io/codacy/grade/7a9e9a1402a14005ae4a14b5cffdb1ee?label=Codacy&style=for-the-badge
+
 [codacy-url]: https://www.codacy.com/gh/PrynsTag/oneBarangay/dashboard?utm_source=github.com&utm_medium=referral&utm_content=PrynsTag/oneBarangay&utm_campaign=Badge_Grade
+
 [requires-shield]: https://img.shields.io/requires/github/PrynsTag/oneBarangay/develop?style=for-the-badge
+
 [requires-url]: https://requires.io/github/PrynsTag/oneBarangay/requirements/?branch=develop
+
 [deepsource-shield]: https://deepsource.io/gh/PrynsTag/oneBarangay.svg/?label=active+issues&token=QI2m-XNk586t3GYXw6YhzOn6
+
 [deepsource-url]: https://deepsource.io/gh/PrynsTag/oneBarangay/?ref=repository-badge
+
 [deepsource-resolved-shield]: https://deepsource.io/gh/PrynsTag/oneBarangay.svg/?label=resolved+issues&token=QI2m-XNk586t3GYXw6YhzOn6
+
 [deepsource-resolved-url]: https://deepsource.io/gh/PrynsTag/oneBarangay/?ref=repository-badge
+
 [black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg
+
 [black-url]: https://github.com/psf/black
+
 [isort-shield]: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
+
 [isort-url]: https://pycqa.github.io/isort/
+
 [product-screenshot]: https://storage.googleapis.com/onebarangay-media/scan-document.png
