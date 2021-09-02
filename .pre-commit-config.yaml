@@ -2,6 +2,17 @@
 default_language_version:
   python: python3
 
+ci:
+  autofix_commit_msg: |
+    refactor[pre-commit.ci]: auto fixes from pre-commit.com hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_commit_msg: "bump[pre-commit.ci]: auto-update pre-commit hooks"
+  autoupdate_schedule: weekly
+  skip: [ ]
+  submodules: false
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
