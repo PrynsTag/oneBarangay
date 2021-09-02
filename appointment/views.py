@@ -1,8 +1,9 @@
 """Create your Appointment views here."""
 from django.http import HttpResponse
+from django.shortcuts import render
 
 
-def index(request):
+def view_appointment(request):
     """Fetch Appointment HTML Pages.
 
     Args:
@@ -11,4 +12,5 @@ def index(request):
     Returns:
       The requested Appointment Page.
     """
-    return HttpResponse("Hello! This is Appointments!")
+    # return HttpResponse("Hello! This is Appointments!")
+    return render(request, "appointment/home.html")
