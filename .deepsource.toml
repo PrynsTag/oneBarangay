@@ -56,7 +56,7 @@ enabled = true
 [analyzers.meta]
 runtime_version = "3.x.x"
 type_checker = "mypy"
-max_line_length = 88
+max_line_length = 98
 skip_doc_coverage = ["module", "magic", "init"]
 additional_builtins = ["_", "pretty_output"]
 
