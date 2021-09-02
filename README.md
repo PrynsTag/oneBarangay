@@ -61,7 +61,13 @@
         </li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li>
+      <a href="#commit-message">Proper Commit Message</a>
+      <ol>
+         <li><a href="connect-jira-with-github-commits">Connect Jira with GitHub Commits</a></li>
+      </ol>
+    </li>
+    <li><a href="#workflow">Workflow</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -247,6 +253,91 @@ and [Deepsource](https://deepsource.io/)
 > **_Note_**: You can use Sentry.io to keep track of unexpected errors in **Production**.
 >
 > > > **_Note_**: Create an account first using your **_Student GitHub_** account and notify the Project Repo Admin to be invited in these tools.
+
+## Commit Message
+
+### Conventional Commit Message
+
+😼  <  Meow! Please use semantic commit messages
+
+< type >[< scope >](issue #): < short summary >
+
+Type: chore, docs, feat, fix, refactor, style, or test. Issue # (required): Issue number of related task in Jira.
+
+Scope (optional): e.g. common, compiler, authentication, core
+
+Summary: In present tense. Not capitalized. No period at the end.
+
+| Type    | Description    | Alias(es)    |
+|:---:	|:---:	|:---:	|
+| revert    | Reverts a previous commit    | [U]ndo, Reversion, Reverted, Mistake    |
+| fix    | Bug fix for the user, not a fix to a build script    | [B]ugfix, Bug-Fix, Hot-Fix, Hotfix    |
+| feat    | New feature for the user, not a new feature for build script    | Add, Added, Addition, Implementation Implemented    |
+| bump    | Increase version; i.e. updating a dependency    | [V]ersion, Release    |
+| test    | Adding missing tests, refactoring tests; no production code change    | Unit, Interoperability, Stage    |
+| build    | Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)    | Not Applicable    |
+| chore    | Updating grunt tasks etc; no production code change    | Not Applicable    |
+| ci    | Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)    | Under Further Consideration    |
+| refactor    | Refactoring production code, eg. renaming a variable    | Refactoring    |
+| style    | Formatting, missing semi colons, etc; no production code change    | Styling, Styles, Markup    |
+| perf    | Code change that improves performance    | Optimizing, Optimization    |
+| docs    | Changes to the documentation    | Documentation, README, Information, In-Line-Comment    |
+| localize    | Translations update    | Translate    |
+
+### Connect Jira with GitHub Commits
+
+#### Smart Commit commands
+
+The basic syntax for a GitHub commit with integration of Jira is as follows:
+
+```sh
+<type>[<scope>](<ISSUE_KEY>): <COMMAND> <short summary> <TRANSITION>
+```
+
+**ISSUE_KEY**: Issue Key from Jira (e.g. BRGY-189)
+
+**COMMAND (When Necessary)**: ex. #comment and #time
+##### comment
+
+| Description | Adds a comment to a Jira Software issue.                                                                                                                   |
+|-------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Syntax      | <ignored text> <ISSUE_KEY> <ignored text> #comment <comment_string>                                                                                        |
+| Example     | JRA-34 #comment corrected indent issue                                                                                                                     |
+| Notes       | The committer's email address must match the email address of a single Jira Software user with permission to comment on issues in that particular project. |
+
+##### time
+
+| Description | Records time tracking information against an issue.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Syntax      | <ignored text> <ISSUE_KEY> <ignored text> #time <value>w <value>d <value>h <value>m <comment_string>                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Example     | JRA-34 #time 1w 2d 4h 30m Total work logged                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Notes       | This example records 1 week, 2 days, 4 hours and 30 minutes against the issue, and adds the comment `Total work logged` in the Work Log tab of the issue. <br><br>1. The values for w, d, h and m can be decimal numbers. <br>2. The comment is added automatically without needing to use the #comment command. <br>3. The committer's email address must match the email address of a single Jira Software user with permission to log work on an issue.
+
+**TRANSITION (Optional)**: The values here are #to-do, #in-progress, #qa, and #done.
+> **NOTE!:** Transition are the different workflow in Jira which you can  find [here](https://princevelasco.atlassian.net/jira/software/projects/BRGY/boards/1)
+
+##### transition
+
+| Description    | Transitions a Jira Software issue to a particular workflow state.                                                                                                                                                    |
+|-------------	|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
+| Syntax        | <ignored text> <ISSUE_KEY> <ignored text> #<transition_name> #comment <comment_string>                                                                                                                                |
+| Example        | JRA-090 #close #comment Fixed this today                                                                                                                                                                                |
+| Notes        | This example executes the close issue workflow transition for the issue and adds the comment '<br>Fixed this today' to the issue.<br><br>For us, the workflow transitions are: #to-do, #in-progress, #qa and #done.    |
+
+#####Examples:
+```sh
+feat[auth](BRGY-6536): #comment my github jira integration commit #done
+```
+
+The most minimal commit message you can do is:
+```sh
+feat[scope]: my github jira integration commit
+```
+> **Note!: Only do this command when you are doing a commit outside your Jira task.**
+
+For more examples, please refer to the [commit message examples](https://regex101.com/r/0DYG8V/1) and for more smart
+commit examples, refer to
+the [Jira Smart Commit Documentation](https://support.atlassian.com/jira-software-cloud/docs/process-issues-with-smart-commits/)
 
 <!-- ROADMAP -->
 
