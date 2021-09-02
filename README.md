@@ -418,6 +418,7 @@ Project Link: [https://github.com/PrynsTag/oneBarangay](https://github.com/Pryns
 - [Pre-commit](https://pre-commit.com/)
 - [Coveralls](http://coveralls.io/)
 - [isort](https://pycqa.github.io/isort/)
+- [djhtml](https://github.com/rtts/djhtml)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
