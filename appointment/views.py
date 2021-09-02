@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 
-def index(request):
+def view_appointment(request):
     """Fetch Appointment HTML Pages.
 
     Args:
