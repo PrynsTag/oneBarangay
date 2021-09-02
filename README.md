@@ -1,3 +1,4 @@
+[![Contributors][contributor-shield]][contributor-url]
 [![Issues][issues-shield]][issues-url]
 [![Apache License][license-shield]][license-url]
 [![Circle CI][ci-shield]][ci-url]
