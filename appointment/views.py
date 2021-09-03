@@ -10,7 +10,8 @@ def view_appointment(request):
       request: The URL Request
 
     Returns:
-      The requested Appointment Page.
+      : The requested Appointment Page.
+
     """
     # return HttpResponse("Hello! This is Appointments!")
     return render(request, "appointment/home.html")
