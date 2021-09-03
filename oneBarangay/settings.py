@@ -165,7 +165,6 @@ STATICFILES_DIRS = [
 DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
-STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 STATIC_URL = "https://storage.googleapis.com/onebarangay-malanday/"
 
 # Default primary key field type
