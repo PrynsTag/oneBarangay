@@ -8,4 +8,29 @@
 
 {% block content %}
     <h1>Appointments</h1>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Time</th>
+            <th>Recipient</th>
+            <th>Document</th>
+            <th>Status</th>
+        </tr>
+        <tr>
+            {% if appointments  == None %}
+                There is no Appointments
+            {% else %}
+                {% for appointment_key, appointment_value in appointments.items %}
+                    <tr>
+                        <td>{{ appointment_value.appointment_id }}</td>
+                        <td>{{ appointment_key }}</td>
+                        <td>{{ appointment_value.first_name }} {{ appointment_value.last_name }}</td>
+                        <td>{{ appointment_value.document|join:", " }}</td>
+                        <td>{{ appointment_value.status }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tr>
+    </table>
 {% endblock %}
