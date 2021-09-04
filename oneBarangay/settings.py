@@ -67,6 +67,7 @@ ALLOWED_HOSTS = ["127.0.0.1", os.getenv("APP_ENGINE_ALLOWED_HOST")]
 INSTALLED_APPS = [
     "oneBarangay",
     "app",
+    "ocr",
     "django.contrib.sessions",
     "django.contrib.auth",
     "django.contrib.contenttypes",
