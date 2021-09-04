@@ -1,6 +1,10 @@
 """URL Routing for OCR."""
-from django.urls import re_path
+from django.urls import path
 
 from . import views
 
-urlpatterns = [re_path(r"^.*\.html", views.ocr_pages, name="ocr-pages")]
+urlpatterns = [
+    path("upload", views.file_upload, name="upload"),
+    path("files", views.ocr_files, name="ocr_files"),
+    path("scan_file", views.scan_file, name="scan_file"),
+]
