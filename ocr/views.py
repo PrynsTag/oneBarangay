@@ -3,19 +3,33 @@ from django.http import HttpResponse
 from django.template import loader
 
 
-def ocr_pages(request):
+def ocr_files(request):
     """Fetch OCR HTML Pages.
 
     Args:
-      request: The requested URL.
+      request: The URL Request.
 
     Returns:
-      : The necessary OCR page requested in the URL.
+      Renders ocr_files.html.
 
     """
-    # Pick out the html file name from the url. And load that templates.
-    # ex. barangay-admin/ocr/file-upload = file-upload
-    load_template = request.path.split("/")[-1]
-    html_template = loader.get_template(load_template)
+    return render(
+        request=request,
+        template_name="ocr/ocr_files.html",
+    )
 
-    return HttpResponse(html_template.render({"segment": load_template}, request))
+
+def scan_file(request):
+    """Fetch the uploaded files for scanning.
+
+    Args:
+      request: The URL Request.
+
+    Returns:
+      The scan_file.html page requested in the URL.
+
+    """
+    return render(
+        request=request,
+        template_name="ocr/scan_result.html",
+    )
