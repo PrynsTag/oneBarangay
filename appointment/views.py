@@ -19,12 +19,9 @@ fake = Faker()
 
 
 def view_appointment(request):
-    """Fetch Appointment HTML Pages.
+    """Display the list of appointments.
 
-    Args:
-    request: The URL Request
-    Returns:
-    : The requested Appointment Page.
+    Returns: Display Appointment View
 
     """
     result_dict = None
