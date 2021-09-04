@@ -30,8 +30,7 @@ env_file = os.path.join(BASE_DIR, ".env")
 decodedBytes = base64.b64decode(os.getenv("GOOGLE_STORAGE_CREDENTIALS"))
 decodedStr = str(decodedBytes, "utf-8")
 GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-    ast.literal_eval(decodedStr)
-)
+    ast.literal_eval(decodedStr))
 
 if os.path.isfile(env_file):
     # Use a local secret file, if provided
@@ -42,14 +41,18 @@ elif os.environ.get("GOOGLE_PROJECT_ID", None):
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_PROJECT_ID")
 
-    client = secretmanager.SecretManagerServiceClient(credentials=GS_CREDENTIALS)
-    settings_name = os.environ.get("SETTINGS_NAME", "oneBarangay-ENV-Variables")
+    client = secretmanager.SecretManagerServiceClient(
+        credentials=GS_CREDENTIALS)
+    settings_name = os.environ.get("SETTINGS_NAME",
+                                   "oneBarangay-ENV-Variables")
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
-    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+    payload = client.access_secret_version(
+        name=name).payload.data.decode("UTF-8")
 
     load_dotenv(stream=io.StringIO(payload))
 else:
-    raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
+    raise Exception(
+        "No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -91,9 +94,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "oneBarangay.urls"
-TEMPLATE_DIR = os.path.join(
-    BASE_DIR, "oneBarangay", "templates"
-)  # ROOT dir for templates
+TEMPLATE_DIR = os.path.join(BASE_DIR, "oneBarangay",
+                            "templates")  # ROOT dir for templates
 
 TEMPLATES = [
     {
@@ -128,16 +130,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -183,7 +189,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Sentry SDK`6789-=
 sentry_sdk.init(
-    dsn="https://c8349ef8bcd74193a46472e19e629f47@o947343.ingest.sentry.io/5931305",
+    dsn=
+    "https://c8349ef8bcd74193a46472e19e629f47@o947343.ingest.sentry.io/5931305",
     integrations=[DjangoIntegration()],
     traces_sample_rate=1.0,
     send_default_pii=True,
