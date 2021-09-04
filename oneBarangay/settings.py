@@ -42,14 +42,18 @@ elif os.environ.get("GOOGLE_PROJECT_ID", None):
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_PROJECT_ID")
 
-    client = secretmanager.SecretManagerServiceClient(credentials=GS_CREDENTIALS)
-    settings_name = os.environ.get("SETTINGS_NAME", "oneBarangay-ENV-Variables")
+    client = secretmanager.SecretManagerServiceClient(
+        credentials=GS_CREDENTIALS)
+    settings_name = os.environ.get(
+        "SETTINGS_NAME", "oneBarangay-ENV-Variables")
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
-    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+    payload = client.access_secret_version(
+        name=name).payload.data.decode("UTF-8")
 
     load_dotenv(stream=io.StringIO(payload))
 else:
-    raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
+    raise Exception(
+        "No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
