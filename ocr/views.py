@@ -2,9 +2,8 @@
 from django.core.files.base import ContentFile
 from django.shortcuts import render
 
-from ocr.models import File
-
 from .forms import FileFieldForm
+from ocr.models import File
 
 
 def file_upload(request):
