@@ -1,0 +1,58 @@
+{% extends "layouts/base.html" %}
+{% block title %} OCR Index {% endblock %}
+{% load static %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <link href="{% static "/assets/vendor/fontawesome/css/fontawesome.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "/assets/vendor/fontawesome/css/brands.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "/assets/vendor/fontawesome/css/solid.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "ocr/file-card.css" %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block content %}
+    <div id="main-content" class="file_manager">
+        <div class="container">
+            <div class="row clearfix">
+                {% for file in files %}
+                    <div class="col-lg-3 col-md-4 col-sm-12">
+                        <div class="card">
+                            <div class="file">
+                                <a href="scan_file">
+                                    <div class="hover">
+                                        <button
+                                            type="button"
+                                            class="btn btn-icon btn-primary"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="Scan"
+                                        >
+                                            <i class="fas fa-qrcode" aria-hidden="true"></i>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-icon btn-danger"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="Delete File"
+                                        >
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </div>
+                                    <div class="file-name">
+                                        <p class="m-b-5 text-muted">{{ file.name }}</p>
+                                        <small>{{ file.size }}
+                                            <span class="date text-muted">Nov. 2 2017</span>
+                                        </small>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}
