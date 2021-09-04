@@ -16,7 +16,7 @@ Including another URLconf
 from django.urls import include, path
 
 urlpatterns = [
-    path("barangay-admin/ocr", include("ocr.urls")),
+    path("barangay-admin/ocr/", include("ocr.urls")),
     path("", include("app.urls")),
     path("barangay-admin/appointment/", include("appointment.urls")),
     path("barangay-admin/complaint/", include("complaint.urls")),
