@@ -116,6 +116,12 @@ workflows:
             - browserstack
           post-steps:
             - jira/notify
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /feature\/.*/
       - build:
           context:
             - docker
@@ -128,6 +134,7 @@ workflows:
               only:
                 - master
                 - develop
+                - /feature\/.*/
       - deploy-to-staging:
           context:
             - docker
