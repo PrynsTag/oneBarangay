@@ -17,7 +17,6 @@ from storages.utils import setting
 
 class GoogleCloudMediaStorage(GoogleCloudStorage, ABC):
     """GoogleCloudStorage suitable for Django's Media files."""
-
     def __init__(self, *args, **kwargs):
         """Initialize media bucket name."""
         if not settings.MEDIA_URL:
@@ -32,7 +31,6 @@ class GoogleCloudMediaStorage(GoogleCloudStorage, ABC):
 
 class GoogleCloudStaticStorage(GoogleCloudStorage, ABC):
     """GoogleCloudStorage suitable for Django's Static files."""
-
     def __init__(self, *args, **kwargs):
         """Initialize static bucket name."""
         if not settings.STATIC_URL:
