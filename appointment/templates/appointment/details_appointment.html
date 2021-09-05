@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+{% extends "layouts/base.html" %}
+
+{% block title %}
+    Barangay Admin - Details Appointment
+{% endblock %}
+
+{% block content %}
+    <h1>Appointment Details</h1>
+
+    <ul>
+        <li>Name: {{ appointment_name }}</li>
+        <li>Account Type: {{ appointment_account }}</li>
+        <li>Contact Number: {{ appointment_contact }}</li>
+    </ul>
+
+    <ul>
+        <li>Date: {{ appointment_date }}</li>
+        <li>Time: {{ appointment_time }}</li>
+        <li>
+            Document Type:
+            <ul>
+                <Li>{{ appointent_document }}</Li>
+            </ul>
+        </li>
+        <li>Total Amount: {{ appointment_amount }}</li>
+        <li>Purpose: {{ appointment_purpose }}</li>
+    </ul>
+
+    <ul>
+        <li>Verification: {{ appointment_image }}</li>
+    </ul>
+
+    <a href="#">Save</a>
+    <a href="#">Cancel</a>
+{% endblock %}
