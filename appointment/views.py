@@ -47,11 +47,6 @@ def view_appointment(request):
 
     Returns: renders the view appointment html
 
-    Args:
-      request:
-
-    Returns:
-
     """
     result_dict = None
 
