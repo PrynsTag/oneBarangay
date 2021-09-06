@@ -54,7 +54,6 @@ def ocr_files(request):
 
     Returns:
       Renders ocr_files.html.
-
     """
     return render(
         request=request,
@@ -70,7 +69,6 @@ def scan_file(request):
 
     Returns:
       The scan_file.html page requested in the URL.
-
     """
     return render(
         request=request,

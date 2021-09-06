@@ -13,6 +13,5 @@ def index(request):
 
     Returns:
       : Display Service Page
-
     """
     return render(request, "services/service.html")

@@ -9,7 +9,6 @@ import firebase_admin
 from django.http import HttpResponse
 from django.shortcuts import render
 from faker import Faker
-
 # Firestore
 # from google.cloud import firestore
 from firebase_admin import auth, firestore
@@ -22,7 +21,6 @@ def view_appointment(request):
     """Display the list of appointments.
 
     Returns: Display Appointment View
-
     """
     result_dict = None
     working_hours = [

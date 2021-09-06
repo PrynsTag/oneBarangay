@@ -1,5 +1,4 @@
-"""
-ASGI config for oneBarangay project.
+"""ASGI config for oneBarangay project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

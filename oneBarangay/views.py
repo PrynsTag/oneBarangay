@@ -11,7 +11,6 @@ def handler403(request, exception=None):
 
     Returns:
       The custom error page for 403 errors.
-
     """
     response = render(request, template_name="403.html")
     response.status_code = 403
@@ -27,7 +26,6 @@ def handler404(request, exception=None):
 
     Returns:
       The custom error page for 403 errors.
-
     """
     response = render(request, template_name="404.html")
     response.status_code = 404
@@ -43,7 +41,6 @@ def handler500(request, exception=None):
 
     Returns:
       The custom error page for 403 errors.
-
     """
     response = render(request, template_name="500.html")
     response.status_code = 500
