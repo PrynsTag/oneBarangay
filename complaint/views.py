@@ -6,13 +6,11 @@ from django.shortcuts import render
 
 
 def index(request):
-    """
-    Sample display for complaint page.
+    """Sample display for complaint page.
 
     Args:
       request:
 
     Returns: This function returns the sample display for complaint page
-
     """
     return HttpResponse("Complaint ang bebe")

@@ -1,14 +1,14 @@
 """Create your Appointment views here."""
-from django.http import HttpResponse
-from django.shortcuts import render
 import datetime
 import random
 from collections import OrderedDict
 from operator import getitem
-from faker import Faker
 
 # Firebase
 import firebase_admin
+from django.http import HttpResponse
+from django.shortcuts import render
+from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
@@ -46,7 +46,6 @@ def view_appointment(request):
     """Display the list of appointments.
 
     Returns: renders the view appointment html
-
     """
     result_dict = None
 
@@ -96,7 +95,6 @@ def details_appointment(request):
 
     Returns:
       : Renders the html of appointment details
-
     """
     return render(request, "appointment/details_appointment.html", {})
 
@@ -110,7 +108,6 @@ def create_dummy_account(num_range: int, password: str = "password123"):
 
     Returns:
       : returns uid, firstname, lastname, account_type, contact number, email, and password
-
     """
     for i in range(0, num_range):
         first_name = fake.first_name()
@@ -147,7 +144,7 @@ def create_dummy_account(num_range: int, password: str = "password123"):
 
 
 def create_dummy_appointment_with_account(
-        num_range: int, password: str = "password123"
+    num_range: int, password: str = "password123"
 ):
     """Create dummy appointment with account in authentication and firestore.
 
@@ -156,7 +153,6 @@ def create_dummy_appointment_with_account(
       password: str:  default password 'password123'
 
     Returns: returns uid, firstname, lastname, account_type, contact number, email, and password
-
     """
     for a in range(700, 1701, 100):
         first_name = fake.first_name()
