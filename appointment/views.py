@@ -62,7 +62,10 @@ def view_appointment(request):
         # create_dummy_account(num_range=10)
 
         # Create Dummy Account in Authentication and Firestore with Appointment
-        create_dummy_appointment_with_account(num_range=1)
+        # create_dummy_appointment_with_account(num_range=10)
+
+        # Delete Account
+        # delete_account_auth()
 
         # View Appointment
         doc_result = doc_ref.get()
