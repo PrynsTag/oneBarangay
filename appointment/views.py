@@ -1,14 +1,14 @@
 """Create your Appointment views here."""
-from django.http import HttpResponse
-from django.shortcuts import render
 import datetime
 import random
 from collections import OrderedDict
 from operator import getitem
-from faker import Faker
 
 # Firebase
 import firebase_admin
+from django.http import HttpResponse
+from django.shortcuts import render
+from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
@@ -147,7 +147,7 @@ def create_dummy_account(num_range: int, password: str = "password123"):
 
 
 def create_dummy_appointment_with_account(
-        num_range: int, password: str = "password123"
+    num_range: int, password: str = "password123"
 ):
     """Create dummy appointment with account in authentication and firestore.
 
