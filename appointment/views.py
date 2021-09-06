@@ -147,7 +147,7 @@ def create_dummy_account(num_range: int, password: str = "password123"):
 
 
 def create_dummy_appointment_with_account(
-    num_range: int, password: str = "password123"
+        num_range: int, password: str = "password123"
 ):
     """Create dummy appointment with account in authentication and firestore.
 
