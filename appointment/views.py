@@ -219,3 +219,17 @@ def create_dummy_appointment_with_account(
             }
 
             doc_ref_appointment.set(data, merge=True)
+
+
+def delete_account_auth():
+    doc_ref_account = db.collection("users").document("resident")
+    doc_ref_account_result = doc_ref_account.get()
+
+    result_dict = None
+
+    if doc_ref_account_result.exists:
+        result_dict = doc_ref_account_result.to_dict()
+    else:
+        print("There is no result")
+
+    auth.delete_users(list(result_dict))
