@@ -4,9 +4,9 @@ default_language_version:
 
 ci:
   autofix_commit_msg: |
-    refactor[pre-commit.ci]: auto fixes from pre-commit.com hooks
+    "refactor[pre-commit.ci]: auto fixes from pre-commit.com hooks
 
-    for more information, see https://pre-commit.ci
+    for more information, see https://pre-commit.ci"
   autofix_prs: true
   autoupdate_commit_msg: "bump[pre-commit.ci]: auto-update pre-commit hooks"
   autoupdate_schedule: weekly
@@ -20,6 +20,10 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: check-docstring-first
+      - id: debug-statements
+      - id: name-tests-test
+      - id: requirements-txt-fixer
 
   - repo: https://github.com/psf/black
     rev: 21.8b0
@@ -32,11 +36,39 @@ repos:
       - id: yamllint
         args: [ --format, parsable, --strict ]
 
-  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v5.0.0
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.0
     hooks:
-      - id: commitlint
-        stages: [ commit-msg ]
+      - id: bandit
+        language_version: python3
+        exclude: ^test/
+        args:
+          - -s
+          - "B404,B602,B603,B607"
+
+  - repo: https://github.com/myint/docformatter
+    rev: v1.4
+    hooks:
+      - id: docformatter
+        args: [ --in-place, --wrap-summaries=115, --wrap-descriptions=120 ]
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8
+        additional_dependencies: [flake8-typing-imports==1.1.0]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.9.3
+    hooks:
+      - id: isort
+        name: isort (python)
+      - id: isort
+        name: isort (cython)
+        types: [ cython ]
+      - id: isort
+        name: isort (pyi)
+        types: [ pyi ]
 
   - repo: https://github.com/rtts/djhtml
     rev: v1.4.9
