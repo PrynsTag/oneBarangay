@@ -51,11 +51,9 @@ def view_appointment(request):
     result_dict = None
 
     try:
-        doc_ref = db.collection("appointments").document("2021_09_05")
-
-        # doc_ref = db.collection("appointments").document(
-        #     (datetime.datetime.now()).strftime("%Y_%m_%d")
-        # )
+        doc_ref = db.collection("appointments").document(
+            (datetime.datetime.now()).strftime("%Y_%m_%d")
+        )
 
         # Create Dummy Appointment
         # create_dummy_appointment(num_range=8, doc_ref=doc_ref)
