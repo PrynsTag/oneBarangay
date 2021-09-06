@@ -9,7 +9,6 @@ import firebase_admin
 from django.http import HttpResponse
 from django.shortcuts import render
 from faker import Faker
-
 # Firestore
 # from google.cloud import firestore
 from firebase_admin import auth, firestore
