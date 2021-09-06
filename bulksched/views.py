@@ -6,8 +6,7 @@ from django.shortcuts import render
 
 
 def index(request):
-    """
-        Sample display for Bulk schedule views.
+    """Sample display for Bulk schedule views.
 
     Args:
       request:
