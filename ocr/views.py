@@ -11,7 +11,6 @@ def ocr_pages(request):
 
     Returns:
       : The necessary OCR page requested in the URL.
-
     """
     # Pick out the html file name from the url. And load that templates.
     # ex. barangay-admin/ocr/file-upload = file-upload

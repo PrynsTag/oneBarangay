@@ -46,7 +46,6 @@ def view_appointment(request):
     """Display the list of appointments.
 
     Returns: renders the view appointment html
-
     """
     result_dict = None
 
@@ -96,7 +95,6 @@ def details_appointment(request):
 
     Returns:
       : Renders the html of appointment details
-
     """
     return render(request, "appointment/details_appointment.html", {})
 
@@ -110,7 +108,6 @@ def create_dummy_account(num_range: int, password: str = "password123"):
 
     Returns:
       : returns uid, firstname, lastname, account_type, contact number, email, and password
-
     """
     for i in range(0, num_range):
         first_name = fake.first_name()
@@ -156,7 +153,6 @@ def create_dummy_appointment_with_account(
       password: str:  default password 'password123'
 
     Returns: returns uid, firstname, lastname, account_type, contact number, email, and password
-
     """
     for a in range(700, 1701, 100):
         first_name = fake.first_name()
