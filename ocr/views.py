@@ -4,54 +4,64 @@ import os
 import re
 
 from django.shortcuts import render
+from django.views import View
 from dotenv import load_dotenv
 from google.cloud import storage, vision
 
-from ocr.models import UploadFile
-
-from .forms import FileFieldForm
+from ocr.forms import UploadForm
 
 load_dotenv()
 
 
-def file_upload(request):
-    """Handle file uploads.
+class FileUploadView(View):
+    """View for file upload."""
 
-    Args:
-      request: The URL Request.
+    def get(self, request):
+        """Get request from file upload.
 
-    Returns:
-      On Success: Renders ocr_files to output uploaded files.
-      On File: Renders file_upload again to display validation errors
-    """
-    if request.method == "POST":
-        form = FileFieldForm(request.POST, request.FILES)
-        files = request.FILES.getlist("file_field")
+        Args:
+          request: The URL request.
+
+        Returns:
+          The file_upload.html along with context to display form.
+        """
+        form = UploadForm()
+        return render(
+            request=request,
+            template_name="ocr/file_upload.html",
+            context={"form": form},
+        )
+
+    def post(self, request):
+        """Post request from file upload.
+
+        Args:
+          request: The URL request.
+
+        Returns:
+          on success: The ocr_files along with context.
+          on fail: The file_upload.html along with context.
+        """
+        form = UploadForm(request.POST, request.FILES)
+        files = request.FILES.getlist("upload_file")
+
         if form.is_valid():
-            uploaded_files_url = []
-            for file in files:
-                new_file = UploadFile(upload_file=file)
-                new_file.save()
-                uploaded_files_url.append(new_file.upload_file.url)
+            for _ in files:
+                form.save()
+
             return render(
                 request,
                 "ocr/ocr_files.html",
                 {"files": files},
             )
         else:
-            form = FileFieldForm()
+            form = UploadForm()
+
             return render(
                 request=request,
                 template_name="ocr/file_upload.html",
                 context={"form": form},
             )
-    else:
-        form = FileFieldForm()
-        return render(
-            request=request,
-            template_name="ocr/file_upload.html",
-            context={"form": form},
-        )
 
 
 def scan_file(request):
