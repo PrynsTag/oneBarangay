@@ -6,7 +6,7 @@ from django.urls import reverse
 from config.storage_backends import GoogleCloudMediaStorage
 
 
-class UploadFile(models.Model):
+class Upload(models.Model):
     """Model to upload files and images in Google Cloud Storage."""
 
     upload_file = models.FileField(
@@ -37,4 +37,4 @@ class UploadFile(models.Model):
         """
         if not self.id:
             self.slug = slugify(self.upload_file)
-        super(UploadFile, self).save(*args, **kwargs)
+        super(Upload, self).save(*args, **kwargs)
