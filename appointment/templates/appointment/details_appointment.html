@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 {% extends "layouts/base.html" %}
+{% load poll_extras %}
 
 {% block title %}
     Barangay Admin - Details Appointment
@@ -10,28 +11,29 @@
     <h1>Appointment Details</h1>
 
     <ul>
-        <li>Name: {{ appointment_name }}</li>
-        <li>Account Type: {{ appointment_account }}</li>
-        <li>Contact Number: {{ appointment_contact }}</li>
+        <li>Status: {{ details.status }}</li>
+        <li>Name: {{ details.first_name }} {{ details.last_name }}</li>
+        <li>Account Type: {{ details.account_type }}</li>
+        <li>Contact Number: {{ details.contact_no }}</li>
     </ul>
 
     <ul>
-        <li>Date: {{ appointment_date }}</li>
-        <li>Time: {{ appointment_time }}</li>
+        <li>Date: {{ details.appointment_date|date_formatter }}</li>
+        <li>Time: {{ details.appointment_time|military_to_standard_time }}</li>
         <li>
             Document Type:
             <ul>
-                <Li>{{ appointent_document }}</Li>
+                <Li>{{ details.document|join:", " }}</Li>
             </ul>
         </li>
-        <li>Total Amount: {{ appointment_amount }}</li>
-        <li>Purpose: {{ appointment_purpose }}</li>
+        <li>Total Amount: {{ amount }}</li>
+        <li>Purpose: {{ details.appointment_purpose }}</li>
     </ul>
 
     <ul>
-        <li>Verification: {{ appointment_image }}</li>
+        <li>Verification: {{ details.appointment_image }}</li>
     </ul>
 
     <a href="#">Save</a>
-    <a href="#">Cancel</a>
+    <a href="{% url "appointment:view-appointment" %}">Cancel</a>
 {% endblock %}
