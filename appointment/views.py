@@ -1,16 +1,19 @@
 """Create your Appointment views here."""
+import base64
 import datetime
 import random
 from collections import OrderedDict
-from operator import getitem
 
 # Firebase
-import firebase_admin
-from django.http import HttpResponse
+# import firebase_admin
+# from django.http import HttpResponse
 from django.shortcuts import render
 from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
+
+# from operator import getitem
+
 
 # Globals
 fake = Faker()
@@ -92,16 +95,38 @@ def view_appointment(request):
     )
 
 
-def details_appointment(request):
+def details_appointment(request, apt_details):
     """Display the details of the user's appointment.
 
     Args:
       request:
+      apt_details:
 
-    Returns:
-      : Renders the html of appointment details
+    Returns: renders the appointment details view
     """
-    return render(request, "appointment/details_appointment.html", {})
+    appointment_id = base64_decode(apt_details)
+    split_id = appointment_id.split(sep="_")
+    date = "_".join(split_id[:-1])  # 2021_09_07
+    time = split_id[-1:][0]  # 0700
+    document_id = f"{date}{time[:0]}"  # 2021_09_07
+    result_dict = None
+
+    doc_ref_appointment_details = db.collection("appointments").document(
+        str(document_id)
+    )
+
+    doc_appointments = doc_ref_appointment_details.get()
+
+    if doc_appointments.exists:
+        result_dict = doc_appointments.to_dict()
+    else:
+        print("There is no result")
+
+    return render(
+        request,
+        "appointment/details_appointment.html",
+        {"details": result_dict[time], "amount": "00.00"},
+    )
 
 
 def create_dummy_account(num_range: int, password: str = "password123"):
@@ -200,13 +225,12 @@ def create_dummy_appointment_with_account(
 
             data = {
                 (str(time) if a < 1000 else str(time)): {
-                    "appointment_id": "{date}{time}-{number}".format(
-                        date=str(date),
-                        time=str(time),
-                        number=time[:1],
+                    "appointment_id": "{date}_{time}".format(
+                        date=str(date), time=str(time)
                     ),
                     "first_name": first_name,
                     "last_name": last_name,
+                    "contact_no": contact_no,
                     "document": [document[random.randrange(0, 3)]],
                     "status": status[random.randrange(0, 4)],
                     "user_uid": user_uid,
@@ -231,6 +255,20 @@ def delete_account_auth():
     if doc_ref_account_result.exists:
         result_dict = doc_ref_account_result.to_dict()
     else:
-        print("There is no result")
+        print("There is no result(s)")
 
     auth.delete_users(list(result_dict))
+
+
+def base64_decode(value):
+    """Decode base64 to normal string.
+
+    Args:
+      value: input base64 string
+
+    Returns: decoded base64 string
+    """
+    value_bytes = value.encode("ascii")
+    base64_bytes = base64.urlsafe_b64decode(value_bytes)
+    base64_message = base64_bytes.decode("ascii")
+    return str(base64_message)
