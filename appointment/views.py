@@ -46,6 +46,11 @@ def view_appointment(request):
     """Display the list of appointments.
 
     Returns: renders the view appointment html
+
+    Args:
+      request:
+
+    Returns: renders all of the appointments
     """
     result_dict = None
 
@@ -104,10 +109,9 @@ def create_dummy_account(num_range: int, password: str = "password123"):
 
     Args:
       num_range: int:  Number of accounts
-      password: str:  default password 'password123'
+      password: str:  (Default value = "password123")
 
-    Returns:
-      : returns uid, firstname, lastname, account_type, contact number, email, and password
+    Returns: add dummy accounts in firebase firestore
     """
     for i in range(0, num_range):
         first_name = fake.first_name()
@@ -152,7 +156,7 @@ def create_dummy_appointment_with_account(
       num_range: int:  Number of accounts
       password: str:  default password 'password123'
 
-    Returns: returns uid, firstname, lastname, account_type, contact number, email, and password
+    Returns: adds dummy accounts in firebase authentication and firebase firestore
     """
     for a in range(700, 1701, 100):
         first_name = fake.first_name()
@@ -218,6 +222,7 @@ def create_dummy_appointment_with_account(
 
 
 def delete_account_auth():
+    """Delete firebase authentication accounts."""
     doc_ref_account = db.collection("users").document("resident")
     doc_ref_account_result = doc_ref_account.get()
 
