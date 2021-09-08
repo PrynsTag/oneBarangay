@@ -4,39 +4,30 @@ import os
 import re
 
 from django.shortcuts import render
-from django.views import View
+from django.views.generic import FormView, ListView, TemplateView
 from dotenv import load_dotenv
 from google.cloud import storage, vision
 
 from ocr.forms import UploadForm
+from ocr.models import Upload
 
 load_dotenv()
 
 
-class FileUploadView(View):
+class FileUploadView(FormView):
     """View for file upload."""
 
-    def get(self, request):
-        """Get request from file upload.
+    form_class = UploadForm
+    template_name = "ocr/file_upload.html"
+    success_url = "ocr/ocr_files.html"
 
-        Args:
-          request: The URL request.
-
-        Returns:
-          The file_upload.html along with context to display form.
-        """
-        form = UploadForm()
-        return render(
-            request=request,
-            template_name="ocr/file_upload.html",
-            context={"form": form},
-        )
-
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         """Post request from file upload.
 
         Args:
           request: The URL request.
+          *args: Additional arguments.
+          **kwargs: Additional keyword arguments.
 
         Returns:
           on success: The ocr_files along with context.
@@ -64,41 +55,50 @@ class FileUploadView(View):
             )
 
 
-def scan_file(request):
-    """Fetch OCR HTML Pages.
+class ScanFileView(ListView):
+    """View for ocr_files.html."""
 
-    Args:
-      slug: the filename slugify
-      request: The URL Request.
-
-    Returns:
-      Renders ocr_files.html.
-    """
-    return render(request=request, template_name="ocr/ocr_files.html")
+    model = Upload
+    template_name = "ocr/ocr_files.html"
+    context_object_name = "files"
 
 
-def scan_result(request, name):
-    """Fetch the uploaded files for scanning.
+class ScanResultView(TemplateView):
+    """View for scan_result.html."""
 
-    Args:
-      request: The URL Request.
+    template_name = "ocr/scan_result.html"
 
-    Returns:
-      The scan_file.html page requested in the URL.
-    """
-    gsc_source_uri = "gs://" + os.getenv("GS_MEDIA_BUCKET_NAME") + "/documents/" + name
-    gcs_destination_uri = "gs://" + "scan_result" + "/documents/" + name
-    return render(
-        context={
-            "ocr_text": async_detect_document(gsc_source_uri, gcs_destination_uri)
-        },
-        request=request,
-        template_name="ocr/scan_result.html",
-    )
+    def get_context_data(self, **kwargs):
+        """Get context data.
+
+        Args:
+          **kwargs: Additional keyword argument.
+
+        Returns:
+          scan_result.html with context of detected text from image.
+        """
+        gsc_source_uri = (
+            "gs://"
+            + os.getenv("GS_MEDIA_BUCKET_NAME")
+            + "/documents/"
+            + kwargs["filename"]
+        )
+        gcs_destination_uri = (
+            "gs://" + "scan_result" + "/documents/" + kwargs["filename"]
+        )
+        return {"ocr_text": async_detect_document(gsc_source_uri, gcs_destination_uri)}
 
 
 def async_detect_document(gcs_source_uri, gcs_destination_uri):
-    """OCR with PDF/TIFF as source files on GCS."""
+    """OCR with PDF/TIFF as source files on GCS.
+
+    Args:
+      gcs_source_uri: Source URI of image.
+      gcs_destination_uri: Destination URI of the scanned result.
+
+    Returns:
+      The detected text from image.
+    """
     # Supported mime_types are: 'application/pdf' and 'image/tiff'
     mime_type = "image/tiff"
 
