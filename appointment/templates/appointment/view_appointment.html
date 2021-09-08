@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 {% extends "layouts/base.html" %}
+{% load poll_extras %}
 
 {% block title %}
     Barangay Admin - View Appointment
@@ -23,11 +24,21 @@
             {% else %}
                 {% for appointment_key, appointment_value in appointments.items %}
                     <tr>
-                        <td>{{ appointment_value.appointment_id }}</td>
-                        <td>{{ appointment_key }}</td>
-                        <td>{{ appointment_value.first_name }} {{ appointment_value.last_name }}</td>
-                        <td>{{ appointment_value.document|join:", " }}</td>
-                        <td>{{ appointment_value.status }}</td>
+                        <td>
+                            <a href="{% url "appointment:detail-appointment" appointment_value.appointment_id|base64_encode %}">{{ appointment_value.appointment_id }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url "appointment:detail-appointment" appointment_value.appointment_id|base64_encode %}">{{ appointment_key }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url "appointment:detail-appointment" appointment_value.appointment_id|base64_encode %}">{{ appointment_value.first_name }} {{ appointment_value.last_name }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url "appointment:detail-appointment" appointment_value.appointment_id|base64_encode %}">{{ appointment_value.document|join:", " }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url "appointment:detail-appointment" appointment_value.appointment_id|base64_encode %}">{{ appointment_value.status }}</a>
+                        </td>
                     </tr>
                 {% endfor %}
             {% endif %}
