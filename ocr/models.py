@@ -12,10 +12,6 @@ class Upload(models.Model):
     upload_file = models.FileField(
         upload_to="documents/", storage=GoogleCloudMediaStorage()
     )
-    slug = models.SlugField()
-    upload_image = models.ImageField(
-        upload_to="images/", storage=GoogleCloudMediaStorage()
-    )
 
     def __str__(self):
         """Print File Class nicely."""
@@ -23,7 +19,7 @@ class Upload(models.Model):
 
     def get_absolute_url(self):
         """Get the absolute url."""
-        return reverse("scan_result", kwargs={"name": self.upload_file.name})
+        return reverse("scan_result", kwargs={"filename": self.upload_file.name})
 
     def save(self, *args, **kwargs):
         """Save file with slug filename.
@@ -36,5 +32,5 @@ class Upload(models.Model):
           None
         """
         if not self.id:
-            self.slug = slugify(self.upload_file)
-        super(Upload, self).save(*args, **kwargs)
+            self.slug = slugify(self.upload_file.name)
+        super().save(*args, **kwargs)
