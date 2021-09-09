@@ -64,6 +64,10 @@ ALLOWED_HOSTS = ["127.0.0.1", os.getenv("APP_ENGINE_ALLOWED_HOST")]
 # Application definition
 
 INSTALLED_APPS = [
+    "appointment",
+    "bulksched",
+    "complaint",
+    "ocr",
     "oneBarangay",
     "app",
     "django.contrib.sessions",
