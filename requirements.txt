@@ -6,7 +6,7 @@ django-storages==1.11.1
 Faker==8.12.1
 firebase-admin==5.0.2
 google-cloud-secret-manager==2.7.0
-google-cloud-storage==1.42.0
+google-cloud-storage==1.42.1
 google-cloud-vision==2.4.2
 gunicorn==20.1.0
 mypy==0.910
