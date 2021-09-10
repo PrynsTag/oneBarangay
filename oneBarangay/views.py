@@ -2,7 +2,7 @@
 from django.shortcuts import render
 
 
-def handler403(request, exception=None):
+def handler403(request):
     """Override default handler for a custom style 403 error.
 
     Args:
@@ -17,7 +17,7 @@ def handler403(request, exception=None):
     return response
 
 
-def handler404(request, exception=None):
+def handler404(request):
     """Override default handler for a custom style 404 error.
 
     Args:
@@ -32,7 +32,7 @@ def handler404(request, exception=None):
     return response
 
 
-def handler500(request, exception=None):
+def handler500(request):
     """Override default handler for a custom style 500 error.
 
     Args:

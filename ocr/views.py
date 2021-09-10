@@ -1,76 +1,79 @@
 """Routing Request to Views of OCR Pages."""
-from django.core.files.base import ContentFile
+import asyncio
+
 from django.shortcuts import render
+from django.views.generic import FormView, ListView, TemplateView
+from dotenv import load_dotenv
 
-from ocr.models import File
+from ocr.form_recognizer import form_recognizer_runner
+from ocr.forms import UploadForm
+from ocr.models import Upload
 
-from .forms import FileFieldForm
+load_dotenv()
 
 
-def file_upload(request):
-    """Handle file uploads.
+class FileUploadView(FormView):
+    """View for file upload."""
 
-    Args:
-      request: The URL Request.
+    form_class = UploadForm
+    template_name = "ocr/file_upload.html"
+    success_url = "ocr/ocr_files.html"
 
-    Returns:
-      On Success: Renders ocr_files to output uploaded files.
-      On File: Renders file_upload again to display validation errors
-    """
-    if request.method == "POST":
-        form = FileFieldForm(request.POST, request.FILES)
-        files = request.FILES.getlist("file_field")
+    def post(self, request, *args, **kwargs):
+        """Post request from file upload.
+
+        Args:
+          request: The URL request.
+          *args: Additional arguments.
+          **kwargs: Additional keyword arguments.
+
+        Returns:
+          on success: The ocr_files along with context.
+          on fail: The file_upload.html along with context.
+        """
+        form = UploadForm(request.POST, request.FILES)
+        files = request.FILES.getlist("upload_file")
+
         if form.is_valid():
-            for file in files:
-                upload = File()
-                for chunks in file.chunks():
-                    upload.file_field.save(file.name, ContentFile(chunks))
+            for _ in files:
+                form.save()
+
             return render(
                 request,
                 "ocr/ocr_files.html",
                 {"files": files},
             )
         else:
-            form = FileFieldForm()
+            form = UploadForm()
+
             return render(
                 request=request,
                 template_name="ocr/file_upload.html",
                 context={"form": form},
             )
-    else:
-        form = FileFieldForm()
-        return render(
-            request=request,
-            template_name="ocr/file_upload.html",
-            context={"form": form},
-        )
 
 
-def ocr_files(request):
-    """Fetch OCR HTML Pages.
+class ScanFileView(ListView):
+    """View for ocr_files.html."""
 
-    Args:
-      request: The URL Request.
-
-    Returns:
-      Renders ocr_files.html.
-    """
-    return render(
-        request=request,
-        template_name="ocr/ocr_files.html",
-    )
+    model = Upload
+    template_name = "ocr/ocr_files.html"
+    context_object_name = "files"
 
 
-def scan_file(request):
-    """Fetch the uploaded files for scanning.
+class ScanResultView(TemplateView):
+    """View for scan_result.html."""
 
-    Args:
-      request: The URL Request.
+    template_name = "ocr/scan_result.html"
 
-    Returns:
-      The scan_file.html page requested in the URL.
-    """
-    return render(
-        request=request,
-        template_name="ocr/scan_result.html",
-    )
+    def get_context_data(self, **kwargs):
+        """Get context data and run form recognizer.
+
+        Args:
+          **kwargs: Additional keyword argument (Filename).
+
+        Returns:
+          scan_result.html with context of detected text from table image.
+        """
+        ocr = asyncio.run(form_recognizer_runner(kwargs["filename"]))
+        return {"ocr_header": ocr[0], "ocr_text": ocr[1]}

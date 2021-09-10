@@ -6,71 +6,160 @@
     </div>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-6">
-                <div class="mb-3">
-                    <label for="houseNo" class="form-label">House #</label>
-                    <input type="num" class="form-control" id="houseNo" />
-                </div>
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" />
-                </div>
-                <div class="mb-3">
-                    <label for="address" class="form-label">Adress</label>
-                    <input type="text" class="form-control" id="address" />
-                </div>
-                <div class="mb-3">
-                    <!-- Include here datepicker for bootstrap 5 -->
-                    <label for="dateOfBirth" class="form-label">Date of Birth</label>
-                    <input type="text" class="form-control" id="dateOfBirth" />
-                </div>
-                <div class="mb-3">
-                    <label for="placeOfBirth" class="form-label">Place of Birth</label>
-                    <input type="text" class="form-control" id="placeOfBirth" />
-                </div>
-            </div>
-            <div class="col-6">
+            <div class="col-12">
                 <div class="row">
-                    <div class="col-4">
-                        <label for="age" class="form-label">Age</label>
-                        <input type="text" class="form-control" id="placeOfBirth" />
+                    <div class="col-3">
+                        <div class="mb-3">
+                            <label for="region" class="form-label">Region</label>
+                            <input type="text" class="form-control" id="region" value="NCR" disabled/>
+                        </div>
                     </div>
-                    <div class="col-4">
-                        <label for="age" class="form-label">Sex</label>
-                        <select class="form-select mb-3" aria-label="Default select example">
-                            <option selected>Select here</option>
-                            <option value="1">Male</option>
-                            <option value="2">Female</option>
-                        </select>
+                    <div class="col-3">
+                        <div class="mb-3">
+                            <label for="province" class="form-label">Province</label>
+                            <input type="text" class="form-control" id="province" value="3rd District" disabled/>
+                        </div>
                     </div>
-                    <div class="col-4">
-                        <label for="age" class="form-label">Civil Status</label>
-                        <select class="form-select mb-3" aria-label="Default select example">
-                            <option selected>Select here</option>
-                            <option value="1">Single</option>
-                            <option value="2">Married</option>
-                            <option value="2">Divorced</option>
-                            <option value="2">Widowed</option>
-                        </select>
+                    <div class="col-3">
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" value="Valenzuela City" disabled/>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3">
-                    <label for="houseNo" class="form-label">House #</label>
-                    <input type="num" class="form-control" id="houseNo" />
-                </div>
-                <div class="mb-3">
-                    <label for="occupation" class="form-label">Occupation</label>
-                    <input type="text" class="form-control" id="occupation" />
-                </div>
-                <div class="mb-3">
-                    <label for="citizenship" class="form-label">Citizenship</label>
-                    <input type="text" class="form-control" id="citizenship" />
-                </div>
-                <div class="mb-3">
-                    <label for="relationship" class="form-label">Relationship</label>
-                    <input type="text" class="form-control" id="relationship" />
+                    <div class="col-3">
+                        <div class="mb-3">
+                            <label for="barangay" class="form-label">Barangay</label>
+                            <input type="text" class="form-control" id="barangay" value="Malanday" disabled/>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-3">
+                        <div class="mb-3">
+                            <label for="houseNo" class="form-label">House #</label>
+                            <input type="text" class="form-control" id="houseNo" value="{{ ocr_header.house_hold_no.text }}"/>
+                            <div class="valid-feedback">Confidence Level: {{ ocr_header.house_hold_no.confidence }}</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" value="{{ ocr_header.address.text }}"/>
+                            <div class="valid-feedback">Confidence Level: {{ ocr_header.address.confidence }}</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Date</label>
+                            <input type="text" class="form-control" id="date" value="{{ ocr_header.date.text }}"/>
+                            <div class="valid-feedback">Confidence Level: {{ ocr_header.date.confidence }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% for fam_member in ocr_text %}
+                {% if forloop.first %}
+                    <h3 class="text-dark mb-5 mt-5">Family Head</h3>
+                {% else %}
+                    <h3 class="text-dark mb-5 mt-5">Family Member {{ forloop.counter0 }}</h3>
+                {% endif %}
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="mb-3">
+                                <label for="lastname" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastname" value="{{ fam_member.last_name_apelyido.text }}"/>
+                                <div class="valid-feedback">Confidence Level: {{ fam_member.last_name_apelyido.confidence }}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="mb-3">
+                                <label for="firstname" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstname" value="{{ fam_member.first_name_pangalan.text }}"/>
+                                <div class="valid-feedback">Confidence Level: {{ fam_member.first_name_pangalan.confidence }}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="mb-3">
+                                <label for="middlename" class="form-label">Middle Name</label>
+                                <input type="text" class="form-control" id="middlename" value="{{ fam_member.middle_name.text }}"/>
+                                <div class="valid-feedback">Confidence Level: {{ fam_member.middle_name.confidence }}</div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="mb-3">
+                                <label for="ext" class="form-label">Extension</label>
+                                <input type="text" class="form-control" id="ext" value="{{ fam_member.ext.text }}"/>
+                                <div class="valid-feedback">Confidence Level: {{ fam_member.ext.confidence }}</div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="mb-3">
+                                <label for="placeOfBirth" class="form-label">Place of Birth</label>
+                                <input type="text" class="form-control" id="placeOfBirth" value="{{ fam_member.place_of_birth.text }}"/>
+                                <div class="valid-feedback">Confidence Level: {{ fam_member.place_of_birth.confidence }}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="mb-3">
+                                <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                                <input type="text" class="form-control" id="dateOfBirth" value="{{ fam_member.date_of_birth.text }}"/>
+                                <div class="valid-feedback">Confidence Level: {{ fam_member.date_of_birth.confidence }}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <label for="sex" class="form-label">Sex</label>
+                            <select class="form-select mb-3" id="sex" aria-label="Default select example">
+                                <option selected value="{{ fam_member.sex_m_or_f.text }}">{{ fam_member.sex_m_or_f.text }}</option>
+                                <option value="1">Male</option>
+                                <option value="2">Female</option>
+                            </select>
+                            <div class="valid-feedback">Confidence Level: {{ fam_member.sex_m_or_f.confidence }}</div>
+                        </div>
+                        <div class="col-3">
+                            <label for="civilStatus" class="form-label">Civil Status</label>
+                            <select class="form-select mb-3" id="civilStatus" aria-label="Default select example">
+                                <option selected value="{{ fam_member.civil_status.text }}">{{ fam_member.civil_status.text }}</option>
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                                <option value="divorced">Divorced</option>
+                                <option value="widowed">Widowed</option>
+                            </select>
+                            <div class="valid-feedback">Confidence Level: {{ fam_member.civil_status.confidence }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="mb-3">
+                                <label for="citizenship" class="form-label">Citizenship</label>
+                                <input type="text" class="form-control" id="citizenship" value="{{ fam_member.citizenship.text }}"/>
+                                <div class="valid-feedback">Confidence Level: {{ fam_member.citizenship.confidence }}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="mb-3">
+                                <label for="monthlyIncome" class="form-label">Monthly Income</label>
+                                <input type="text" class="form-control" id="monthlyIncome" value="{{ fam_member.monthly_income.text }}"/>
+                                <div class="valid-feedback">Confidence Level: {{ fam_member.monthly_income.confidence }}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="mb-3">
+                                <label for="remarks" class="form-label">Remarks</label>
+                                <input type="text" class="form-control" id="remarks" value="{{ fam_member.remarks.text }}"/>
+                                <div class="valid-feedback">Confidence Level: {{ fam_member.remarks.confidence }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     </div>
 {% endblock content %}

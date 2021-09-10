@@ -1,12 +1,19 @@
 """OCR Forms."""
 from django import forms
+from django.forms import ClearableFileInput
+
+from .models import Upload
 
 
-class FileFieldForm(forms.Form):
-    """Form for file upload."""
+class UploadForm(forms.ModelForm):
+    """Upload Form."""
 
-    file_field = forms.FileField(
-        label="File",
-        widget=forms.ClearableFileInput(attrs={"multiple": True}),
-        required=False,
-    )
+    class Meta:
+        """Meta Class."""
+
+        model = Upload
+        fields = ["upload_file"]
+        labels = {"upload_file": "File:"}
+        widgets = {
+            "upload_file": ClearableFileInput(attrs={"multiple": True}),
+        }
