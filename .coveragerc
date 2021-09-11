@@ -1,4 +1,4 @@
-# coveralls for oneBarangay
+# coveralls for one_barangay
 [run]
 data_file = test-results/.coverage
 source = .

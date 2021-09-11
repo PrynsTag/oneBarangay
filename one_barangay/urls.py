@@ -1,4 +1,4 @@
-"""oneBarangay URL Configuration.
+"""one_barangay URL Configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -19,7 +19,6 @@ urlpatterns = [
     path("barangay-admin/ocr/", include("ocr.urls")),
     path("", include("app.urls")),
     path("barangay-admin/appointment/", include("appointment.urls")),
-    path("barangay-admin/complaint/", include("complaint.urls")),
     path("barangay-admin/bulk-schedule/", include("bulksched.urls")),
     path("barangay-admin/services/", include("services.urls")),
     # path("barangay-admin/announcement", include("announcement.urls")),
