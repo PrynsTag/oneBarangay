@@ -1,5 +1,6 @@
 Django==3.2.7
 django-storages==1.11.1
+faker==8.12.1
 firebase-admin==5.0.2
 google-cloud-secret-manager==2.7.0
 google-cloud-storage==1.42.1
