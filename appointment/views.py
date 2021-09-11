@@ -1,21 +1,20 @@
 """Create your Appointment views here."""
 import datetime
-import random
 from collections import OrderedDict
-from operator import getitem
+from random import SystemRandom
 
 # Firebase
-import firebase_admin
-from django.http import HttpResponse
 from django.shortcuts import render
 from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
+from auth.service_account import firebase_authentication
+
 # Globals
 fake = Faker()
-
-db = firestore.client()
+app = firebase_authentication()
+db = firestore.client(app)
 
 working_hours = [
     "1300",
@@ -46,6 +45,12 @@ def view_appointment(request):
     """Display the list of appointments.
 
     Returns: renders the view appointment html
+
+    Args:
+      request: The URL request.
+
+    Returns:
+      The view_appointment template and tbhe aapointments and working hours context data.
     """
     result_dict = None
 
@@ -91,15 +96,15 @@ def details_appointment(request):
     """Display the details of the user's appointment.
 
     Args:
-      request:
+      request: The URL request.
 
     Returns:
-      : Renders the html of appointment details
+      Renders the html of appointment details
     """
     return render(request, "appointment/details_appointment.html", {})
 
 
-def create_dummy_account(num_range: int, password: str = "password123"):
+def create_dummy_account(num_range: int, password: str):
     """Create dummy account using firebase.
 
     Args:
@@ -107,13 +112,15 @@ def create_dummy_account(num_range: int, password: str = "password123"):
       password: str:  default password 'password123'
 
     Returns:
-      : returns uid, firstname, lastname, account_type, contact number, email, and password
+      returns uid, firstname, lastname, account_type, contact number, email, and password
     """
+    cryptogen = SystemRandom()
+
     for i in range(0, num_range):
         first_name = fake.first_name()
         last_name = fake.last_name()
         contact_no = fake.phone_number()
-        account_type = account_types[random.randrange(0, 3)]
+        account_type = account_types[cryptogen.randrange(0, 3)]
         email = fake.email(domain=None)
         user_uid = None
 
@@ -143,22 +150,21 @@ def create_dummy_account(num_range: int, password: str = "password123"):
             doc_ref.set(data, merge=True)
 
 
-def create_dummy_appointment_with_account(
-    num_range: int, password: str = "password123"
-):
+def create_dummy_appointment_with_account(num_range: int, password: str):
     """Create dummy appointment with account in authentication and firestore.
 
     Args:
       num_range: int:  Number of accounts
       password: str:  default password 'password123'
-
     Returns: returns uid, firstname, lastname, account_type, contact number, email, and password
     """
+    cryptogen = SystemRandom()
+
     for a in range(700, 1701, 100):
         first_name = fake.first_name()
         last_name = fake.last_name()
         contact_no = fake.phone_number()
-        account_type = account_types[random.randrange(0, 3)]
+        account_type = account_types[cryptogen.randrange(0, 3)]
         email = fake.email(domain=None)
         user_uid = None
         sentence = fake.sentence(nb_words=10)
@@ -203,8 +209,8 @@ def create_dummy_appointment_with_account(
                     ),
                     "first_name": first_name,
                     "last_name": last_name,
-                    "document": [document[random.randrange(0, 3)]],
-                    "status": status[random.randrange(0, 4)],
+                    "document": [document[cryptogen.randrange(0, 3)]],
+                    "status": status[cryptogen.randrange(0, 4)],
                     "user_uid": user_uid,
                     "account_type": account_type,
                     "appointment_date": date,
@@ -218,6 +224,7 @@ def create_dummy_appointment_with_account(
 
 
 def delete_account_auth():
+    """Delete all account."""
     doc_ref_account = db.collection("users").document("resident")
     doc_ref_account_result = doc_ref_account.get()
 
