@@ -116,7 +116,7 @@ def create_dummy_account(num_range: int, password: str):
     """
     cryptogen = SystemRandom()
 
-    for i in range(0, num_range):
+    for _ in range(0, num_range):
         first_name = fake.first_name()
         last_name = fake.last_name()
         contact_no = fake.phone_number()
@@ -150,7 +150,7 @@ def create_dummy_account(num_range: int, password: str):
             doc_ref.set(data, merge=True)
 
 
-def create_dummy_appointment_with_account(num_range: int, password: str):
+def create_dummy_appointment_with_account(password: str):
     """Create dummy appointment with account in authentication and firestore.
 
     Args:
