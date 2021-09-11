@@ -9,16 +9,16 @@ entrypoint: gunicorn main:app -w 1 -k uvicorn.workers.UvicornWorker
 
 handlers:
   - url: /favicon.ico
-    static_files: oneBarangay/templates/favicon.ico
-    upload: oneBarangay/templates/favicon.ico
+    static_files: one_barangay/templates/favicon.ico
+    upload: one_barangay/templates/favicon.ico
 
   - url: /robots.txt
-    static_files: oneBarangay/templates/robots.txt
-    upload: oneBarangay/templates/robots.txt
+    static_files: one_barangay/templates/robots.txt
+    upload: one_barangay/templates/robots.txt
 
   - url: /humans.txt
-    static_files: oneBarangay/templates/humans.txt
-    upload: oneBarangay/templates/humans.txt
+    static_files: one_barangay/templates/humans.txt
+    upload: one_barangay/templates/humans.txt
 
 env_variables:
   APP_ENGINE_ALLOWED_HOST: \"$APP_ENGINE_ALLOWED_HOST\"
