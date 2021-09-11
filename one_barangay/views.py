@@ -7,7 +7,6 @@ def handler403(request):
 
     Args:
       request: The URL request.
-      exception:  (Default value = None) The error thrown.
 
     Returns:
       The custom error page for 403 errors.
@@ -22,7 +21,6 @@ def handler404(request):
 
     Args:
       request: The URL request.
-      exception:  (Default value = None) The error thrown.
 
     Returns:
       The custom error page for 403 errors.
@@ -37,7 +35,6 @@ def handler500(request):
 
     Args:
       request: The URL request.
-      exception:  (Default value = None) The error thrown.
 
     Returns:
       The custom error page for 403 errors.

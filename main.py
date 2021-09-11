@@ -1,4 +1,4 @@
 """Required File to Deploy to App Engine."""
-from oneBarangay.asgi import application
+from one_barangay.asgi import application
 
 app = application
