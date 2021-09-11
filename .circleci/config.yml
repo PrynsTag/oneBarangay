@@ -64,8 +64,8 @@ jobs:
       - run:
           name: Make Migration
           command: |
-            base64 -di \<<< $CLOUD_STORAGE_KEY >> /home/circleci/project/key.json
-            export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/project/key.json
+            base64 -di \<<< $CLOUD_STORAGE_KEY >> /tmp/circleci/key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=/tmp/circleci/key.json
             ./manage.py makemigrations
             ./manage.py migrate
       - run:
