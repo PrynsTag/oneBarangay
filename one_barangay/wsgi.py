@@ -1,4 +1,4 @@
-"""WSGI config for oneBarangay project.
+"""WSGI config for one_barangay project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -10,6 +10,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "oneBarangay.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "one_barangay.settings")
 
 application = get_wsgi_application()

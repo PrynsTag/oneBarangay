@@ -64,13 +64,8 @@ jobs:
       - run:
           name: Make Migration
           command: |
-            base64 -di \<<< $CLOUD_STORAGE_KEY >> /home/circleci/project/key.json
-            export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/project/key.json
-            ./manage.py makemigrations
-            ./manage.py migrate
-      - run:
-          name: Make Migration
-          command: |
+            base64 -di \<<< $CLOUD_STORAGE_KEY >> /tmp/key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=/tmp/key.json
             ./manage.py makemigrations
             ./manage.py migrate
 
@@ -111,11 +106,14 @@ workflows:
   build-test-deploy:
     jobs:
       - test:
+          name: App Engine Test
+          post-steps:
+            - jira/notify:
+                environment_type: testing
+                job_type: build
           context:
             - docker
             - browserstack
-          post-steps:
-            - jira/notify
           filters:
             branches:
               only:
@@ -123,41 +121,49 @@ workflows:
                 - develop
                 - /feature\/.*/
       - build:
+          name: App Engine Build
+          post-steps:
+            - jira/notify:
+                environment_type: testing
+                job_type: build
           context:
             - docker
-          post-steps:
-            - jira/notify
           requires:
-            - test
+            - App Engine Test
           filters:
             branches:
               only:
                 - master
                 - develop
                 - /feature\/.*/
+
       - deploy-to-staging:
+          name: App Engine Staging
+          post-steps:
+            - jira/notify:
+                environment_type: staging
+                job_type: deployment
           context:
             - docker
           requires:
-            - test
-            - build
+            - App Engine Test
+            - App Engine Build
           filters:
             branches:
               only:
                 - master
                 - develop
-          post-steps:
-            - jira/notify
+
       - approve-prod-deployment:
           type: approval
           filters:
             branches:
               only: master
           requires:
-            - deploy-to-staging
-          post-steps:
-            - jira/notify
+            - App Engine Staging
+
       - deploy-to-prod:
+          name: App Engine Production
           context:
             - docker
           requires:
@@ -166,4 +172,6 @@ workflows:
             branches:
               only: master
           post-steps:
-            - jira/notify
+            - jira/notify:
+                environment_type: production
+                job_type: deployment

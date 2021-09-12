@@ -8,7 +8,6 @@
 linter:
   pmd_cpd:
     minimum-tokens: 70
-    target: src
     language: python
     encoding: UTF-8
     skip-duplicate-files: true
@@ -17,32 +16,26 @@ linter:
 
   # ESLint example. See https://help.sider.review/tools/javascript/eslint
   eslint:
-    root_dir: project/
+    root_dir: one_barangay/static/assets/js/
     dependencies:
       - my-eslint-plugin@2
     npm_install: false
-    target:
-      - src/
-      - lib/
-    ext: [.js, .jsx]
-    config: config/.eslintrc.js
-    ignore-path: config/.eslintignore
+    ext: [.js, .jsx, .es6]
+    ignore-path: .gitignore
     ignore-pattern: "vendor/**"
     no-ignore: true
     global: ["require", "exports:true"]
     quiet: true
 
-  #   # Flake8 example. See https://help.sider.review/tools/python/flake8
-  #   flake8:
-  #     root_dir: project/
-  #     dependencies:
-  #       - flake8-bugbear
-  #       - flake8-builtins==1.4.1
-  #       - git+https://github.com/PyCQA/flake8-import-order.git@51e16f33065512afa1a85a20b2c2d3be768f78ea
-  #       - { name: "flake8-docstrings", version: "==1.6.0" }
-  #     target: src/
-  #     config: config/.flake8
-  #     parallel: false
+  # Flake8 example. See https://help.sider.review/tools/python/flake8
+  flake8:
+    dependencies:
+      - flake8-bugbear
+      - flake8-builtins
+      - flake8-import-order
+      - flake8-docstrings
+    config: setup.cfg
+    parallel: true
 
   #   # Misspell example. See https://help.sider.review/tools/others/misspell
   #   misspell:
@@ -68,11 +61,9 @@ linter:
 
   # ShellCheck example. See https://help.sider.review/tools/shellscript/shellcheck
   shellcheck:
-    root_dir: project/
     target:
-      - "**/*.{sh,bash}"
+      - "**/*.{bash,bats,dash,ksh,sh}"
       - shebang: true
-    include: [SC2104, SC2105]
     exclude: [SC1000, SC1118]
     enable: all
     shell: bash
@@ -81,17 +72,16 @@ linter:
 
   # stylelint example. See https://help.sider.review/tools/css/stylelint
   stylelint:
-    root_dir: project/
+    root_dir: one_barangay/static/assets/css
     dependencies:
       - my-stylelint-plugin@2
     npm_install: false
     config: config/.stylelintrc.yml
-    syntax: scss
-    ignore-path: config/.stylelintignore
+    ignore-path: .gitignore
     ignore-disables: true
     report-needless-disables: true
     quiet: true
-    target: ["app/**/*.scss"]
+    target: "**/*.{css,less,sass,scss,sss}"
 
 # Ignore specific files. Example:
 ignore:
