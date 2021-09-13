@@ -5,7 +5,6 @@ from random import SystemRandom
 from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
-
 from auth.service_account import firebase_authentication
 
 working_hours = [
@@ -36,6 +35,7 @@ status = ["request", "in_progress", "get", "completed"]
 class Dummy:
     """Create Dummy accounts."""
 
+    # Authentication Account and Firestore User Account
     def create_dummy_account(self, num_range: int, password: str):
         """Create dummy account using firebase.
 
@@ -54,6 +54,7 @@ class Dummy:
 
         for _ in range(0, num_range):
             first_name = fake.first_name()
+            middle_name = fake.first_name()
             last_name = fake.last_name()
             contact_no = fake.phone_number()
             account_type = account_types[cryptogen.randrange(0, 3)]
@@ -75,6 +76,7 @@ class Dummy:
                 data = {
                     f"{user_uid}": {
                         "first_name": first_name,
+                        "middle_name": middle_name,
                         "last_name": last_name,
                         "email": email,
                         "contact_no": contact_no,
@@ -85,6 +87,7 @@ class Dummy:
 
                 doc_ref.set(data, merge=True)
 
+    # Authentication Account and Firestore User Account with Appoinment
     def create_dummy_appointment_with_account(self, password: str):
         """Create dummy appointment with account in authentication and firestore.
 
@@ -94,6 +97,7 @@ class Dummy:
         Returns:
             adds dummy accounts in firebase authentication and firebase firestore
         """
+
         cryptogen = SystemRandom()
         app = firebase_authentication()
         db = firestore.client(app)
@@ -101,6 +105,7 @@ class Dummy:
 
         for a in range(700, 1701, 100):
             first_name = fake.first_name()
+            middle_name = fake.first_name()
             last_name = fake.last_name()
             contact_no = fake.phone_number()
             account_type = account_types[cryptogen.randrange(0, 3)]
@@ -125,6 +130,7 @@ class Dummy:
                 data = {
                     f"{user_uid}": {
                         "first_name": first_name,
+                        "middle_name": middle_name,
                         "last_name": last_name,
                         "email": email,
                         "contact_no": contact_no,
@@ -145,6 +151,7 @@ class Dummy:
                             date=str(date), time=str(time)
                         ),
                         "first_name": first_name,
+                        "middle_name": middle_name,
                         "last_name": last_name,
                         "document": [document[cryptogen.randrange(0, 3)]],
                         "status": status[cryptogen.randrange(0, 4)],
