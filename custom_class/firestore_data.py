@@ -1,4 +1,6 @@
+"""Custom class firestore_data."""
 from firebase_admin import auth, firestore
+
 from auth.service_account import firebase_authentication
 
 app = firebase_authentication()
@@ -6,6 +8,8 @@ db = firestore.client(app)
 
 
 class FirestoreData:
+    """Firestore account."""
+
     def delete_account_auth(self):
         """Delete all account."""
         doc_ref_account = db.collection("users").document("resident")

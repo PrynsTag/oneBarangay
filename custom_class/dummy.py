@@ -1,9 +1,12 @@
-from faker import Faker
-from random import SystemRandom
+"""Custom class dummy."""
 import datetime
+from random import SystemRandom
+
+from faker import Faker
 from firebase_admin import auth, firestore
-from auth.service_account import firebase_authentication
 from firebase_admin.exceptions import AlreadyExistsError
+
+from auth.service_account import firebase_authentication
 
 working_hours = [
     "1300",
@@ -31,6 +34,8 @@ status = ["request", "in_progress", "get", "completed"]
 
 
 class Dummy:
+    """Create Dummy accounts."""
+
     def create_dummy_account(self, num_range: int, password: str):
         """Create dummy account using firebase.
 
@@ -39,6 +44,8 @@ class Dummy:
           password: str:  (Default value = "password123")
 
         Returns: add dummy accounts in firebase firestore
+          num_range: int:
+          password: str:
         """
         cryptogen = SystemRandom()
         app = firebase_authentication()
@@ -82,8 +89,10 @@ class Dummy:
         """Create dummy appointment with account in authentication and firestore.
 
         Args:
-          password: str:  default password 'password123'
-        Returns: adds dummy accounts in firebase authentication and firebase firestore
+            password: str:  default password 'password123'
+
+        Returns:
+            adds dummy accounts in firebase authentication and firebase firestore
         """
         cryptogen = SystemRandom()
         app = firebase_authentication()
