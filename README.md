@@ -291,7 +291,7 @@ Summary: In present tense. Not capitalized. No period at the end.
 The basic syntax for a GitHub commit with integration of Jira is as follows:
 
 ```sh
-<type>[<scope>](<ISSUE_KEY>): <COMMAND> <short summary> <TRANSITION>
+<type>(<ISSUE_KEY>)[<scope>]: <COMMAND> <short summary> <TRANSITION>
 ```
 
 **ISSUE_KEY**: Issue Key from Jira (e.g. BRGY-189)
