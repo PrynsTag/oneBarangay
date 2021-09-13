@@ -1,22 +1,19 @@
 """Create your Appointment views here."""
-import base64
 import datetime
 from collections import OrderedDict
-from random import SystemRandom
 
 # Firebase
 from django.shortcuts import render
-from faker import Faker
-from firebase_admin import auth, firestore
+from firebase_admin import firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
 from auth.service_account import firebase_authentication
+from custom_class.date_formatter import Date_Formatter
 
-# from operator import getitem
-
+# Custom Class
+from custom_class.encrypter import Encrypter
 
 # Globals
-fake = Faker()
 app = firebase_authentication()
 db = firestore.client(app)
 
@@ -34,27 +31,15 @@ working_hours = [
     "1700",
 ]
 
-account_types = ["admin", "barangay_worker", "resident"]
-
-document = [
-    "Barangay Clearance",
-    "Certificate of Indigency",
-    "Barangay Cedula",
-]
-
-status = ["request", "in_progress", "get", "completed"]
-
 
 def view_appointment(request):
     """Display the list of appointments.
-
-    Returns: renders the view appointment html
 
     Args:
       request: The URL request.
 
     Returns:
-      The view_appointment template and tbhe aapointments and working hours context data.
+      The view_appointment template and the appointments and working hours context data.
     """
     result_dict = None
 
@@ -92,15 +77,12 @@ def details_appointment(request, apt_details):
     Returns:
       Renders the html of appointment details
     """
-    appointment_id = base64_decode(apt_details)
-    split_id = appointment_id.split(sep="_")
-    date = "_".join(split_id[:-1])  # 2021_09_07
-    time = split_id[-1:][0]  # 0700
-    document_id = f"{date}{time[:0]}"  # 2021_09_07
+    encrypter = Encrypter(text=apt_details)
+    date_formatter = Date_Formatter(full_date=encrypter.code_decoder(), separator="_")
     result_dict = None
 
     doc_ref_appointment_details = db.collection("appointments").document(
-        str(document_id)
+        str(date_formatter.formatted_date)
     )
 
     doc_appointments = doc_ref_appointment_details.get()
@@ -113,150 +95,5 @@ def details_appointment(request, apt_details):
     return render(
         request,
         "appointment/details_appointment.html",
-        {"details": result_dict[time], "amount": "00.00"},
+        {"details": result_dict[date_formatter.formatted_time], "amount": "00.00"},
     )
-
-
-def create_dummy_account(num_range: int, password: str):
-    """Create dummy account using firebase.
-
-    Args:
-      num_range: int:  Number of accounts
-      password: str:  (Default value = "password123")
-
-    Returns: add dummy accounts in firebase firestore
-    """
-    cryptogen = SystemRandom()
-
-    for _ in range(0, num_range):
-        first_name = fake.first_name()
-        last_name = fake.last_name()
-        contact_no = fake.phone_number()
-        account_type = account_types[cryptogen.randrange(0, 3)]
-        email = fake.email(domain=None)
-        user_uid = None
-
-        doc_ref = db.collection("users").document(f"{account_type}")
-
-        try:
-            auth.create_user(email=email, password=password)
-
-        except AlreadyExistsError:
-            print("Account already exist.")
-
-        else:
-            user = auth.get_user_by_email(email=email)
-            user_uid = user.uid
-
-            data = {
-                f"{user_uid}": {
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "email": email,
-                    "contact_no": contact_no,
-                    "user_uid": f"{user_uid}",
-                    "account_type": account_type,
-                }
-            }
-
-            doc_ref.set(data, merge=True)
-
-
-def create_dummy_appointment_with_account(password: str):
-    """Create dummy appointment with account in authentication and firestore.
-
-    Args:
-      num_range: int:  Number of accounts
-      password: str:  default password 'password123'
-    Returns: adds dummy accounts in firebase authentication and firebase firestore
-    """
-    cryptogen = SystemRandom()
-
-    for a in range(700, 1701, 100):
-        first_name = fake.first_name()
-        last_name = fake.last_name()
-        contact_no = fake.phone_number()
-        account_type = account_types[cryptogen.randrange(0, 3)]
-        email = fake.email(domain=None)
-        user_uid = None
-        sentence = fake.sentence(nb_words=10)
-        image = fake.file_name(category="image", extension="jpeg")
-        date = (datetime.datetime.now()).strftime("%Y_%m_%d")
-        time = f"0{str(a)}" if a < 1000 else str(a)
-
-        doc_ref_account = db.collection("users").document("resident")
-
-        try:
-            auth.create_user(email=email, password=password)
-
-        except AlreadyExistsError:
-            print("Account already exist.")
-
-        else:
-            user_uid = (auth.get_user_by_email(email=email)).uid
-
-            data = {
-                f"{user_uid}": {
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "email": email,
-                    "contact_no": contact_no,
-                    "user_uid": f"{user_uid}",
-                    "account_type": account_type,
-                }
-            }
-
-            doc_ref_account.set(data, merge=True)
-
-            doc_ref_appointment = db.collection("appointments").document(
-                str((datetime.datetime.now()).strftime("%Y_%m_%d"))
-            )
-
-            data = {
-                (str(time) if a < 1000 else str(time)): {
-                    "appointment_id": "{date}_{time}".format(
-                        date=str(date), time=str(time)
-                    ),
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "document": [document[cryptogen.randrange(0, 3)]],
-                    "status": status[cryptogen.randrange(0, 4)],
-                    "user_uid": user_uid,
-                    "account_type": account_type,
-                    "appointment_date": date,
-                    "appointment_time": time,
-                    "appointment_purpose": sentence,
-                    "appointment_image": image,
-                }
-            }
-
-            doc_ref_appointment.set(data, merge=True)
-
-
-def delete_account_auth():
-    """Delete all account."""
-    doc_ref_account = db.collection("users").document("resident")
-    doc_ref_account_result = doc_ref_account.get()
-
-    result_dict = None
-
-    if doc_ref_account_result.exists:
-        result_dict = doc_ref_account_result.to_dict()
-    else:
-        print("There is no result(s)")
-
-    auth.delete_users(list(result_dict))
-
-
-def base64_decode(value):
-    """Decode base64 to normal string.
-
-    Args:
-      value: input base64 string
-
-    Returns: decoded base64 string
-    """
-    value_bytes = value.encode("ascii")
-    base64_bytes = base64.urlsafe_b64decode(value_bytes)
-    base64_message = base64_bytes.decode("ascii")
-    return str(base64_message)
