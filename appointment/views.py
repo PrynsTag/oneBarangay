@@ -63,18 +63,6 @@ def view_appointment(request):
             (datetime.datetime.now()).strftime("%Y_%m_%d")
         )
 
-        # Create Dummy Appointment
-        # create_dummy_appointment(num_range=8, doc_ref=doc_ref)
-
-        # Create Dummy Account in Authentication and Firestore
-        # create_dummy_account(num_range=10)
-
-        # Create Dummy Account in Authentication and Firestore with Appointment
-        # create_dummy_appointment_with_account(num_range=10)
-
-        # Delete Account
-        # delete_account_auth()
-
         # View Appointment
         doc_result = doc_ref.get()
 
