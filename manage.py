@@ -6,7 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "one_barangay.local_settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "one_barangay.settings")
     try:
         from django.core.management import (  # For Django pylint: disable=import-outside-toplevel
             execute_from_command_line,

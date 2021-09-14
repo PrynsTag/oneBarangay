@@ -35,3 +35,4 @@ app.yaml.sh
 !manage.py
 local-process.yml
 .gitattributes
+!db.sqlite3
