@@ -126,7 +126,10 @@ There are two things you need to have in order to run this project:
    pip install -r requirements.txt
    ```
 5. Copy the environment variables
-    [here](https://console.cloud.google.com/security/secret-manager/secret/oneBarangay-ENV-Variables/versions?project=onebarangay-malanday)
+   [here](https://console.cloud.google.com/security/secret-manager/secret/oneBarangay-ENV-Variables/versions?project=onebarangay-malanday)
+
+6. Create an `.env` File and paste the values in step 3
+7. In local-settings.py, change this line:
 
 7. Create an `.env` File and paste the values in step 3
 8. In local-settings.py, change this line:
@@ -249,7 +252,9 @@ After the set-up, there are two things you need to test using CircleCI, the
 2. Fix any issues that might occur before proceeding.
 
 3. After that, repeat the steps on Running the Local CLI but this time, change
-    the code at the end from `--job test` to `--job build`
+   the code at the end from `--job test` to `--job build`
+
+4. Repeat the process until you don't see the error.
 
 5. Repeat the process until you don't see the error.
 
