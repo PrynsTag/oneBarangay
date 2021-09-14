@@ -16,16 +16,14 @@ linter:
 
   # ESLint example. See https://help.sider.review/tools/javascript/eslint
   eslint:
-    root_dir: one_barangay/static/assets/js/
+    target: one_barangay/static/assets/js/
     npm_install: false
+    dependencies:
+      - eslint-plugin-vue
     ext: [.js, .jsx, .es6]
     ignore-path: .gitignore
-    ignore-pattern: "/assets/vendor/*"
+    ignore-pattern: "**/assets/vendor/*"
     no-ignore: true
-    global:
-      - require
-      - "exports:true"
-    quiet: true
 
   # Flake8 example. See https://help.sider.review/tools/python/flake8
   flake8:
