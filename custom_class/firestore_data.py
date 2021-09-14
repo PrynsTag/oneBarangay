@@ -1,4 +1,5 @@
 from firebase_admin import auth, firestore
+
 from auth.service_account import firebase_authentication
 
 app = firebase_authentication()

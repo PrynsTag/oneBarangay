@@ -1,9 +1,11 @@
-from faker import Faker
-from random import SystemRandom
 import datetime
+from random import SystemRandom
+
+from faker import Faker
 from firebase_admin import auth, firestore
-from auth.service_account import firebase_authentication
 from firebase_admin.exceptions import AlreadyExistsError
+
+from auth.service_account import firebase_authentication
 
 working_hours = [
     "1300",
