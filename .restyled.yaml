@@ -8,4 +8,4 @@ restylers:
       enabled: false
   - "*"
   - black:
-      arguments: ["--line-length 98"]
+      arguments: ["--line-length 98 ."]

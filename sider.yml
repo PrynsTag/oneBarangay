@@ -18,6 +18,8 @@ linter:
   eslint:
     root_dir: one_barangay/static/assets/js/
     npm_install: false
+    dependencies:
+      - eslint-plugin-vue
     ext: [.js, .jsx, .es6]
     ignore-path: .gitignore
     ignore-pattern: "/assets/vendor/*"
