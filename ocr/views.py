@@ -2,9 +2,7 @@
 import asyncio
 
 from django.shortcuts import render
-from django.views.generic import FormView
-from django.views.generic import ListView
-from django.views.generic import TemplateView
+from django.views.generic import FormView, ListView, TemplateView
 from dotenv import load_dotenv
 
 from ocr.form_recognizer import form_recognizer_runner
