@@ -1,11 +1,18 @@
-from firebase_admin import auth, firestore
-from auth.service_account import firebase_authentication
+"""Module for firestore operations."""
+import firebase_admin
+from firebase_admin import auth, credentials, firestore
 
-app = firebase_authentication()
-db = firestore.client(app)
+from auth.service_account import get_service_from_b64
+
+cred = credentials.Certificate(get_service_from_b64())
+default_app = firebase_admin.initialize_app(cred)
+
+db = firestore.client(default_app)
 
 
 class FirestoreData:
+    """Manage firestore data."""
+
     def delete_account_auth(self):
         """Delete all account."""
         doc_ref_account = db.collection("users").document("resident")

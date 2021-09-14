@@ -1,9 +1,12 @@
-from faker import Faker
-from random import SystemRandom
+"""Dummy class to generate dummy data."""
 import datetime
+from random import SystemRandom
+
+from faker import Faker
 from firebase_admin import auth, firestore
-from auth.service_account import firebase_authentication
 from firebase_admin.exceptions import AlreadyExistsError
+
+from auth.service_account import firebase_authentication
 
 working_hours = [
     "1300",
@@ -31,6 +34,8 @@ status = ["request", "in_progress", "get", "completed"]
 
 
 class Dummy:
+    """Create dummy data."""
+
     def create_dummy_account(self, num_range: int, password: str):
         """Create dummy account using firebase.
 
@@ -51,7 +56,6 @@ class Dummy:
             contact_no = fake.phone_number()
             account_type = account_types[cryptogen.randrange(0, 3)]
             email = fake.email(domain=None)
-            user_uid = None
 
             doc_ref = db.collection("users").document(f"{account_type}")
 
@@ -85,7 +89,7 @@ class Dummy:
           password: str:  default password 'password123'
         Returns: adds dummy accounts in firebase authentication and firebase firestore
         """
-        cryptogen = SystemRandom()
+        crypto_gen = SystemRandom()
         app = firebase_authentication()
         db = firestore.client(app)
         fake = Faker()
@@ -94,9 +98,8 @@ class Dummy:
             first_name = fake.first_name()
             last_name = fake.last_name()
             contact_no = fake.phone_number()
-            account_type = account_types[cryptogen.randrange(0, 3)]
+            account_type = account_types[crypto_gen.randrange(0, 3)]
             email = fake.email(domain=None)
-            user_uid = None
             sentence = fake.sentence(nb_words=10)
             image = fake.file_name(category="image", extension="jpeg")
             date = (datetime.datetime.now()).strftime("%Y_%m_%d")
@@ -137,8 +140,8 @@ class Dummy:
                         ),
                         "first_name": first_name,
                         "last_name": last_name,
-                        "document": [document[cryptogen.randrange(0, 3)]],
-                        "status": status[cryptogen.randrange(0, 4)],
+                        "document": [document[crypto_gen.randrange(0, 3)]],
+                        "status": status[crypto_gen.randrange(0, 4)],
                         "user_uid": user_uid,
                         "account_type": account_type,
                         "appointment_date": date,
