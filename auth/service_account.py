@@ -2,24 +2,24 @@
 import ast
 import base64
 import json
+import logging
 import os
 import tempfile
 
 from dotenv import load_dotenv
-from firebase_admin import credentials, initialize_app
 
 # Load .env file
 load_dotenv()
 
 
-def firebase_authentication(b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
-    """Authenticate service account in firebase.
+def get_service_from_b64(b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
+    """Authenticate using a service account for google products.
 
     Args:
-      b64_env_name:  (Default value = "GOOGLE_STORAGE_CREDENTIALS") The base64 encoded json file.
+      b64_env_name:  (Default value = "GOOGLE_STORAGE_CREDENTIALS") The base64 text.
 
     Returns:
-      A certificate object.
+      A path to file.
     """
     fd, path = tempfile.mkstemp()
     try:
@@ -28,12 +28,13 @@ def firebase_authentication(b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
         json_dictionary = ast.literal_eval(decoded_str)
 
         with os.fdopen(fd, mode="w+") as tmp:
+            logging.info(f"Temp file creating at {path}.")
             json.dump(json_dictionary, tmp)
             tmp.flush()
 
-        cred = credentials.Certificate(path)
-        app = initialize_app(cred)
-    finally:
-        os.remove(path)
+        logging.info(f"File created {path}.")
 
-    return app
+    except EOFError as e:
+        logging.error(f"Temp File not Created. {e}")
+
+    return path

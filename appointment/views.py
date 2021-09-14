@@ -3,18 +3,23 @@ import datetime
 from collections import OrderedDict
 from random import SystemRandom
 
-# Firebase
+import firebase_admin
 from django.shortcuts import render
 from faker import Faker
-from firebase_admin import auth, firestore
+from firebase_admin import auth, credentials, firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
-from auth.service_account import firebase_authentication
+from auth.service_account import get_service_from_b64
+
+# Firebase
 
 # Globals
 fake = Faker()
-app = firebase_authentication()
-db = firestore.client(app)
+
+cred = credentials.Certificate(get_service_from_b64())
+default_app = firebase_admin.initialize_app(cred)
+
+db = firestore.client(default_app)
 
 working_hours = [
     "1300",
@@ -50,7 +55,7 @@ def view_appointment(request):
       request: The URL request.
 
     Returns:
-      The view_appointment template and tbhe aapointments and working hours context data.
+      The view_appointment template and the appointments and working hours context data.
     """
     result_dict = None
 
@@ -114,13 +119,13 @@ def create_dummy_account(num_range: int, password: str):
     Returns:
       returns uid, firstname, lastname, account_type, contact number, email, and password
     """
-    cryptogen = SystemRandom()
+    crypto_gen = SystemRandom()
 
     for _ in range(0, num_range):
         first_name = fake.first_name()
         last_name = fake.last_name()
         contact_no = fake.phone_number()
-        account_type = account_types[cryptogen.randrange(0, 3)]
+        account_type = account_types[crypto_gen.randrange(0, 3)]
         email = fake.email(domain=None)
         user_uid = None
 
@@ -154,17 +159,16 @@ def create_dummy_appointment_with_account(password: str):
     """Create dummy appointment with account in authentication and firestore.
 
     Args:
-      num_range: int:  Number of accounts
       password: str:  default password 'password123'
     Returns: returns uid, firstname, lastname, account_type, contact number, email, and password
     """
-    cryptogen = SystemRandom()
+    crypto_gen = SystemRandom()
 
     for a in range(700, 1701, 100):
         first_name = fake.first_name()
         last_name = fake.last_name()
         contact_no = fake.phone_number()
-        account_type = account_types[cryptogen.randrange(0, 3)]
+        account_type = account_types[crypto_gen.randrange(0, 3)]
         email = fake.email(domain=None)
         user_uid = None
         sentence = fake.sentence(nb_words=10)
@@ -209,8 +213,8 @@ def create_dummy_appointment_with_account(password: str):
                     ),
                     "first_name": first_name,
                     "last_name": last_name,
-                    "document": [document[cryptogen.randrange(0, 3)]],
-                    "status": status[cryptogen.randrange(0, 4)],
+                    "document": [document[crypto_gen.randrange(0, 3)]],
+                    "status": status[crypto_gen.randrange(0, 4)],
                     "user_uid": user_uid,
                     "account_type": account_type,
                     "appointment_date": date,
