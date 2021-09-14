@@ -17,8 +17,6 @@ linter:
   # ESLint example. See https://help.sider.review/tools/javascript/eslint
   eslint:
     root_dir: one_barangay/static/assets/js/
-    dependencies:
-      - my-eslint-plugin@2
     npm_install: false
     ext: [.js, .jsx, .es6]
     ignore-path: .gitignore
@@ -73,8 +71,6 @@ linter:
   # stylelint example. See https://help.sider.review/tools/css/stylelint
   stylelint:
     root_dir: one_barangay/static/assets/css
-    dependencies:
-      - my-stylelint-plugin@2
     npm_install: false
     config: config/.stylelintrc.yml
     ignore-path: .gitignore
