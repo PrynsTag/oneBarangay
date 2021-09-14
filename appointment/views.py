@@ -120,7 +120,7 @@ def create_dummy_account(num_range: int, password: str):
       returns uid, firstname, lastname, account_type, contact number, email, and password
     """
     crypto_gen = SystemRandom()
-    
+
     for _ in range(0, num_range):
         first_name = fake.first_name()
         last_name = fake.last_name()
