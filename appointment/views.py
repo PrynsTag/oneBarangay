@@ -3,7 +3,6 @@ import datetime
 from collections import OrderedDict
 from random import SystemRandom
 
-# Firebase
 import firebase_admin
 from django.shortcuts import render
 from faker import Faker
@@ -11,6 +10,8 @@ from firebase_admin import auth, credentials, firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
 from auth.service_account import get_service_from_b64
+
+# Firebase
 
 # Globals
 fake = Faker()
