@@ -20,9 +20,11 @@ linter:
     npm_install: false
     ext: [.js, .jsx, .es6]
     ignore-path: .gitignore
-    ignore-pattern: "vendor/**"
+    ignore-pattern: "/assets/vendor/*"
     no-ignore: true
-    global: ["require", "exports:true"]
+    global:
+      - require
+      - "exports:true"
     quiet: true
 
   # Flake8 example. See https://help.sider.review/tools/python/flake8
