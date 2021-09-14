@@ -126,10 +126,10 @@ There are two things you need to have in order to run this project:
    pip install -r requirements.txt
    ```
 5. Copy the environment variables
-    [here](https://console.cloud.google.com/security/secret-manager/secret/oneBarangay-ENV-Variables/versions?project=onebarangay-malanday)
+   [here](https://console.cloud.google.com/security/secret-manager/secret/oneBarangay-ENV-Variables/versions?project=onebarangay-malanday)
 
-7. Create an `.env` File and paste the values in step 3
-8. In local-settings.py, change this line:
+6. Create an `.env` File and paste the values in step 3
+7. In local-settings.py, change this line:
 
    ```sh
    decodedBytes = base64.b64decode("<your-env-value>")
@@ -137,7 +137,7 @@ There are two things you need to have in order to run this project:
 
    To the value of `GOOGLE_STORAGE_CREDENTIALS` in the .env file.
 
-9. Lastly, run `./manage.py runserver` to run the application.
+8. Lastly, run `./manage.py runserver` to run the application.
 
 <!-- FOR CONTRIBUTORS -->
 
@@ -249,9 +249,9 @@ After the set-up, there are two things you need to test using CircleCI, the
 2. Fix any issues that might occur before proceeding.
 
 3. After that, repeat the steps on Running the Local CLI but this time, change
-    the code at the end from `--job test` to `--job build`
+   the code at the end from `--job test` to `--job build`
 
-5. Repeat the process until you don't see the error.
+4. Repeat the process until you don't see the error.
 
 #### GitKraken
 
