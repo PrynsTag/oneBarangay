@@ -59,7 +59,9 @@ class RecognizeCustomFormsSampleAsync:
                                     # Condition for multiple word result
                                     if len(words) > 1:
                                         word_list = [word["text"] for word in words]
-                                        confidence_list = [word["confidence"] for word in words]
+                                        confidence_list = [
+                                            word["confidence"] for word in words
+                                        ]
                                         slug_name = (
                                             val["name"]
                                             .lower()
@@ -69,7 +71,9 @@ class RecognizeCustomFormsSampleAsync:
                                         )
                                         row[slug_name] = {
                                             "text": " ".join(word_list),
-                                            "confidence": round(fmean(confidence_list), 3),
+                                            "confidence": round(
+                                                fmean(confidence_list), 3
+                                            ),
                                         }
                                     else:
                                         slug_name = (
@@ -101,7 +105,10 @@ class RecognizeCustomFormsSampleAsync:
                                     row = {}
                     else:
                         slug_name = (
-                            name.lower().replace(" ", "_").replace("(", "").replace(")", "")
+                            name.lower()
+                            .replace(" ", "_")
+                            .replace("(", "")
+                            .replace(")", "")
                         )
                         header[slug_name] = {
                             "text": field.value,

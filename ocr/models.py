@@ -9,7 +9,9 @@ from config.storage_backends import GoogleCloudMediaStorage
 class Upload(models.Model):
     """Model to upload files and images in Google Cloud Storage."""
 
-    upload_file = models.FileField(upload_to="documents/", storage=GoogleCloudMediaStorage())
+    upload_file = models.FileField(
+        upload_to="documents/", storage=GoogleCloudMediaStorage()
+    )
 
     def __str__(self):
         """Print File Class nicely."""
