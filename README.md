@@ -131,6 +131,9 @@ There are two things you need to have in order to run this project:
 6. Create an `.env` File and paste the values in step 3
 7. In local-settings.py, change this line:
 
+7. Create an `.env` File and paste the values in step 3
+8. In local-settings.py, change this line:
+
 8. Create an `.env` File and paste the values in step 3
 9. In local-settings.py, change this line:
 
