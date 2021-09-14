@@ -36,9 +36,7 @@ async def async_upload_to_bucket(
     async with aiohttp.ClientSession() as session:
         storage = Storage(service_file=service_account_path, session=session)
         gcs_filename = filepath.split("/")[-1]
-        await storage.upload(
-            target_bucket_name, f"{bucket_folder}/{gcs_filename}", file_obj
-        )
+        await storage.upload(target_bucket_name, f"{bucket_folder}/{gcs_filename}", file_obj)
         return f"https://storage.googleapis.com/\
         {target_bucket_name}/{bucket_folder}/\
         {urllib.parse.quote(gcs_filename)}"
@@ -58,9 +56,7 @@ async def upload_to_gcs_runner(filepath: str):
     try:
         async with AIOFile(filepath, mode="rb") as afp:
             f = await afp.read()
-            path = await async_upload_to_bucket(
-                filepath, f, target_bucket_name, bucket_folder
-            )
+            path = await async_upload_to_bucket(filepath, f, target_bucket_name, bucket_folder)
             return path
     except Exception as e:
         logging.error(f"File not uploaded. {e}")
@@ -87,9 +83,7 @@ def download_from_gcs(
         bucket = storage_client.get_bucket(bucket_name)
         path = os.path.join(bucket_folder, filename)
 
-        base_dir = (
-            Path(__file__).resolve().parent.parent
-        )  # TODO: Change to user location
+        base_dir = Path(__file__).resolve().parent.parent  # TODO: Change to user location
 
         destination = os.path.join(base_dir, filename)
         blob = bucket.blob(path)

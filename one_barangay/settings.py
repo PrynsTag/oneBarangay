@@ -26,9 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env_file = os.path.join(BASE_DIR, ".env")
 
 # Decode credential to JSON
-decoded_bytes = base64.b64decode(
-    os.environ.setdefault("GOOGLE_STORAGE_CREDENTIALS", "")
-)
+decoded_bytes = base64.b64decode(os.environ.setdefault("GOOGLE_STORAGE_CREDENTIALS", ""))
 decoded_str = str(decoded_bytes, "utf-8")
 GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
     ast.literal_eval(decoded_str)
@@ -92,9 +90,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "one_barangay.urls"
-TEMPLATE_DIR = os.path.join(
-    BASE_DIR, "one_barangay", "templates"
-)  # ROOT dir for templates
+TEMPLATE_DIR = os.path.join(BASE_DIR, "one_barangay", "templates")  # ROOT dir for templates
 
 TEMPLATES = [
     {
