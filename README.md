@@ -131,8 +131,8 @@ There are two things you need to have in order to run this project:
 6. Create an `.env` File and paste the values in step 3
 7. In local-settings.py, change this line:
 
-7. Create an `.env` File and paste the values in step 3
-8. In local-settings.py, change this line:
+8. Create an `.env` File and paste the values in step 3
+9. In local-settings.py, change this line:
 
    ```sh
    decodedBytes = base64.b64decode("<your-env-value>")
@@ -140,7 +140,7 @@ There are two things you need to have in order to run this project:
 
    To the value of `GOOGLE_STORAGE_CREDENTIALS` in the .env file.
 
-9. Lastly, run `./manage.py runserver` to run the application.
+10. Lastly, run `./manage.py runserver` to run the application.
 
 <!-- FOR CONTRIBUTORS -->
 
