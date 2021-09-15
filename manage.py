@@ -19,6 +19,17 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
+    try:
+        import googleclouddebugger
+
+        googleclouddebugger.enable(breakpoint_enable_canary=True)
+    except ImportError as exc:
+        raise ImportError(
+            "Couldn't import Cloud Debugger. "
+            "Are you sure its installed and "
+            "is available in your requirements.txt?"
+        ) from exc
+
 
 if __name__ == "__main__":
     main()
