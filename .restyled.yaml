@@ -7,5 +7,3 @@ restylers:
   - prettier:
       enabled: false
   - "*"
-  - black:
-      arguments: ["--line-length 98"]

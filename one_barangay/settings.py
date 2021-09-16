@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "complaint",
     "ocr",
     "app",
+    "ocr",
     "django.contrib.sessions",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -102,7 +103,7 @@ TEMPLATE_DIR = os.path.join(
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "ocr", "templates", "ocr"), TEMPLATE_DIR],
+        "DIRS": [TEMPLATE_DIR],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -161,17 +162,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "one_barangay", "static"),
     os.path.join(BASE_DIR, "ocr", "static"),
 ]
-DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-GS_BUCKET_NAME = os.getenv("GS_BUCKET_NAME")
-GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
-STATIC_URL = "https://storage.googleapis.com/onebarangay-malanday/"
+STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+DEFAULT_FILE_STORAGE = "config.storage_backends.GoogleCloudMediaStorage"
 
+GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
+GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
+GS_STATIC_BUCKET_NAME = os.getenv("GS_STATIC_BUCKET_NAME")
+GS_BUCKET_NAME = GS_PROJECT_ID
+
+STATIC_URL = "https://storage.googleapis.com/{}/".format(GS_STATIC_BUCKET_NAME)
+MEDIA_URL = "https://storage.googleapis.com/{}/".format(GS_MEDIA_BUCKET_NAME)
+
+GS_DEFAULT_ACL = "publicRead"
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
