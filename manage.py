@@ -5,6 +5,8 @@ import sys
 
 from google.auth.exceptions import DefaultCredentialsError
 
+from auth.service_account import get_service_from_b64
+
 
 def main():
     """Run administrative tasks."""
@@ -22,9 +24,12 @@ def main():
     execute_from_command_line(sys.argv)
 
     try:
-        import googleclouddebugger
+        import googleclouddebugger  # For GCP pylint: disable=import-outside-toplevel
 
-        googleclouddebugger.enable(breakpoint_enable_canary=True)
+        googleclouddebugger.enable(
+            breakpoint_enable_canary=True,
+            service_account_json_file=get_service_from_b64(),
+        )
     except ImportError as exc:
         raise ImportError(
             "Couldn't import Cloud Debugger. "
