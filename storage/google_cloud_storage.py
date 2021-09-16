@@ -40,8 +40,8 @@ async def async_upload_to_bucket(
             target_bucket_name, f"{bucket_folder}/{gcs_filename}", file_obj
         )
         return f"https://storage.googleapis.com/\
-        {target_bucket_name}/{bucket_folder}/\
-        {urllib.parse.quote(gcs_filename)}"
+                {target_bucket_name}/{bucket_folder}/\
+                {urllib.parse.quote(gcs_filename)}"
 
 
 async def upload_to_gcs_runner(filepath: str):

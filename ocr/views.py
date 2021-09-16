@@ -47,9 +47,9 @@ class FileUploadView(FormView):
             form = UploadForm()
 
             return render(
-                request=request,
-                template_name="ocr/file_upload.html",
-                context={"form": form},
+                request,
+                "ocr/file_upload.html",
+                {"form": form},
             )
 
 
