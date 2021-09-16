@@ -2,12 +2,11 @@
 import asyncio
 
 from django.shortcuts import render
-from django.views.generic import FormView, ListView, TemplateView
+from django.views.generic import FormView, TemplateView
 from dotenv import load_dotenv
 
 from ocr.form_recognizer import form_recognizer_runner
 from ocr.forms import UploadForm
-from ocr.models import Upload
 
 load_dotenv()
 
@@ -51,14 +50,6 @@ class FileUploadView(FormView):
                 template_name="ocr/file_upload.html",
                 context={"form": form},
             )
-
-
-class ScanFileView(ListView):
-    """View for ocr_files.html."""
-
-    model = Upload
-    template_name = "ocr/ocr_files.html"
-    context_object_name = "files"
 
 
 class ScanResultView(TemplateView):
