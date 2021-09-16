@@ -1,6 +1,7 @@
 """Routing Request to Views of OCR Pages."""
 import asyncio
 
+from django.core.files.storage import default_storage
 from django.shortcuts import render
 from django.views.generic import FormView, TemplateView
 from dotenv import load_dotenv
@@ -34,8 +35,8 @@ class FileUploadView(FormView):
         files = request.FILES.getlist("upload_file")
 
         if form.is_valid():
-            for _ in files:
-                form.save()
+            for file in files:
+                default_storage.save(file.name, file)
 
             return render(
                 request,
