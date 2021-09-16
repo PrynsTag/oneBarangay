@@ -3,6 +3,8 @@
 import os
 import sys
 
+from google.auth.exceptions import DefaultCredentialsError
+
 
 def main():
     """Run administrative tasks."""
@@ -29,6 +31,8 @@ def main():
             "Are you sure its installed and "
             "is available in your requirements.txt?"
         ) from exc
+    except DefaultCredentialsError as exc:
+        raise ImportError("The credential json or path is invalid..") from exc
 
 
 if __name__ == "__main__":
