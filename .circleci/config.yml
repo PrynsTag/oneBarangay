@@ -25,6 +25,8 @@ jobs:
       - run:
           name: Run Django Test
           command: |
+            base64 -di \<<< $CLOUD_STORAGE_KEY >> /tmp/key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=/tmp/key.json
             coverage run ./manage.py test -v 2 --parallel
             coverage run ./manage.py check --deploy
       - run:
