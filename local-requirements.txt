@@ -7,7 +7,7 @@ coveralls==3.2.0
 Django==3.2.7
 django-coverage-plugin==2.0.0
 django-storages==1.11.1
-Faker==8.12.1
+Faker==8.13.2
 firebase-admin==5.0.2
 gcloud-aio-storage==6.1.1
 gcloud-rest-storage==6.1.1
