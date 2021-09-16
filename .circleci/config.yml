@@ -50,25 +50,6 @@ jobs:
           path: test-results
           destination: tr1
 
-  build:
-    docker:
-      - image: cimg/python:3.9
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-    parallelism: 4
-    steps:
-      - checkout
-      - python/install-packages:
-          pkg-manager: pip
-      - run:
-          name: Make Migration
-          command: |
-            base64 -di \<<< $CLOUD_STORAGE_KEY >> /tmp/key.json
-            export GOOGLE_APPLICATION_CREDENTIALS=/tmp/key.json
-            ./manage.py makemigrations
-            ./manage.py migrate
-
   deploy-to-staging:
     docker:
       - image: google/cloud-sdk
@@ -120,22 +101,6 @@ workflows:
                 - master
                 - develop
                 - /feature\/.*/
-      - build:
-          name: App Engine Build
-          post-steps:
-            - jira/notify:
-                environment_type: testing
-                job_type: build
-          context:
-            - docker
-          requires:
-            - App Engine Test
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-                - /feature\/.*/
 
       - deploy-to-staging:
           name: App Engine Staging
@@ -147,7 +112,6 @@ workflows:
             - docker
           requires:
             - App Engine Test
-            - App Engine Build
           filters:
             branches:
               only:
