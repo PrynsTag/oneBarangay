@@ -72,7 +72,6 @@ linter:
   stylelint:
     root_dir: one_barangay/static/assets/css
     npm_install: false
-    config: config/.stylelintrc.yml
     ignore-path: .gitignore
     ignore-disables: true
     report-needless-disables: true
