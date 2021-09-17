@@ -34,7 +34,7 @@ app.yaml.sh
 local-process.yml
 .gitattributes
 #explicitly include
-!db.sqlite3
 !one_barangay/settings.py
 !manage.py
 !**/templates
+!.env
