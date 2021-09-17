@@ -3,7 +3,8 @@ import datetime
 from random import SystemRandom
 
 from faker import Faker
-from firebase_admin import auth, firestore
+from firebase_admin import auth
+from firebase_admin import firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
 from auth.service_account import firebase_authentication
