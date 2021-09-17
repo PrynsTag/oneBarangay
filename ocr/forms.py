@@ -1,5 +1,4 @@
 """OCR Forms."""
-
 from django import forms
 
 

@@ -3,7 +3,8 @@ import asyncio
 
 from django.core.files.storage import default_storage
 from django.shortcuts import render
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView
+from django.views.generic import TemplateView
 from dotenv import load_dotenv
 
 from ocr.form_recognizer import form_recognizer_runner
