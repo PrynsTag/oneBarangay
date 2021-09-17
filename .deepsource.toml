@@ -60,13 +60,6 @@ max_line_length = 98
 skip_doc_coverage = ["module", "magic", "init"]
 additional_builtins = ["_", "pretty_output"]
 
-[[analyzers]]
-name = "shell"
-enabled = true
-
-[analyzers.meta]
-dialect = "bash"
-
 [[transformers]]
 name = "isort"
 enabled = true
