@@ -6,4 +6,10 @@ restylers:
       enabled: false
   - prettier:
       enabled: false
+  - reorder-python-imports:
+      enabled: false
+  - clang-format:
+      enabled: false
+  - jq:
+      enabled: false
   - "*"
