@@ -1,0 +1,16 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Prince Carl Velasco -- Project Manager / Lead Developer -- www.linkedin.com/in/princevelasco
+    John Christian Garon -- Web Developer -- www.google.com
+
+# THANKS
+
+    Sir Mark
+
+# TECHNOLOGY COLOPHON
+
+    CSS3, HTML5
+    Nginx, jQuery, Modernizr, Normalize.css, Browserstack, CircleCI

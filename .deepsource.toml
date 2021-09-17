@@ -1,8 +1,45 @@
 version = 1
 
+test_patterns = [
+    "tests/**",
+    "test_*.py",
+    "*/test/**",
+    "test*.py",
+    "integration_tests/test_*.py",
+]
+
+exclude_patterns = [
+    "migrations/**",
+    "/dist/*min.js",
+    "bin/**",
+    "**/node_modules/",
+    "js/**/*.min.js",
+    "public/**,",
+    "dist/**"
+]
+
 [[analyzers]]
 name = "javascript"
 enabled = true
+
+[analyzers.meta]
+plugins = [
+    "react",
+    "angularjs",
+    "angular",
+    "vue",
+    "ember",
+    "meteor"
+]
+environment = ["nodejs", "browser", "jest"]
+module_system = "es-modules"
+style_guide = "airbnb"
+dialect = "typescript"
+dependency_file_paths = [
+    "src/client/package.json",
+    "src/server/package.json",
+    "app/package.json"
+]
 
 [[analyzers]]
 name = "test-coverage"
@@ -16,8 +53,12 @@ enabled = true
 name = "python"
 enabled = true
 
-  [analyzers.meta]
-  runtime_version = "3.x.x"
+[analyzers.meta]
+runtime_version = "3.x.x"
+type_checker = "mypy"
+max_line_length = 98
+skip_doc_coverage = ["module", "magic", "init"]
+additional_builtins = ["_", "pretty_output"]
 
 [[transformers]]
 name = "isort"
@@ -25,10 +66,6 @@ enabled = true
 
 [[transformers]]
 name = "black"
-enabled = true
-
-[[transformers]]
-name = "prettier"
 enabled = true
 
 [[transformers]]

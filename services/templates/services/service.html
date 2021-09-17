@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+
+{% extends "layouts/base.html" %}
+
+{% block title %}
+    Barangay Admin - Services
+{% endblock %}
+
+{% block content %}
+    <h1>Services</h1>
+
+    <ul>
+        <li><a href="{% url "appointment:view-appointment" %}">Appointment</a></li>
+        <li><a href="{% url "complaint:index" %}">Complaints</a></li>
+        <li><a href="{% url "bulksched:index" %}">Bulk Schedule</a></li>
+    </ul>
+{% endblock %}

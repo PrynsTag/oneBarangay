@@ -5,6 +5,20 @@ env: standard
 instance_class: F1
 inbound_services:
   - warmup
+entrypoint: gunicorn main:app -w 1 -k uvicorn.workers.UvicornWorker
+
+handlers:
+  - url: /favicon.ico
+    static_files: one_barangay/templates/favicon.ico
+    upload: one_barangay/templates/favicon.ico
+
+  - url: /robots.txt
+    static_files: one_barangay/templates/robots.txt
+    upload: one_barangay/templates/robots.txt
+
+  - url: /humans.txt
+    static_files: one_barangay/templates/humans.txt
+    upload: one_barangay/templates/humans.txt
 
 env_variables:
   APP_ENGINE_ALLOWED_HOST: \"$APP_ENGINE_ALLOWED_HOST\"
@@ -17,7 +31,13 @@ env_variables:
   GCLOUD_AUTH_KEY: \"$GCLOUD_AUTH_KEY\"
   GOOGLE_COMPUTE_ZONE: \"$GOOGLE_COMPUTE_ZONE\"
   GOOGLE_PROJECT_ID: \"$GOOGLE_PROJECT_ID\"
-  GS_BUCKET_NAME: \"$GS_BUCKET_NAME\"
+  GS_STATIC_BUCKET_NAME: \"$GS_STATIC_BUCKET_NAME\"
+  GS_MEDIA_BUCKET_NAME: \"$GS_MEDIA_BUCKET_NAME\"
+  JIRA_API_TOKEN: \"$JIRA_API_TOKEN\"
+  AZURE_FORM_RECOGNIZER_KEY: \"$AZURE_FORM_RECOGNIZER_KEY\"
+  AZURE_FORM_RECOGNIZER_ENDPOINT: \"$AZURE_FORM_RECOGNIZER_ENDPOINT\"
+  CUSTOM_TRAINED_MODEL_ID: \"$CUSTOM_TRAINED_MODEL_ID\"
+  CONTAINER_SAS_URL: \"$CONTAINER_SAS_URL\"
 
 automatic_scaling:
   min_idle_instances: automatic

@@ -12,6 +12,11 @@ jobs:
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
+    environment:
+      BROWSERSTACK_USERNAME: \"$BROWSERSTACK_USERNAME\"
+      BROWSERSTACK_ACCESS_KEY: \"$BROWSERSTACK_ACCESS_KEY\"
+      BROWSERSTACK_LOCAL: $BROWSERSTACK_LOCAL
+      BROWSERSTACK_LOCAL_IDENTIFIER: \"$BROWSERSTACK_LOCAL_IDENTIFIER\"
     parallelism: 4
     steps:
       - checkout
@@ -20,42 +25,32 @@ jobs:
       - run:
           name: Run Django Test
           command: |
+            base64 -di \<<< $CLOUD_STORAGE_KEY >> /tmp/key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=/tmp/key.json
             coverage run ./manage.py test -v 2 --parallel
             coverage run ./manage.py check --deploy
       - run:
-          name: Run Coverage Report
+          name: Generate Coverage Reort
           command: |
             mkdir -p test-results
             coverage report
             coverage html -d test-results/coverage.html
             coverage xml -o test-results/unittest/unittest.xml
-            coveralls
+      - run:
+          name: Report results to Coveralls
+          command: |
+            ./.coveralls.yml.sh > ./.coveralls.yml
+            coveralls -v
+      - run:
+          name: Report results to DeepSource
+          command: |
+            curl https://deepsource.io/cli | sh
+            ./bin/deepsource report --analyzer test-coverage --key python --value-file test-results/unittest/unittest.xml
       - store_test_results:
           path: test-results/unittest
       - store_artifacts:
           path: test-results
           destination: tr1
-
-  build:
-    docker:
-      - image: cimg/python:3.9
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-    parallelism: 4
-    steps:
-      - checkout
-      - python/install-packages:
-          pkg-manager: pip
-      - run:
-          name: Collect Static
-          command: |
-            ./manage.py collectstatic --no-input
-      - run:
-          name: Collect Static and Make Migration
-          command: |
-            ./manage.py makemigrations
-            ./manage.py migrate
 
   deploy-to-staging:
     docker:
@@ -66,19 +61,17 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Copy across app.yaml & .coveralls.yml config
+          name: Copy across app.yaml
           command: |
             ./app.yaml.sh > ./app.yaml
-            ./.coveralls.yml.sh > ./.coveralls.yml
       - run:
-          name: Set up gcloud config
+          name: Set up GCloud Auth and Deploy to Staging
           command: |
             echo $GCLOUD_AUTH_KEY | base64 -di | gcloud auth activate-service-account --key-file=-
             gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
             gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
-      - run:
-          name: Deploying to App Engine Staging
-          command: gcloud app deploy --no-promote app.yaml
+            gcloud --quiet config set account ${SERVICE_ACCOUNT}
+            gcloud app deploy --no-promote app.yaml
 
   deploy-to-prod:
     docker:
@@ -96,40 +89,47 @@ workflows:
   build-test-deploy:
     jobs:
       - test:
-          context:
-            - docker
+          name: App Engine Test
           post-steps:
-            - jira/notify
-      - build:
+            - jira/notify:
+                environment_type: testing
+                job_type: build
           context:
             - docker
-          post-steps:
-            - jira/notify
-          requires:
-            - test
-      - deploy-to-staging:
-          context:
-            - docker
-          requires:
-            - test
-            - build
+            - browserstack
           filters:
             branches:
               only:
                 - master
                 - develop
+                - /feature\/.*/
+
+      - deploy-to-staging:
+          name: App Engine Staging
           post-steps:
-            - jira/notify
+            - jira/notify:
+                environment_type: staging
+                job_type: deployment
+          context:
+            - docker
+          requires:
+            - App Engine Test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+
       - approve-prod-deployment:
           type: approval
           filters:
             branches:
               only: master
           requires:
-            - deploy-to-staging
-          post-steps:
-            - jira/notify
+            - App Engine Staging
+
       - deploy-to-prod:
+          name: App Engine Production
           context:
             - docker
           requires:
@@ -138,4 +138,6 @@ workflows:
             branches:
               only: master
           post-steps:
-            - jira/notify
+            - jira/notify:
+                environment_type: production
+                job_type: deployment

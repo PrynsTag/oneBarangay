@@ -1,8 +1,7 @@
-# coveralls for oneBarangay
+# coveralls for one_barangay
 [run]
 data_file = test-results/.coverage
-source = home
-plugins = django_coverage_plugin
+source = .
 
 omit =
     venv/*

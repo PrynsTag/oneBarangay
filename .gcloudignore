@@ -29,7 +29,12 @@ LICENSE
 .github
 .circleci
 static
-!home/static
 templates
-!home/templates
 app.yaml.sh
+local-process.yml
+.gitattributes
+#explicitly include
+!one_barangay/settings.py
+!manage.py
+!**/templates
+!.env

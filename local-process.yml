@@ -1,4 +1,5 @@
 # Orb 'circleci/python@1.4' resolved to 'circleci/python@1.4.0'
+---
 version: 2
 jobs:
   build:
@@ -16,8 +17,8 @@ jobs:
       - run:
           name: Collect Static
           command: |
-            base64 -di <<< $CLOUD_STORAGE_KEY >> /home/circleci/project/key.json
-            export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/project/key.json
+            base64 -di <<< $CLOUD_STORAGE_KEY >> /tmp/circleci/key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=/tmp/circleci/key.json
             ./manage.py collectstatic --no-input
             ./manage.py makemigrations
             ./manage.py migrate
@@ -28,6 +29,10 @@ jobs:
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
+    environment:
+      BROWSERSTACK_USERNAME: \"$BROWSERSTACK_USERNAME\"
+      BROWSERSTACK_ACCESS_KEY: \"$BROWSERSTACK_ACCESS_KEY\"
+      BROWSERSTACK_LOCAL: true
     parallelism: 4
     steps:
       - checkout
@@ -36,10 +41,10 @@ jobs:
           name: Install dependencies with pip using project requirements.txt
           working_directory: .
       - run:
-          name: Collect Static and Run Django Test
+          name: Run Django Test
           command: |
-            base64 -di <<< $CLOUD_STORAGE_KEY >> /home/circleci/project/key.json
-            export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/project/key.json
+            base64 -di <<< $CLOUD_STORAGE_KEY >> /tmp/key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=/tmp/key.json
             coverage run ./manage.py test -v 2 --parallel
             coverage run ./manage.py check --deploy
       - run:

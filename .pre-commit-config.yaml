@@ -2,6 +2,17 @@
 default_language_version:
   python: python3
 
+ci:
+  autofix_commit_msg: |
+    "refactor[pre-commit.ci]: auto fixes from pre-commit.com hooks
+
+    for more information, see https://pre-commit.ci"
+  autofix_prs: true
+  autoupdate_commit_msg: "bump[pre-commit.ci]: auto-update pre-commit hooks"
+  autoupdate_schedule: weekly
+  skip: [ ]
+  submodules: false
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
@@ -9,37 +20,62 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: check-docstring-first
+      - id: debug-statements
+      - id: name-tests-test
+      - id: requirements-txt-fixer
 
   - repo: https://github.com/psf/black
-    rev: 21.7b0
+    rev: 21.8b0
     hooks:
       - id: black
 
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.26.2
+    rev: v1.26.3
     hooks:
       - id: yamllint
-        args: [--format, parsable, --strict]
+        args: [ --format, parsable, --strict ]
 
-  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v5.0.0
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.0
     hooks:
-      - id: commitlint
-        stages: [commit-msg]
+      - id: bandit
+        language_version: python3
+        exclude: ^test/
+        args:
+          - -s
+          - "B404,B602,B603,B607"
 
-  - repo: https://github.com/markdownlint/markdownlint
-    rev: v0.11.0
+  - repo: https://github.com/myint/docformatter
+    rev: v1.4
     hooks:
-      - id: markdownlint
+      - id: docformatter
+        args: [ --in-place, --wrap-summaries=115, --wrap-descriptions=120 ]
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8
+        additional_dependencies: [flake8-typing-imports==1.1.0]
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.8.0
+    rev: 5.9.3
     hooks:
       - id: isort
         name: isort (python)
       - id: isort
         name: isort (cython)
-        types: [cython]
+        types: [ cython ]
       - id: isort
         name: isort (pyi)
-        types: [pyi]
+        types: [ pyi ]
+
+  - repo: https://github.com/rtts/djhtml
+    rev: v1.4.9
+    hooks:
+      - id: djhtml
+
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.1.1
+    hooks:
+      - id: pydocstyle
