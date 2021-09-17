@@ -1,6 +1,8 @@
 """Module for firestore operations."""
 import firebase_admin
-from firebase_admin import auth, credentials, firestore
+from firebase_admin import auth
+from firebase_admin import credentials
+from firebase_admin import firestore
 
 from auth.service_account import get_service_from_b64
 
