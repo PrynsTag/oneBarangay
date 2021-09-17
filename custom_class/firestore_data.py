@@ -14,6 +14,15 @@ class FirestoreData:
     """Manage firestore data."""
 
     def verify_identification(self, firstname=None, middlename=None, lastname=None):
+        """For identification verification.
+
+        Args:
+          firstname:  (Default value = None)
+          middlename:  (Default value = None)
+          lastname:  (Default value = None)
+
+        Returns: data of resident
+        """
         user_collection = db.collection("users")
         query = user_collection.where(
             "resident", "in", ["1dy2QQQGjqYYwJAvHfbxYhr2vnI2"]
@@ -47,12 +56,14 @@ class FirestoreData:
             doc_ref_appointment.document(id).delete()
 
     def search_verification(self):
+        """Search age for verification."""
         user_ref = db.collection("test").where("age", "==", 22).get()
 
         for res in user_ref:
             print(res.to_dict())
 
     def test_search_date(self):
+        """Search date for testing only."""
         import datetime
 
         start_date = datetime.datetime(year=2021, month=9, day=15, hour=23, minute=59)
