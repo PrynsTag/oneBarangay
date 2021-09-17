@@ -2,8 +2,7 @@
 import os
 from statistics import fmean
 
-from azure.ai.formrecognizer.aio import FormRecognizerClient
-from azure.ai.formrecognizer.aio import FormTrainingClient
+from azure.ai.formrecognizer.aio import FormRecognizerClient, FormTrainingClient
 from azure.core.credentials import AzureKeyCredential
 from dotenv import load_dotenv
 
