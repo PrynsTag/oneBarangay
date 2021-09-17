@@ -1,10 +1,7 @@
 {
   "name": "oneBarangay",
   "description": "An Online Document Issuing Application",
-  "display_override": [
-    "window-control-overlay",
-    "minimal-ui"
-  ],
+  "display_override": ["window-control-overlay", "minimal-ui"],
   "display": "standalone",
   "icons": [
     {
