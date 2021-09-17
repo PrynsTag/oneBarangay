@@ -77,6 +77,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Copy across app.yaml
+          command: |
+            ./app.yaml.sh > ./app.yaml
+      - run:
           name: Deploying to App Engine Production
           command: |
             echo $GCLOUD_AUTH_KEY | base64 -di | gcloud auth activate-service-account --key-file=-
