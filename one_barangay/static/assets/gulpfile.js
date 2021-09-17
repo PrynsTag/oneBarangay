@@ -4,7 +4,8 @@
 * Volt Free - Bootstrap 5 Dashboard
 =========================================================
 
-* Product Page: https://themesberg.com/product/admin-dashboard/volt-premium-bootstrap-5-dashboard
+* Product Page:
+https://themesberg.com/product/admin-dashboard/volt-premium-bootstrap-5-dashboard
 * Copyright 2020 Themesberg (https://www.themesberg.com)
 * License (https://themesberg.com/licensing)
 
@@ -12,7 +13,9 @@
 
 =========================================================
 
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. Please contact us to request a removal.
+* The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software. Please contact us to request a
+removal.
 
 */
 
@@ -49,10 +52,7 @@ const paths = {
     img: './html&css/assets/img',
     vendor: './html&css/vendor'
   },
-  base: {
-    base: './',
-    node: './node_modules'
-  },
+  base: { base: './', node: './node_modules' },
   src: {
     base: './',
     css: './css',
@@ -75,15 +75,15 @@ const paths = {
 // Compile SCSS
 gulp.task('scss', function () {
   return gulp
-    .src([paths.src.scss + '/custom/**/*.scss', paths.src.scss + '/volt/**/*.scss', paths.src.scss + '/volt.scss'])
+    .src([
+      paths.src.scss + '/custom/**/*.scss',
+      paths.src.scss + '/volt/**/*.scss',
+      paths.src.scss + '/volt.scss'
+    ])
     .pipe(wait(500))
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
-    .pipe(
-      autoprefixer({
-        overrideBrowserslist: ['> 1%']
-      })
-    )
+    .pipe(autoprefixer({ overrideBrowserslist: ['> 1%'] }))
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(paths.src.css))
     .pipe(browserSync.stream())
@@ -91,15 +91,12 @@ gulp.task('scss', function () {
 
 // Minify CSS
 gulp.task('minify:css', function () {
-  return gulp
-    .src([paths.src.css + '/volt.css'])
+  return gulp.src([paths.src.css + '/volt.css'])
     .pipe(cleanCss())
-    .pipe(
-      rename(function (path) {
-        // Updates the object in-place
-        path.extname = '.min.css'
-      })
-    )
+    .pipe(rename(function (path) {
+      // Updates the object in-place
+      path.extname = '.min.css'
+    }))
     .pipe(gulp.dest(paths.src.css))
 })
 
