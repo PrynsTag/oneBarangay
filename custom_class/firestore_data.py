@@ -1,9 +1,7 @@
 """Custom class firestore_data."""
 import datetime
 
-from firebase_admin import firestore
-
-db = firestore.client()
+from auth.service_account import firebase_connect
 
 
 class FirestoreData:
@@ -20,6 +18,8 @@ class FirestoreData:
         Returns:
           : resident information.
         """
+        db = firebase_connect()
+
         user_collection = db.collection("users")
         query = user_collection.where(
             "resident", "in", ["1dy2QQQGjqYYwJAvHfbxYhr2vnI2"]
@@ -29,6 +29,8 @@ class FirestoreData:
 
     def delete_account_auth(self):
         """Delete all account."""
+        db = firebase_connect()
+
         account_ids = []
         appointment_ids = []
         doc_ref_account = db.collection("users")
@@ -54,6 +56,8 @@ class FirestoreData:
 
     def search_verification(self):
         """Search account for verification."""
+        db = firebase_connect()
+
         user_ref = db.collection("test").where("age", "==", 22).get()
 
         for res in user_ref:
@@ -61,7 +65,7 @@ class FirestoreData:
 
     def test_search_date(self):
         """Search date for testing only."""
-        import datetime
+        db = firebase_connect()
 
         start_date = datetime.datetime(year=2021, month=9, day=15, hour=23, minute=59)
 
@@ -96,8 +100,7 @@ class FirestoreData:
         Returns:
             : get appointment list in firebase firestore
         """
-        import datetime
-
+        db = firebase_connect()
         count = 1
         appointment_list = []
 
