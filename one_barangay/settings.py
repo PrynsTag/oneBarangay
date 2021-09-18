@@ -72,7 +72,6 @@ INSTALLED_APPS = [
     "complaint",
     "ocr",
     "app",
-    "ocr",
     "django.contrib.sessions",
     "django.contrib.auth",
     "django.contrib.contenttypes",
