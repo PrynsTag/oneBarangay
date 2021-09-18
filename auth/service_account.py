@@ -16,10 +16,10 @@ def get_service_from_b64(b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
     """Authenticate using a service account for google products.
 
     Args:
-      b64_env_name:  (Default value = "GOOGLE_STORAGE_CREDENTIALS") The base64 text.
+      b64_env_name: (Default value = "GOOGLE_STORAGE_CREDENTIALS") The base64 text.
 
     Returns:
-      A path to file.
+      : A path to file.
     """
     fd, path = tempfile.mkstemp()
     try:
@@ -41,7 +41,7 @@ def get_service_from_b64(b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
 
 
 def firebase_connect():
-    """This function connects to firebase firestore data."""
+    """Connect to firebase firestore data."""
     import firebase_admin
     from firebase_admin import credentials, firestore
 
