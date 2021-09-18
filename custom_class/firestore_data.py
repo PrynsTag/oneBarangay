@@ -1,10 +1,7 @@
 """Custom class firestore_data."""
-import firebase_admin
-from firebase_admin import auth, credentials, firestore
+import datetime
 
-from auth.service_account import get_service_from_b64
-
-get_service_from_b64()
+from firebase_admin import firestore
 
 db = firestore.client()
 
@@ -47,7 +44,7 @@ class FirestoreData:
             for result in doc_ref_appointment_id:
                 appointment_ids.append(result.id)
 
-            auth.delete_users(account_ids)
+            # auth.delete_users(account_ids)
 
         for id in account_ids:
             doc_ref_account.document(id).delete()
