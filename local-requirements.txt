@@ -1,6 +1,7 @@
 aiofile==3.7.1
 aiohttp==3.7.4.post0
 azure-ai-formrecognizer==3.1.2
+black==21.8b0
 blackfire==1.6.1
 browserstack-local==1.2.3
 coveralls==3.2.0
