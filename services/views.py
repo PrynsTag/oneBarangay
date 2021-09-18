@@ -1,4 +1,4 @@
-"""Hello World."""
+"""Services views.."""
 
 from django.shortcuts import render
 
