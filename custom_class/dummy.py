@@ -217,3 +217,23 @@ class Dummy:
                         temp_minute = 0
                     else:
                         temp_minute += time_interval
+
+    def document_id(self, year: int, month: int, day: int, hour: int, minute: int):
+        """Create document ID for firebase firestore document.
+
+        Args:
+          year: int: year of document
+          month: int: month of document
+          day: int: day of document
+          hour: int: hour of document
+          minute: int: minute of document
+
+        Returns:
+          : combined year, month, day, hour, and minute in document format
+        """
+        month = month if month >= 10 else f"0{month}"
+        day = day if day >= 10 else f"0{day}"
+        hour = hour if hour >= 10 else f"0{hour}"
+        minute = "00" if minute == 0 else minute
+
+        return f"{year}{month}{day}-{hour}{minute}"
