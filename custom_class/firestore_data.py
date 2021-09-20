@@ -1,40 +1,48 @@
 """Custom class firestore_data."""
 import datetime
 
-from auth.service_account import firebase_connect
+from django.shortcuts import Http404
+from firebase_admin import firestore
 
 
 class FirestoreData:
-    """Firestore account."""
+    """Manage firestore data."""
 
-    def verify_identification(self, firstname=None, middlename=None, lastname=None):
+    def __init__(self):
+        """Initialize firebase connection."""
+        self.db = firestore.client()
+
+    def verify_identification(self, firstname: str, middlename: str, lastname: str):
         """For verification of identification.
 
         Args:
-          firstname: (Default value = None)
-          middlename: (Default value = None)
-          lastname:  (Default value = None)
+          firstname: str: user firstname
+          middlename: str: user middlename
+          lastname: str: user lastname
 
         Returns:
           : resident information.
         """
-        db = firebase_connect()
+        user_list = []
 
-        user_collection = db.collection("users")
-        query = user_collection.where(
-            "resident", "in", ["1dy2QQQGjqYYwJAvHfbxYhr2vnI2"]
-        )
+        user_collection = self.db.collection("users")
+        query = (
+            user_collection.where("first_name", "==", firstname)
+            .where("middle_name", "==", middlename)
+            .where("last_name", "==", lastname)
+        ).stream()
 
-        return query
+        for info in query:
+            user_list.append(info.to_dict())
+
+        return user_list
 
     def delete_account_auth(self):
         """Delete all account."""
-        db = firebase_connect()
-
         account_ids = []
         appointment_ids = []
-        doc_ref_account = db.collection("users")
-        doc_ref_appointment = db.collection("appointments")
+        doc_ref_account = self.db.collection("users")
+        doc_ref_appointment = self.db.collection("appointments")
 
         for result in doc_ref_account.stream():
             account_ids.append(result.id)
@@ -56,33 +64,10 @@ class FirestoreData:
 
     def search_verification(self):
         """Search account for verification."""
-        db = firebase_connect()
-
-        user_ref = db.collection("test").where("age", "==", 22).get()
+        user_ref = self.db.collection("test").where("age", "==", 22).get()
 
         for res in user_ref:
             print(res.to_dict())
-
-    def test_search_date(self):
-        """Search date for testing only."""
-        db = firebase_connect()
-
-        start_date = datetime.datetime(year=2021, month=9, day=15, hour=23, minute=59)
-
-        end_date = datetime.datetime(year=2021, month=9, day=16, hour=23, minute=59)
-
-        print(f"Start Date: {start_date}")
-        print(f"End Date: {end_date}")
-
-        date_ref = (
-            db.collection("test_appointment")
-            .where("start_appointment", ">", start_date)
-            .where("end_appointment", "<", end_date)
-        )
-        result = date_ref.get()
-
-        for count, result in enumerate(result):
-            print(f"Count: {count} {result.to_dict()}")
 
     def day_appointments(
         self, date: datetime.date = datetime.date.today(), utc_offset: int = 0
@@ -94,13 +79,10 @@ class FirestoreData:
         Args:
           date: datetime.date:  (Default value = datetime.date.today())
           utc_offset: int:  (Default value = 0)
-          date: datetime.date:  (Default value = datetime.date.today())
-          utc_offset: int:  (Default value = 0)
 
         Returns:
-            : get appointment list in firebase firestore
+          : get appointment list in firebase firestore
         """
-        db = firebase_connect()
         count = 1
         appointment_list = []
 
@@ -122,7 +104,7 @@ class FirestoreData:
         end_date_delta = end_date - datetime.timedelta(hours=utc_offset)
 
         date_ref = (
-            db.collection("appointments")
+            self.db.collection("appointments")
             .where("start_appointment", ">", start_date_delta)
             .where("start_appointment", "<=", end_date_delta)
             .order_by("start_appointment")
