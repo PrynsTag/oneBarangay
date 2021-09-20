@@ -24,3 +24,8 @@ class DateFormatter:
         day = int(date_split[2])
 
         return datetime.date(year=year, month=month, day=day)
+
+    def date_fb_convert(self):
+        """Convert firebase DatetimeWithNanoseconds into python format date and time."""
+        if isinstance(self.full_date, datetime.datetime):
+            return self.full_date.__str__()
