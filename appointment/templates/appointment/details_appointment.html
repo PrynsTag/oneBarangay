@@ -11,29 +11,45 @@
     <h1>Appointment Details</h1>
 
     <ul>
-        <li>Status: {{ details.status }}</li>
-        <li>Name: {{ details.first_name }} {{ details.last_name }}</li>
-        <li>Account Type: {{ details.account_type }}</li>
-        <li>Contact Number: {{ details.contact_no }}</li>
+        <li>Status: {{ user_detail.status }}</li>
+        <li>Name:</li>
+        <ul>
+            <li>First Name: {{ user_detail.first_name }}</li>
+            <li>Middle Name: {{ user_detail.middle_name }}</li>
+            <li>Last Name: {{ user_detail.last_name }}</li>
+        </ul>
+        <li>Account Type: {{ user_detail.account_type }}</li>
+        <li>Contact Number: {{ user_detail.contact_no }}</li>
     </ul>
 
     <ul>
-        <li>Date: {{ details.appointment_date|date_formatter }}</li>
-        <li>Time: {{ details.appointment_time|military_to_standard_time }}</li>
+        <li>Start Date: {{ user_detail.start_appointment }}</li>
+        <li>End Date: {{ user_detail.end_appointment }}</li>
         <li>
             Document Type:
             <ul>
-                <Li>{{ details.document|join:", " }}</Li>
+                <li>{{ user_detail.document|join:", " }}</li>
             </ul>
         </li>
         <li>Total Amount: {{ amount }}</li>
-        <li>Purpose: {{ details.appointment_purpose }}</li>
+        <li>Purpose: {{ user_detail.appointment_purpose }}</li>
     </ul>
 
     <ul>
-        <li>Verification: {{ details.appointment_image }}</li>
+        <li>Verification: {{ user_detail.appointment_image }}</li>
     </ul>
 
-    <a href="#">Save</a>
-    <a href="{% url "appointment:view-appointment" %}">Cancel</a>
+    <form action="{% url "appointment:id_verification" user_detail.document_id|base64_encode %}" method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" name="submit" value="Search">
+    </form>
+
+    {% if user_verified %}
+        <a href="{% url "appointment:user_verified" document_id %}">Confirm</a>
+        <a href="{% url "appointment:view-appointment" back %}">Back</a>
+    {% else %}
+        <a href="">Confirm</a>
+        <a href="{% url "appointment:view-appointment" back %}">Back</a>
+    {% endif %}
 {% endblock %}
