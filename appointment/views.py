@@ -1,102 +1,145 @@
 """Create your Appointment views here."""
 import datetime
-from collections import OrderedDict
 
 # Firebase
-from django.shortcuts import render
-from firebase_admin import firestore
-from firebase_admin.exceptions import AlreadyExistsError
+from django.shortcuts import Http404, HttpResponse, HttpResponseRedirect, render, reverse
 
-from auth.service_account import firebase_authentication
-from custom_class.date_formatter import Date_Formatter
-
-# Custom Class
+from custom_class.dateformatter import DateFormatter
+from custom_class.dummy import Dummy
 from custom_class.encrypter import Encrypter
+from custom_class.firestore_data import FirestoreData
 
-# Globals
-app = firebase_authentication()
-db = firestore.client(app)
+from .forms import IdVerification
 
-working_hours = [
-    "1300",
-    "0800",
-    "0900",
-    "1000",
-    "1100",
-    "1200",
-    "0700",
-    "1400",
-    "1500",
-    "1600",
-    "1700",
-]
+search = FirestoreData()
 
 
-def view_appointment(request):
+def view_appointment(request, date):
     """Display the list of appointments.
 
     Args:
       request: The URL request.
+      date: appointment date
 
     Returns:
-      The view_appointment template and the appointments and working hours context data.
+      : The view_appointment template and the appointments and working hours context data.
     """
-    result_dict = None
+    for key in list(request.session.keys()):
+        del request.session[key]
 
     try:
-        doc_ref = db.collection("appointments").document(
-            (datetime.datetime.now()).strftime("%Y_%m_%d")
+        date_split = date.split("-")
+        year = int(date_split[0])
+        month = int(date_split[1])
+        day = int(date_split[2])
+
+        datetime.datetime(year=year, month=month, day=day)
+
+    except ValueError:
+        raise Http404("Page not found")
+
+    else:
+        search_date = datetime.date(year=year, month=month, day=day)
+        count, appointment_list = search.day_appointments(
+            date=search_date, utc_offset=8
         )
 
-        # View Appointment
-        doc_result = doc_ref.get()
+        str_date = datetime.date(year=year, month=month, day=day).strftime(
+            "%A, %B %d, %Y"
+        )
 
-        if doc_result.exists:
-            result_dict = doc_result.to_dict()
-        else:
-            print("There is no result")
+        strp_date = datetime.datetime.strptime(f"{year}-{month}-{day}", "%Y-%m-%d")
 
-    except AlreadyExistsError:
-        print("Account already exists.")
+        next_date = strp_date + datetime.timedelta(days=1)
+        previous_date = strp_date - datetime.timedelta(days=1)
 
-    if result_dict is not None:
-        result_dict = OrderedDict(sorted(result_dict.items(), key=lambda x: x))
+        next_date_formatter = DateFormatter(full_date=next_date)
+        previous_date_formatter = DateFormatter(full_date=previous_date)
 
-    return render(
-        request,
-        "appointment/view_appointment.html",
-        {"appointments": result_dict, "time_sorted": sorted(working_hours)},
-    )
+        next_date_format = next_date_formatter.date_splitter()
+        previous_date_format = previous_date_formatter.date_splitter()
+
+        return render(
+            request,
+            "appointment/view_appointment.html",
+            {
+                "appointments_list": appointment_list,
+                "no_result": count,
+                "appointment_date": str(str_date),
+                "next_date": next_date_format,
+                "previous_date": previous_date_format,
+                "current_date": datetime.date.today(),
+            },
+        )
 
 
-def details_appointment(request, apt_details):
+def details_appointment(request, document_id):
     """Display the details of the user's appointment.
 
     Args:
       request: The URL request.
+      document_id: user appointment document ID
+
     Returns:
-      Renders the html of appointment details
+      : Renders the html of appointment details
     """
-    encrypter = Encrypter(text=apt_details)
-    date_formatter = Date_Formatter(full_date=encrypter.code_decoder(), separator="_")
-    result_dict = None
+    form = IdVerification()
+    encrypter = Encrypter(text=document_id).code_decoder()
 
-    doc_ref_appointment_details = db.collection("appointments").document(
-        str(date_formatter.formatted_date)
-    )
+    # Verification
+    split_documentid = encrypter.split("-")
+    get_date = split_documentid[0]
+    get_time = split_documentid[1]
+    year = int(get_date[:4])
+    month = int(get_date[4:6])
+    day = int(get_date[6:8])
+    time_int = int(get_time)
 
-    doc_appointments = doc_ref_appointment_details.get()
+    try:
+        datetime.date(year=year, month=month, day=day)
 
-    if doc_appointments.exists:
-        result_dict = doc_appointments.to_dict()
+    except ValueError:
+        raise Http404("Invalid Input")
+
     else:
-        print("There is no result")
+        if 0 < time_int < 2300:
+            search_appointment = FirestoreData()
+            appointment_detail = search_appointment.search_appointment(
+                document_id=encrypter
+            )
 
-    return render(
-        request,
-        "appointment/details_appointment.html",
-        {"details": result_dict[date_formatter.formatted_time], "amount": "00.00"},
-    )
+            if "user_verified" in request.session:
+                document_id = request.session["document_id"]
+
+                id_encode = Encrypter(text=document_id).code_encoder()
+
+                return render(
+                    request,
+                    "appointment/details_appointment.html",
+                    {
+                        "user_verified": True,
+                        "user_detail": appointment_detail,
+                        "amount": 100,
+                        "form": form,
+                        "back": str(datetime.date(year=year, month=month, day=day)),
+                        "document_id": id_encode,
+                    },
+                )
+            else:
+                return render(
+                    request,
+                    "appointment/details_appointment.html",
+                    {
+                        "user_verified": False,
+                        "user_detail": appointment_detail,
+                        "amount": 100,
+                        "form": form,
+                        "back": str(datetime.date(year=year, month=month, day=day)),
+                    },
+                )
+        else:
+            raise Http404("Invalid Input")
+
 
 def id_verification(request, document_id):
     """Check user ID for verification.
