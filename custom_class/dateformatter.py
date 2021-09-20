@@ -17,6 +17,7 @@ class DateFormatter:
         self.separator = separator
 
     def date_splitter(self):
+        """Split full date and time into date."""
         date_split = (str(self.full_date).split(" "))[0].split("-")
         year = int(date_split[0])
         month = int(date_split[1])
