@@ -1,6 +1,8 @@
 """Custom class encrypter."""
 import base64
 
+from django.shortcuts import Http404
+
 
 class Encrypter:
     """This class encrypts and decrypts texts."""
@@ -15,15 +17,21 @@ class Encrypter:
 
     def code_encoder(self):
         """Convert text to base64."""
-        text = self.text
-        value_bytes = text.encode("ascii")
-        base64_bytes = base64.urlsafe_b64encode(value_bytes)
-        base64_message = base64_bytes.decode("ascii")
-        return str(base64_message)
+        try:
+            text = self.text
+            value_bytes = text.encode("ascii")
+            base64_bytes = base64.urlsafe_b64encode(value_bytes)
+            base64_message = base64_bytes.decode("ascii")
+            return str(base64_message)
+        except UnicodeDecodeError:
+            raise Http404("Page Not Found")
 
     def code_decoder(self):
         """Convert text to base64."""
-        value_bytes = self.text.encode("ascii")
-        base64_bytes = base64.urlsafe_b64decode(value_bytes)
-        base64_message = base64_bytes.decode("ascii")
-        return str(base64_message)
+        try:
+            value_bytes = self.text.encode("ascii")
+            base64_bytes = base64.urlsafe_b64decode(value_bytes)
+            base64_message = base64_bytes.decode("ascii")
+            return str(base64_message)
+        except UnicodeDecodeError:
+            raise Http404("Page not Found")
