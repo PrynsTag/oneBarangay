@@ -126,3 +126,25 @@ def delete_account(request):
     search.delete_account_auth()
 
     return HttpResponse("Account Deleted")
+
+
+def user_verified(request, document_id):
+    """Check user existence.
+
+    Args:
+      request: The URL request
+      document_id: user appointment document ID
+
+    Returns:
+        : Change user's document status
+    """
+    document_id_decode = Encrypter(text=document_id).code_decoder()
+
+    if "user_verified" in request.session and "document_id" in request.session:
+        session_document_id = request.session["document_id"]
+        if session_document_id == document_id_decode:
+            print("session document id and document id are the same")
+        else:
+            print("session document id and document are not the same")
+
+    raise Http404("In user verified")
