@@ -97,3 +97,19 @@ def details_appointment(request, apt_details):
         "appointment/details_appointment.html",
         {"details": result_dict[date_formatter.formatted_time], "amount": "00.00"},
     )
+
+
+def add_appointment(request):
+    """For date testing only.
+
+    Args:
+      request: Returns: add date in firestore
+
+    Returns:
+        : add account in firebase authentication and firestore
+    """
+    firestore_add_date = Dummy()
+    firestore_add_date.add_appointment_account(time_interval=15, utc_offset=8)
+
+    return HttpResponseRedirect(reverse("services:index"))
+
