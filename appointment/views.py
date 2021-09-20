@@ -113,3 +113,16 @@ def add_appointment(request):
 
     return HttpResponseRedirect(reverse("services:index"))
 
+
+def delete_account(request):
+    """Delete accounts in authentication and firestore.
+
+    Args:
+      request: Returns: delete accounts.
+
+    Returns:
+        : delete accounts in firebase authentication and firestore
+    """
+    search.delete_account_auth()
+
+    return HttpResponse("Account Deleted")
