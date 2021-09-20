@@ -98,6 +98,60 @@ def details_appointment(request, apt_details):
         {"details": result_dict[date_formatter.formatted_time], "amount": "00.00"},
     )
 
+def id_verification(request, document_id):
+    """Check user ID for verification.
+
+    Args:
+      request: Returns: view of appointment details.
+      document_id: user appointment document ID
+
+    Returns:
+        : change document status
+    """
+    verify_user = FirestoreData()
+    document_id_decrypt = Encrypter(text=document_id).code_decoder()
+
+    if request.method == "POST":
+        verification_form = IdVerification(request.POST)
+
+        if verification_form.is_valid():
+            field_firstname = verification_form.cleaned_data.get("first_name")
+            field_middlename = verification_form.cleaned_data.get("middle_name")
+            field_lastname = verification_form.cleaned_data.get("last_name")
+
+            results = verify_user.verify_identification(
+                firstname=field_firstname,
+                middlename=field_middlename,
+                lastname=field_lastname,
+            )
+
+            convert_fb_timestamp = DateFormatter(
+                full_date=results[0]["created_on"]
+            ).date_fb_convert()
+
+            results[0]["created_on"] = convert_fb_timestamp
+
+            if len(results) == 1:
+                request.session["user_verified"] = True
+                request.session["user_info"] = results[0]
+                request.session["document_id"] = document_id_decrypt
+
+                return HttpResponseRedirect(
+                    reverse(
+                        "appointment:detail-appointment",
+                        kwargs={"document_id": document_id},
+                    )
+                )
+            else:
+                return HttpResponse("Duplicate user info")
+        else:
+            return HttpResponse("Invalid input.")
+    else:
+        verification_form = IdVerification()
+        return render(
+            request, "appointment/details_appointment.html", {"form", verification_form}
+        )
+
 
 def add_appointment(request):
     """For date testing only.
