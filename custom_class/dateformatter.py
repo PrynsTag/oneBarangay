@@ -1,6 +1,5 @@
 """Custom class date formatter."""
 import datetime
-import time
 
 
 class DateFormatter:
