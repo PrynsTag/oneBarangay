@@ -60,3 +60,37 @@ def military_to_standard_time(value):
     else:
         print("Invalid time please try again")
         return "Invalid Time"
+
+
+@register.filter("firebase_timestamp_format")
+def firebase_timestamp_format(value, utc_offset: int = 0):
+    """Convert firebase firestore timestamp format into python.
+
+    Args:
+      value: firebase date and time format
+      utc_offset: int:  (Default value = 0)
+
+    Returns:
+        : python format timestamp
+    """
+    utc_split = str(value).split(" ")
+    date_split = utc_split[0].split("-")
+    year = date_split[0]
+    month = date_split[1]
+    day = date_split[2]
+    time_utc_split = utc_split[1].split("+")
+    time_split = time_utc_split[0].split(":")
+    hour = time_split[0]
+    minute = time_split[1]
+    # second = time_split[2]
+
+    convert_datetime = datetime.datetime.strptime(
+        f"{year}-{month}-{day} {hour}:{minute}:00",
+        "%Y-%m-%d %H:%M:%S",
+    )
+
+    result_utc = convert_datetime + datetime.timedelta(hours=utc_offset)
+
+    result_utc = result_utc.strftime("%I:%M %p")
+
+    return result_utc
