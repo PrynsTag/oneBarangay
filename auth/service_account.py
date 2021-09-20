@@ -43,11 +43,7 @@ def get_service_from_b64(b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
 def firebase_connect():
     """Connect to firebase firestore data."""
     import firebase_admin
-    from firebase_admin import credentials, firestore
+    from firebase_admin import credentials
 
     cred = credentials.Certificate(get_service_from_b64())
-    default_app = firebase_admin.initialize_app(cred)
-
-    db = firestore.client(default_app)
-
-    return db
+    firebase_admin.initialize_app(cred)
