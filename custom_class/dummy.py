@@ -6,6 +6,8 @@ from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
+from custom_class.encrypter import Encrypter
+
 working_hours = [
     "1300",
     "0800",
@@ -32,26 +34,25 @@ status = ["request", "in_progress", "get", "completed"]
 
 cryptogen = SystemRandom()
 fake = Faker()
-db = firestore.client()
 
 
 class Dummy:
     """Create Dummy accounts."""
+
+    def __init__(self):
+        """Initialize firebase connection."""
+        self.db = firestore.client()
 
     # Authentication Account and Firestore User Account
     def create_dummy_account(self, num_range: int, password: str):
         """Create dummy account using firebase.
 
         Args:
-          num_range: int:  Number of accounts
-          password: str:  (Default value = "password123")
-        Returns: add dummy accounts in firebase firestore
-          num_range: int:
-          password: str:
-          num_range: int:
-          password: str:
+          num_range: int: number of accounts
+          password: str: custom password
 
-        Returns: add accounts in firebase authentication and firestore
+        Returns:
+          : add accounts in firebase authentication and firestore
         """
         for _ in range(0, num_range):
             first_name = fake.first_name()
@@ -62,7 +63,7 @@ class Dummy:
             email = fake.email(domain=None)
             user_uid = None
 
-            doc_ref = db.collection("users").document(f"{account_type}")
+            doc_ref = self.db.collection("users").document(f"{account_type}")
 
             try:
                 auth.create_user(email=email, password=password)
@@ -114,7 +115,7 @@ class Dummy:
         Returns:
           : adds dummy accounts in firebase authentication and appointments in firebase firestore
         """
-        doc_ref_appointment = db.collection("appointments")
+        doc_ref_appointment = self.db.collection("appointments")
         month = month if 1 > month > 12 else datetime.datetime.now().month
 
         try:
@@ -157,16 +158,17 @@ class Dummy:
 
                 result_utc_adv = local_datetime_adv - datetime.timedelta(hours=8)
 
+                # appointment_id = self.document_id(
+                #     year=year, month=month, day=day, hour=temp_hour, minute=temp_minute
+                # )
                 first_name = fake.first_name()
                 middle_name = fake.first_name()
                 last_name = fake.last_name()
                 email = fake.email(domain=None)
                 contact_no = fake.phone_number()
                 account_type = "resident"
-                user_uid = None
                 sentence = fake.sentence(nb_words=10)
                 image = fake.file_name(category="image", extension="jpeg")
-
                 try:
                     # Create Account in Firebase Authentication
                     auth.create_user(email=email, password=password)
@@ -178,7 +180,7 @@ class Dummy:
                     # Get UID on created account in Firebase Authentication
                     user_uid = auth.get_user_by_email(email=email).uid
 
-                    doc_ref_account = db.collection("users").document(user_uid)
+                    doc_ref_account = self.db.collection("users").document(user_uid)
 
                     # Adding user accounts in firestore
                     user_account_data = {
@@ -193,8 +195,17 @@ class Dummy:
 
                     doc_ref_account.set(user_account_data, merge=True)
 
+                    document_id = self.document_id(
+                        year=year,
+                        month=month,
+                        day=day,
+                        hour=temp_hour,
+                        minute=temp_minute,
+                    )
+
                     # Adding user appointments in firestore
                     appointment_data = {
+                        "document_id": document_id,
                         "first_name": first_name,
                         "middle_name": middle_name,
                         "last_name": last_name,
@@ -210,7 +221,9 @@ class Dummy:
                         "created_on": datetime.datetime.now(),
                     }
 
-                    doc_ref_appointment.add(appointment_data)
+                    data_encryptor = Encrypter(text=document_id).code_encoder()
+
+                    doc_ref_appointment.document(data_encryptor).set(appointment_data)
 
                     if (temp_minute + time_interval) == 60:
                         temp_hour += 1
