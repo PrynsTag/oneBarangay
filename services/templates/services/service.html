@@ -10,8 +10,13 @@
     <h1>Services</h1>
 
     <ul>
-        <li><a href="{% url "appointment:view-appointment" %}">Appointment</a></li>
-        <li><a href="{% url "complaint:index" %}">Complaints</a></li>
-        <li><a href="{% url "bulksched:index" %}">Bulk Schedule</a></li>
+        <li>
+            <a href="{% url "appointment:view-appointment" current_date %}">Appointment</a>
+            <ul>
+                <li>Active Appointments: {{ active_appointments }}</li>
+            </ul>
+        </li>
+        {#        <li><a href="{% url "complaint:index" %}">Complaints</a></li>#}
+        {#        <li><a href="{% url "bulksched:index" %}">Bulk Schedule</a></li>#}
     </ul>
 {% endblock %}
