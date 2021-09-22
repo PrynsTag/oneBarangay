@@ -46,10 +46,11 @@
     </form>
 
     {% if user_verified %}
+        <h2>User was verified.</h2>
         <a href="{% url "appointment:user_verified" document_id %}">Confirm</a>
         <a href="{% url "appointment:view-appointment" back %}">Back</a>
     {% else %}
-        <a href="">Confirm</a>
+        <a href="javascript:void(0)">Confirm</a>
         <a href="{% url "appointment:view-appointment" back %}">Back</a>
     {% endif %}
 {% endblock %}
