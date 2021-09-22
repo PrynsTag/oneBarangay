@@ -23,8 +23,8 @@
     </ul>
 
     <ul>
-        <li>Start Date: {{ user_detail.start_appointment }}</li>
-        <li>End Date: {{ user_detail.end_appointment }}</li>
+        <li>Start Date: {{ user_detail.start_appointment|firebase_timestamp_format:8 }}</li>
+        <li>End Date: {{ user_detail.end_appointment|firebase_timestamp_format:8 }}</li>
         <li>
             Document Type:
             <ul>
