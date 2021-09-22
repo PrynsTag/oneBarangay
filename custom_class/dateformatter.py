@@ -2,8 +2,6 @@
 import datetime
 import math
 
-from django.http import Http404
-
 
 class DateFormatter:
     """Split full date into date, time, and date & time."""
@@ -34,6 +32,14 @@ class DateFormatter:
 
     # 2021-09-18 23:00:00+00:00
     def datetime_splitter(self, utc_offset: int = 0):
+        """Full date and time splitter with custom UTC.
+
+        Args:
+          utc_offset: int:  (Default value = 0)
+
+        Returns:
+            : date and time with added custom UTC
+        """
         datetime_split = str(self.full_date).split(" ")
         date_split = datetime_split[0].split("-")
         year = date_split[0]
@@ -53,6 +59,7 @@ class DateFormatter:
         return result_utc
 
     def document_splitter(self):
+        """Document ID split."""
         split_document_id = self.document_str.split("-")
         get_date = split_document_id[0]
         get_time = split_document_id[1]
@@ -64,6 +71,14 @@ class DateFormatter:
         return get_date, get_time, year, month, day, time_int
 
     def datetime_createdOn(self, utc_offset: int = 0):
+        """Format date and time from created_on.
+
+        Args:
+          utc_offset: int:  (Default value = 0)
+
+        Returns:
+            : formatted date and time with added custom UTC
+        """
         datetime_split = str(self.datetime_str).split(" ")
         date_split = datetime_split[0].split("-")
         year = date_split[0]
@@ -87,7 +102,15 @@ class DateFormatter:
         if isinstance(self.full_date, datetime.datetime):
             return self.full_date.__str__()
 
-    def firebaseTime_formatIt(self, utc_offset):
+    def firebaseTime_formatIt(self, utc_offset: int = 0):
+        """Convert firebase timestamp DatetimewithNanoseconds into python format date and time.
+
+        Args:
+          utc_offset: custom UTC
+
+        Returns:
+            : python format date and time with custom UTC
+        """
         appointment_converted = self.date_fb_convert()
         appointment_offset = self.firebase_utcOffset(
             date=appointment_converted, utc_offset=utc_offset
@@ -96,6 +119,15 @@ class DateFormatter:
         return appointment_offset
 
     def firebase_utcOffset(self, date: str, utc_offset: int = 0):
+        """Convert string and add UTC.
+
+        Args:
+          date: str:
+          utc_offset: int:  (Default value = 0)
+
+        Returns:
+            : Full date and time with added custom UTC
+        """
         datetime_split = date.split(" ")
         date_split = datetime_split[0].split("-")
         year = date_split[0]
