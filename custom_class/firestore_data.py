@@ -1,7 +1,6 @@
 """Custom class firestore_data."""
 import datetime
 
-from django.shortcuts import Http404
 from firebase_admin import firestore
 
 
