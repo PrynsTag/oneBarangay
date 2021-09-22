@@ -125,20 +125,5 @@ class FirestoreData:
 
         Returns:
             : user appointment info
-        """
-        appointment_ref = self.db.collection("appointments")
-        user_appointment = appointment_ref.where(
-            "document_id", "==", document_id
-        ).stream()
-
-        appointment_list = []
-        count = 0
-
-        for details in user_appointment:
-            appointment_list.append(details.to_dict())
-            count += 1
-
-        if count == 1:
-            return appointment_list[0]
-        else:
-            raise Http404("Conflict Appointment ID")
+        #"""
+        return self.db.collection("appointments").document(document_id).get().to_dict()
