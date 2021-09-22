@@ -8,20 +8,6 @@ from firebase_admin.exceptions import AlreadyExistsError
 
 from custom_class.encrypter import Encrypter
 
-working_hours = [
-    "1300",
-    "0800",
-    "0900",
-    "1000",
-    "1100",
-    "1200",
-    "0700",
-    "1400",
-    "1500",
-    "1600",
-    "1700",
-]
-
 account_types = ["admin", "barangay_worker", "resident"]
 
 document = [
