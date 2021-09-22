@@ -84,10 +84,10 @@ def firebase_timestamp_format(value, utc_offset: int = 0):
     time_split = time_utc_split[0].split(":")
     hour = time_split[0]
     minute = time_split[1]
-    # second = time_split[2]
+    second = time_split[2]
 
     convert_datetime = datetime.datetime.strptime(
-        f"{year}-{month}-{day} {hour}:{minute}:00",
+        f"{year}-{month}-{day} {hour}:{minute}:{second}",
         "%Y-%m-%d %H:%M:%S",
     )
 
