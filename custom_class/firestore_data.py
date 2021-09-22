@@ -125,5 +125,6 @@ class FirestoreData:
 
         Returns:
             : user appointment info
-        #"""
+        #
+        """
         return self.db.collection("appointments").document(document_id).get().to_dict()
