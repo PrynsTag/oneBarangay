@@ -2,13 +2,7 @@
 import datetime
 
 # Firebase
-from django.shortcuts import (
-    Http404,
-    HttpResponse,
-    HttpResponseRedirect,
-    render,
-    reverse,
-)
+from django.shortcuts import Http404, HttpResponse, HttpResponseRedirect, render, reverse
 
 from custom_class.dateformatter import DateFormatter
 from custom_class.dummy import Dummy
