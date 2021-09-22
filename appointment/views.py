@@ -17,7 +17,7 @@ from custom_class.firestore_data import FirestoreData
 
 from .forms import IdVerification
 
-search = FirestoreData()
+firestoreQuery = FirestoreData()
 
 
 def view_appointment(request, date):
@@ -46,7 +46,7 @@ def view_appointment(request, date):
 
     else:
         search_date = datetime.date(year=year, month=month, day=day)
-        count, appointment_list = search.day_appointments(
+        count, appointment_list = firestoreQuery.day_appointments(
             date=search_date, utc_offset=8
         )
 
@@ -87,19 +87,15 @@ def details_appointment(request, document_id):
       document_id: user appointment document ID
 
     Returns:
-      : Renders the html of appointment details
+      : renders the html of appointment details
     """
     form = IdVerification()
     encrypter = Encrypter(text=document_id).code_decoder()
 
     # Verification
-    split_documentid = encrypter.split("-")
-    get_date = split_documentid[0]
-    get_time = split_documentid[1]
-    year = int(get_date[:4])
-    month = int(get_date[4:6])
-    day = int(get_date[6:8])
-    time_int = int(get_time)
+    get_date, get_time, year, month, day, time_int = DateFormatter(
+        document_str=encrypter
+    ).document_splitter()
 
     try:
         datetime.date(year=year, month=month, day=day)
@@ -109,13 +105,31 @@ def details_appointment(request, document_id):
 
     else:
         if 0 < time_int < 2300:
-            search_appointment = FirestoreData()
-            appointment_detail = search_appointment.search_appointment(
-                document_id=encrypter
+            appointment_detail = firestoreQuery.search_appointment(
+                document_id=document_id
+            )
+
+            start_appointment_formatted = DateFormatter(
+                full_date=appointment_detail["start_appointment"]
+            ).firebaseTime_formatIt(utc_offset=8)
+
+            end_appointment_formatted = DateFormatter(
+                full_date=appointment_detail["end_appointment"]
+            ).firebaseTime_formatIt(utc_offset=8)
+
+            createdOn_appointment_formatted = DateFormatter(
+                full_date=appointment_detail["created_on"]
+            ).firebaseTime_formatIt(utc_offset=8)
+
+            print(f"Start appointment detail formatted: {start_appointment_formatted}")
+            print(f"End appointment detail formatted: {end_appointment_formatted}")
+            print(
+                f"Created On appointment detail formatted: {createdOn_appointment_formatted}"
             )
 
             if "user_verified" in request.session:
-                document_id = request.session["document_id"]
+
+                request.session["user_info"] = appointment_detail
 
                 id_encode = Encrypter(text=document_id).code_encoder()
 
@@ -226,7 +240,7 @@ def delete_account(request):
     Returns:
         : delete accounts in firebase authentication and firestore
     """
-    search.delete_account_auth()
+    firestoreQuery.delete_account_auth()
 
     return HttpResponse("Account Deleted")
 
