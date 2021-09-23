@@ -33,10 +33,9 @@ class RecognizeCustomFormsSampleAsync:
             # Make sure your form's type is included in the
             # list of form types the custom model can recognize
             form_url = (
-                "https://storage.googleapis.com/"
-                + os.getenv("GS_MEDIA_BUCKET_NAME")
-                + "/documents/"
-                + filename
+                f"https://storage.googleapis.com/"
+                f"{os.getenv('GS_MEDIA_BUCKET_NAME')}/"
+                f"{filename}"
             )
             poller = await form_recognizer_client.begin_recognize_custom_forms_from_url(
                 model_id=model_id, form_url=form_url, include_field_elements=True

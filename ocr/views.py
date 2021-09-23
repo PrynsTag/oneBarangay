@@ -1,13 +1,13 @@
 """Routing Request to Views of OCR Pages."""
 import asyncio
 
+from django.core.files.storage import default_storage
 from django.shortcuts import render
-from django.views.generic import FormView, ListView, TemplateView
+from django.views.generic import FormView, TemplateView
 from dotenv import load_dotenv
 
 from ocr.form_recognizer import form_recognizer_runner
 from ocr.forms import UploadForm
-from ocr.models import Upload
 
 load_dotenv()
 
@@ -35,8 +35,9 @@ class FileUploadView(FormView):
         files = request.FILES.getlist("upload_file")
 
         if form.is_valid():
-            for _ in files:
-                form.save()
+            for file in files:
+                default_storage.save(file.name, file)
+                print(default_storage.url(file.name))
 
             return render(
                 request,
@@ -47,18 +48,10 @@ class FileUploadView(FormView):
             form = UploadForm()
 
             return render(
-                request=request,
-                template_name="ocr/file_upload.html",
-                context={"form": form},
+                request,
+                "ocr/file_upload.html",
+                {"form": form},
             )
-
-
-class ScanFileView(ListView):
-    """View for ocr_files.html."""
-
-    model = Upload
-    template_name = "ocr/ocr_files.html"
-    context_object_name = "files"
 
 
 class ScanResultView(TemplateView):

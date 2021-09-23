@@ -12,11 +12,6 @@ jobs:
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
-    environment:
-      BROWSERSTACK_USERNAME: \"$BROWSERSTACK_USERNAME\"
-      BROWSERSTACK_ACCESS_KEY: \"$BROWSERSTACK_ACCESS_KEY\"
-      BROWSERSTACK_LOCAL: $BROWSERSTACK_LOCAL
-      BROWSERSTACK_LOCAL_IDENTIFIER: \"$BROWSERSTACK_LOCAL_IDENTIFIER\"
     parallelism: 4
     steps:
       - checkout
@@ -25,6 +20,8 @@ jobs:
       - run:
           name: Run Django Test
           command: |
+            base64 -di \<<< $CLOUD_STORAGE_KEY >> /tmp/key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=/tmp/key.json
             coverage run ./manage.py test -v 2 --parallel
             coverage run ./manage.py check --deploy
       - run:
@@ -49,25 +46,6 @@ jobs:
       - store_artifacts:
           path: test-results
           destination: tr1
-
-  build:
-    docker:
-      - image: cimg/python:3.9
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-    parallelism: 4
-    steps:
-      - checkout
-      - python/install-packages:
-          pkg-manager: pip
-      - run:
-          name: Make Migration
-          command: |
-            base64 -di \<<< $CLOUD_STORAGE_KEY >> /tmp/key.json
-            export GOOGLE_APPLICATION_CREDENTIALS=/tmp/key.json
-            ./manage.py makemigrations
-            ./manage.py migrate
 
   deploy-to-staging:
     docker:
@@ -99,8 +77,17 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Copy across app.yaml
+          command: |
+            ./app.yaml.sh > ./app.yaml
+      - run:
           name: Deploying to App Engine Production
-          command: gcloud app deploy app.yaml
+          command: |
+            echo $GCLOUD_AUTH_KEY | base64 -di | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+            gcloud --quiet config set account ${SERVICE_ACCOUNT}
+            gcloud app deploy app.yaml
 
 workflows:
   build-test-deploy:
@@ -120,22 +107,6 @@ workflows:
                 - master
                 - develop
                 - /feature\/.*/
-      - build:
-          name: App Engine Build
-          post-steps:
-            - jira/notify:
-                environment_type: testing
-                job_type: build
-          context:
-            - docker
-          requires:
-            - App Engine Test
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-                - /feature\/.*/
 
       - deploy-to-staging:
           name: App Engine Staging
@@ -147,7 +118,6 @@ workflows:
             - docker
           requires:
             - App Engine Test
-            - App Engine Build
           filters:
             branches:
               only:

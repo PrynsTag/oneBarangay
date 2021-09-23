@@ -30,8 +30,11 @@ LICENSE
 .circleci
 static
 templates
-!**/templates
 app.yaml.sh
-!manage.py
 local-process.yml
 .gitattributes
+#explicitly include
+!one_barangay/settings.py
+!manage.py
+!**/templates
+!.env

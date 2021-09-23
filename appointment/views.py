@@ -220,7 +220,7 @@ def add_appointment(request):
         : add account in firebase authentication and firestore
     """
     firestore_add_date = Dummy()
-    firestore_add_date.add_appointment_account(time_interval=15, utc_offset=8)
+    firestore_add_date.add_appointment_account(time_interval=15, utc_offset=8, day=21)
 
     return HttpResponseRedirect(reverse("services:index"))
 

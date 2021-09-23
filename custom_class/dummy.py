@@ -1,12 +1,18 @@
 """Custom class dummy."""
 import datetime
+import json
 from random import SystemRandom
 
+import firebase_admin
 from faker import Faker
-from firebase_admin import auth, firestore
+from firebase_admin import auth, credentials, firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
+from auth.service_account import get_service_from_b64
 from custom_class.encrypter import Encrypter
+
+cred = credentials.Certificate(get_service_from_b64())
+firestore_app = firebase_admin.initialize_app(cred, name="firestore_app")
 
 account_types = ["admin", "barangay_worker", "resident"]
 
@@ -27,7 +33,11 @@ class Dummy:
 
     def __init__(self):
         """Initialize firebase connection."""
-        self.db = firestore.client()
+        # self.db = firestore.client()
+        self.db = firestore.client(firestore_app)
+        self.doc_ref_rbi = self.db.collection("rbi").order_by(
+            "created_at", direction="DESCENDING"
+        )
 
     # Authentication Account and Firestore User Account
     def create_dummy_account(self, num_range: int, password: str):

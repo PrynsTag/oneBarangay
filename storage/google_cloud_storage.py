@@ -34,14 +34,16 @@ async def async_upload_to_bucket(
     """
     service_account_path = get_service_from_b64()
     async with aiohttp.ClientSession() as session:
-        storage = Storage(service_file=service_account_path, session=session)
+        gcs_storage = Storage(
+            service_file=service_account_path, session=session  # skipcq
+        )
         gcs_filename = filepath.split("/")[-1]
-        await storage.upload(
+        await gcs_storage.upload(
             target_bucket_name, f"{bucket_folder}/{gcs_filename}", file_obj
         )
         return f"https://storage.googleapis.com/\
-        {target_bucket_name}/{bucket_folder}/\
-        {urllib.parse.quote(gcs_filename)}"
+                {target_bucket_name}/{bucket_folder}/\
+                {urllib.parse.quote(gcs_filename)}"
 
 
 async def upload_to_gcs_runner(filepath: str):
