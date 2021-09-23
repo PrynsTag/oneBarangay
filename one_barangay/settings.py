@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "complaint",
     "ocr",
     "app",
+    "services",
     "django.contrib.sessions",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -167,6 +168,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "one_barangay", "static"),
     os.path.join(BASE_DIR, "ocr", "static"),
+    os.path.join(BASE_DIR, "services", "static"),
 ]
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 DEFAULT_FILE_STORAGE = "config.storage_backends.GoogleCloudMediaStorage"
