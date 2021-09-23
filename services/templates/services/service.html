@@ -2,21 +2,40 @@
 
 {% extends "layouts/base.html" %}
 
+{% load static %}
+
 {% block title %}
     Barangay Admin - Services
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{% static "services/services_card.css" %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
     <h1>Services</h1>
 
-    <ul>
-        <li>
-            <a href="{% url "appointment:view-appointment" current_date %}">Appointment</a>
-            <ul>
-                <li>Active Appointments: {{ active_appointments }}</li>
-            </ul>
-        </li>
-        {#        <li><a href="{% url "complaint:index" %}">Complaints</a></li>#}
-        {#        <li><a href="{% url "bulksched:index" %}">Bulk Schedule</a></li>#}
-    </ul>
+    <div class="col-md-10 ">
+        <div class="row ">
+            <div class="col-xl-3 col-lg-6">
+                <a href="{% url "appointment:view-appointment" current_date %}">
+                    <div class="card l-bg-blue-dark">
+                        <div class="card-statistic-3 p-4">
+                            <div class="card-icon card-icon-large"><i class="fas fa-users"></i></div>
+                            <div class="mb-4">
+                                <h5 class="card-title mb-0">Appointments</h5>
+                            </div>
+                            <div class="row align-items-center mb-2 d-flex">
+                                <div class="col-12">
+                                    <h2 class="d-flex align-items-center mb-0">
+                                        {{ active_appointments }}<span class="fs-6 ms-2">Active</span>
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
 {% endblock %}
