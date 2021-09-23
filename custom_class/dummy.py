@@ -1,6 +1,5 @@
 """Custom class dummy."""
 import datetime
-import json
 from random import SystemRandom
 
 import firebase_admin
