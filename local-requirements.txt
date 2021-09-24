@@ -11,7 +11,7 @@ django-storages==1.11.1
 Faker==8.13.2
 firebase-admin==5.0.2
 gcloud-aio-storage==6.1.1
-gcloud-rest-storage==6.1.1
+gcloud-rest-storage==6.2.0
 google-cloud-secret-manager==2.7.1
 google-cloud-storage==1.42.1
 google-cloud-vision==2.4.2
