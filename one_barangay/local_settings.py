@@ -39,13 +39,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1", os.getenv("APP_ENGINE_ALLOWED_HOST")]
 
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
 # Application definition
 
 INSTALLED_APPS = [
     "one_barangay",
     "app",
     "ocr",
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -54,6 +55,9 @@ INSTALLED_APPS = [
 ]
 
 PRODUCTION_ENABLED = DEBUG
+
+if PRODUCTION_ENABLED is True:
+    INSTALLED_APPS.append("django.contrib.admin")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -70,10 +74,35 @@ TEMPLATE_DIR = os.path.join(
     BASE_DIR, "one_barangay", "templates"  # ROOT dir for templates
 )
 
-CACHE = {
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+    },
+}
+
+CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-        "LOCATION": "127.0.0.1:8000",
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
     }
 }
 
@@ -146,16 +175,16 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "one_barangay", "static"),
     os.path.join(BASE_DIR, "ocr", "static"),
 ]
-STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-DEFAULT_FILE_STORAGE = "config.storage_backends.GoogleCloudMediaStorage"
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
 GS_STATIC_BUCKET_NAME = GS_PROJECT_ID
 GS_BUCKET_NAME = GS_PROJECT_ID
 
-STATIC_URL = "https://storage.googleapis.com/{}/".format(GS_STATIC_BUCKET_NAME)
-MEDIA_URL = "https://storage.googleapis.com/{}/".format(GS_MEDIA_BUCKET_NAME)
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
 
 GS_DEFAULT_ACL = "publicRead"
 

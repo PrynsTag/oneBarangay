@@ -3,23 +3,20 @@ import datetime
 from collections import OrderedDict
 from random import SystemRandom
 
-import firebase_admin
 from django.shortcuts import render
 from faker import Faker
-from firebase_admin import auth, credentials, firestore
+from firebase_admin import auth
 from firebase_admin.exceptions import AlreadyExistsError
+from google.cloud import firestore
+from google.oauth2 import credentials
 
 from auth.service_account import get_service_from_b64
 
-# Firebase
-
-# Globals
 fake = Faker()
 
-cred = credentials.Certificate(get_service_from_b64())
-default_app = firebase_admin.initialize_app(cred)
+cred = credentials.Credentials(get_service_from_b64())
 
-db = firestore.client(default_app)
+db = firestore.Client(credentials=cred)
 
 working_hours = [
     "1300",
