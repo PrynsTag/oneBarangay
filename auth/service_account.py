@@ -6,7 +6,9 @@ import logging
 import os
 import tempfile
 
+import firebase_admin
 from dotenv import load_dotenv
+from firebase_admin import credentials
 
 # Load .env file
 load_dotenv()
@@ -38,3 +40,9 @@ def get_service_from_b64(b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
         logging.error(f"Temp File not Created. {e}")
 
     return path
+
+
+def firestore_auth():
+    """Authenticate to cloud firestore."""
+    cred = credentials.Certificate(get_service_from_b64())
+    return firebase_admin.initialize_app(cred, name="firestore_app")
