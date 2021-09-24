@@ -91,6 +91,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
 ROOT_URLCONF = "one_barangay.urls"
 TEMPLATE_DIR = os.path.join(
     BASE_DIR, "one_barangay", "templates"
