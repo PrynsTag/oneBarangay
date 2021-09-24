@@ -79,7 +79,6 @@ PRODUCTION_ENABLED = DEBUG
 
 if PRODUCTION_ENABLED is True:
     INSTALLED_APPS.append("django.contrib.admin")
-    INSTALLED_APPS.append("django.contrib.sessions")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -185,7 +184,7 @@ GS_DEFAULT_ACL = "publicRead"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Sentry SDK`6789-=
+# Sentry SDK
 sentry_sdk.init(  # Proper Sentry Declaration pylint: disable=abstract-class-instantiated
     dsn="https://c8349ef8bcd74193a46472e19e629f47@o947343.ingest.sentry.io/5931305",
     integrations=[DjangoIntegration()],
