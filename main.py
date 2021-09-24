@@ -18,7 +18,7 @@ if __name__ == "__main__":
     if os.getenv("GAE_ENV", "").startswith("standard"):
         # production
         uvicorn.run(
-            app,
+            "main:app",
             port=os.getenv("PORT"),
             host="127.0.0.1",
             workers=1,
