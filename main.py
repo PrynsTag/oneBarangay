@@ -43,5 +43,5 @@ if __name__ == "__main__":
             reload=True,
             access_log=True,
             host="127.0.0.1",
-            workers=1,
+            workers=4,
         )
