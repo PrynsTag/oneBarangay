@@ -42,7 +42,7 @@ def get_service_from_b64(b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
     return path
 
 
-def firebase_connect():
-    """Connect to firebase firestore data."""
+def firestore_auth():
+    """Authenticate to cloud firestore."""
     cred = credentials.Certificate(get_service_from_b64())
-    firebase_admin.initialize_app(cred)
+    return firebase_admin.initialize_app(cred, name="firestore_app")
