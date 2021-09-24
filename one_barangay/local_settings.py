@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "one_barangay",
     "app",
     "ocr",
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -56,6 +55,9 @@ INSTALLED_APPS = [
 ]
 
 PRODUCTION_ENABLED = DEBUG
+
+if PRODUCTION_ENABLED is True:
+    INSTALLED_APPS.append("django.contrib.admin")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
