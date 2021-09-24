@@ -145,3 +145,7 @@ process.yml
 .circleci/local-config.yml
 test-results/
 manage.py
+
+media/
+
+static/
