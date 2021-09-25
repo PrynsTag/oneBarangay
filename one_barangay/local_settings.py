@@ -70,9 +70,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "one_barangay.urls"
-TEMPLATE_DIR = os.path.join(
-    BASE_DIR, "one_barangay", "templates"  # ROOT dir for templates
-)
+TEMPLATE_DIR = os.path.join(BASE_DIR, "one_barangay", "templates")  # ROOT dir for templates
 
 
 LOGGING = {
@@ -175,16 +173,25 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "one_barangay", "static"),
     os.path.join(BASE_DIR, "ocr", "static"),
 ]
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
 GS_STATIC_BUCKET_NAME = GS_PROJECT_ID
 GS_BUCKET_NAME = GS_PROJECT_ID
 
-STATIC_URL = "/static/"
-MEDIA_URL = "/media/"
+if os.getenv("RUNNER", None) == "main.py":
+    STATIC_URL = f"https://storage.googleapis.com/{GS_STATIC_BUCKET_NAME}/"
+    MEDIA_URL = f"https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/"
+    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    DEFAULT_FILE_STORAGE = "config.storage_backends.GoogleCloudMediaStorage"
+
+else:
+    STATIC_URL = "/static/"
+    MEDIA_URL = "/media/"
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
 
 GS_DEFAULT_ACL = "publicRead"
 
