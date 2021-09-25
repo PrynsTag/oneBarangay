@@ -7,7 +7,7 @@ django-coverage-plugin==2.0.0
 django-redis==5.0.0
 django-storages==1.11.1
 faker==8.13.2
-firebase-admin==5.0.2
+firebase-admin==5.0.3
 gcloud-aio-storage==6.1.1
 gcloud-rest-storage==6.2.0
 google-cloud-secret-manager==2.7.1
