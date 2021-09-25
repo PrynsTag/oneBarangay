@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from gcloud.aio.storage import Storage
 from google.cloud import storage
 
-from auth.service_account import get_service_from_b64
+from one_barangay.scripts.service_account import get_service_from_b64
 
 load_dotenv()
 
