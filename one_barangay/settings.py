@@ -24,11 +24,10 @@ from sentry_sdk.integrations.django import DjangoIntegration
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env_file = os.path.join(BASE_DIR, ".env")
+load_dotenv()
 
 # Decode credential to JSON
-decoded_bytes = base64.b64decode(
-    os.environ.setdefault("GOOGLE_STORAGE_CREDENTIALS", "")
-)
+decoded_bytes = base64.b64decode(os.environ.setdefault("GOOGLE_STORAGE_CREDENTIALS", ""))
 decoded_str = str(decoded_bytes, "utf-8")
 GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
     ast.literal_eval(decoded_str)
@@ -39,7 +38,7 @@ if os.path.isfile(env_file):
 
     load_dotenv(env_file)
 # ...
-elif os.environ.get("GOOGLE_PROJECT_ID", None):
+elif os.environ.get("GOOGLE_PROJECT_ID", None):  # noqa: SIM106
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_PROJECT_ID")
 
@@ -94,9 +93,7 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 ROOT_URLCONF = "one_barangay.urls"
-TEMPLATE_DIR = os.path.join(
-    BASE_DIR, "one_barangay", "templates"
-)  # ROOT dir for templates
+TEMPLATE_DIR = os.path.join(BASE_DIR, "one_barangay", "templates")  # ROOT dir for templates
 
 TEMPLATES = [
     {
@@ -175,8 +172,8 @@ GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
 GS_STATIC_BUCKET_NAME = os.getenv("GS_STATIC_BUCKET_NAME")
 GS_BUCKET_NAME = GS_PROJECT_ID
 
-STATIC_URL = "https://storage.googleapis.com/{}/".format(GS_STATIC_BUCKET_NAME)
-MEDIA_URL = "https://storage.googleapis.com/{}/".format(GS_MEDIA_BUCKET_NAME)
+STATIC_URL = f"https://storage.googleapis.com/{GS_STATIC_BUCKET_NAME}/"
+MEDIA_URL = f"https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/"
 
 GS_DEFAULT_ACL = "publicRead"
 # Default primary key field type
