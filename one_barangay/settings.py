@@ -165,7 +165,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "ocr", "static"),
 ]
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-DEFAULT_FILE_STORAGE = "config.storage_backends.GoogleCloudMediaStorage"
+DEFAULT_FILE_STORAGE = "one_barangay.scripts.storage_backends.GoogleCloudMediaStorage"
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")

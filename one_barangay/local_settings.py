@@ -184,7 +184,7 @@ if os.getenv("RUNNER", None) == "main.py":
     STATIC_URL = f"https://storage.googleapis.com/{GS_STATIC_BUCKET_NAME}/"
     MEDIA_URL = f"https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-    DEFAULT_FILE_STORAGE = "config.storage_backends.GoogleCloudMediaStorage"
+    DEFAULT_FILE_STORAGE = "one_barangay.scripts.storage_backends.GoogleCloudMediaStorage"
 
 else:
     STATIC_URL = "/static/"
