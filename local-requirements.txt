@@ -8,10 +8,13 @@ Django==3.2.7
 django-coverage-plugin==2.0.0
 django-redis==5.0.0
 django-storages==1.11.1
+django-stubs==1.9.0
+djangorestframework-stubs==1.4.0
 Faker==8.14.0
 firebase-admin==5.0.3
 gcloud-aio-storage==6.2.0
 gcloud-rest-storage==6.2.0
+google-api-python-client==2.22.0
 google-cloud-secret-manager==2.7.1
 google-cloud-storage==1.42.2
 google-cloud-vision==2.4.2
