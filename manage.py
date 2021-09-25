@@ -5,7 +5,7 @@ import sys
 
 from google.auth.exceptions import DefaultCredentialsError
 
-from auth.service_account import get_service_from_b64
+from one_barangay.scripts.service_account import get_service_from_b64
 
 
 def main():
