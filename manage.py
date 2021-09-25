@@ -11,6 +11,12 @@ from auth.service_account import get_service_from_b64
 def main():
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "one_barangay.settings")
+    os.environ["FIRESTORE_DATASET"] = "rbi"
+    os.environ["FIRESTORE_EMULATOR_HOST"] = "127.0.0.1:8080"
+    os.environ["FIRESTORE_EMULATOR_HOST_PATH"] = "127.0.0.1:8080/firestore"
+    os.environ["FIRESTORE_HOST"] = "http://127.0.0.1:8080"
+    os.environ["FIRESTORE_PROJECT_ID"] = "onebarangay-malanday"
+
     try:
         from django.core.management import (  # For Django pylint: disable=import-outside-toplevel
             execute_from_command_line,
