@@ -30,19 +30,19 @@ def get_service_from_b64(b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
         json_dictionary = ast.literal_eval(decoded_str)
 
         with os.fdopen(fd, mode="w+") as tmp:
-            logging.info(f"Temp file creating at {path}.")
+            logging.info("Temp file creating at %s.", path)
             json.dump(json_dictionary, tmp)
             tmp.flush()
 
-        logging.info(f"File created {path}.")
+        logging.info("File created %s.", path)
 
     except EOFError as e:
-        logging.error(f"Temp File not Created. {e}")
+        logging.error("Temp File not Created. %s", e)
 
     return path
 
 
-def firestore_auth():
+def firestore_auth(name="firestore_app"):
     """Authenticate to cloud firestore."""
     cred = credentials.Certificate(get_service_from_b64())
-    return firebase_admin.initialize_app(cred, name="firestore_app")
+    return firebase_admin.initialize_app(cred, name=name)
