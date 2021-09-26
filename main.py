@@ -30,4 +30,5 @@ if __name__ == "__main__":
             access_log=True,
             host="127.0.0.1",
             workers=4,
+            lifespan="off",
         )
