@@ -62,13 +62,15 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1", os.getenv("APP_ENGINE_ALLOWED_HOST")]
 
+SESSION_ENGINE = "django.contrib.sessions.backends.file"
+
+
 # Application definition
 
 INSTALLED_APPS = [
     "one_barangay",
     "app",
     "ocr",
-    "django.contrib.sessions",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.messages",
