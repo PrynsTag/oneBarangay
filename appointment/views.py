@@ -1,5 +1,6 @@
 """Create your Appointment views here."""
 import datetime
+import logging
 from collections import OrderedDict
 from random import SystemRandom
 
@@ -10,7 +11,9 @@ from firebase_admin.exceptions import AlreadyExistsError
 from google.cloud import firestore
 from google.oauth2 import credentials
 
-from auth.service_account import get_service_from_b64
+from one_barangay.scripts.service_account import get_service_from_b64
+
+logger = logging.getLogger(__name__)
 
 fake = Faker()
 
@@ -79,10 +82,10 @@ def view_appointment(request):
         if doc_result.exists:
             result_dict = doc_result.to_dict()
         else:
-            print("There is no result")
+            logger.error("There is no result")
 
     except AlreadyExistsError:
-        print("Account already exists.")
+        logger.exception("Account already exists.")
 
     if result_dict is not None:
         result_dict = OrderedDict(sorted(result_dict.items(), key=lambda x: x))
@@ -131,8 +134,8 @@ def create_dummy_account(num_range: int, password: str):
         try:
             auth.create_user(email=email, password=password)
 
-        except AlreadyExistsError:
-            print("Account already exist.")
+        except AlreadyExistsError as e:
+            logger.exception("Account already exist. %s", e)
 
         else:
             user = auth.get_user_by_email(email=email)
@@ -179,7 +182,7 @@ def create_dummy_appointment_with_account(password: str):
             auth.create_user(email=email, password=password)
 
         except AlreadyExistsError:
-            print("Account already exist.")
+            logger.exception("Account already exist.")
 
         else:
             user_uid = (auth.get_user_by_email(email=email)).uid
@@ -203,11 +206,7 @@ def create_dummy_appointment_with_account(password: str):
 
             data = {
                 (str(time) if a < 1000 else str(time)): {
-                    "appointment_id": "{date}{time}-{number}".format(
-                        date=str(date),
-                        time=str(time),
-                        number=time[:1],
-                    ),
+                    "appointment_id": f"{str(date)}{str(time)}-{time[:1]}",
                     "first_name": first_name,
                     "last_name": last_name,
                     "document": [document[crypto_gen.randrange(0, 3)]],
@@ -234,6 +233,6 @@ def delete_account_auth():
     if doc_ref_account_result.exists:
         result_dict = doc_ref_account_result.to_dict()
     else:
-        print("There is no result")
+        logger.error("There is no result")
 
     auth.delete_users(list(result_dict))
