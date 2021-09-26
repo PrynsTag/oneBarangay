@@ -5,7 +5,7 @@ env: standard
 instance_class: F1
 inbound_services:
   - warmup
-entrypoint: python main.py
+entrypoint: gunicorn main:app -w 1 -k uvicorn.workers.UvicornWorker
 
 handlers:
   - url: /favicon.ico
