@@ -1,23 +1,23 @@
-import getWindow from "./getWindow.js";
+import getWindow from './getWindow.js'
 
-function isElement(node) {
-  var OwnElement = getWindow(node).Element;
-  return node instanceof OwnElement || node instanceof Element;
+function isElement (node) {
+  const OwnElement = getWindow(node).Element
+  return node instanceof OwnElement || node instanceof Element
 }
 
-function isHTMLElement(node) {
-  var OwnElement = getWindow(node).HTMLElement;
-  return node instanceof OwnElement || node instanceof HTMLElement;
+function isHTMLElement (node) {
+  const OwnElement = getWindow(node).HTMLElement
+  return node instanceof OwnElement || node instanceof HTMLElement
 }
 
-function isShadowRoot(node) {
+function isShadowRoot (node) {
   // IE 11 has no ShadowRoot
   if (typeof ShadowRoot === 'undefined') {
-    return false;
+    return false
   }
 
-  var OwnElement = getWindow(node).ShadowRoot;
-  return node instanceof OwnElement || node instanceof ShadowRoot;
+  const OwnElement = getWindow(node).ShadowRoot
+  return node instanceof OwnElement || node instanceof ShadowRoot
 }
 
-export { isElement, isHTMLElement, isShadowRoot };
+export { isElement, isHTMLElement, isShadowRoot }

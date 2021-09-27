@@ -1,3 +1,3 @@
-export default function getNodeName(element) {
-  return element ? (element.nodeName || '').toLowerCase() : null;
+export default function getNodeName (element) {
+  return element ? (element.nodeName || '').toLowerCase() : null
 }

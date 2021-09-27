@@ -1,3 +1,3 @@
-export default function getVariation(placement) {
-  return placement.split('-')[1];
+export default function getVariation (placement) {
+  return placement.split('-')[1]
 }

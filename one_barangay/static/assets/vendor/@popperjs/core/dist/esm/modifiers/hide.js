@@ -1,12 +1,12 @@
-import { top, bottom, left, right } from "../enums.js";
-import detectOverflow from "../utils/detectOverflow.js";
+import { top, bottom, left, right } from '../enums.js'
+import detectOverflow from '../utils/detectOverflow.js'
 
-function getSideOffsets(overflow, rect, preventedOffsets) {
+function getSideOffsets (overflow, rect, preventedOffsets) {
   if (preventedOffsets === void 0) {
     preventedOffsets = {
       x: 0,
       y: 0
-    };
+    }
   }
 
   return {
@@ -14,43 +14,42 @@ function getSideOffsets(overflow, rect, preventedOffsets) {
     right: overflow.right - rect.width + preventedOffsets.x,
     bottom: overflow.bottom - rect.height + preventedOffsets.y,
     left: overflow.left - rect.width - preventedOffsets.x
-  };
+  }
 }
 
-function isAnySideFullyClipped(overflow) {
+function isAnySideFullyClipped (overflow) {
   return [top, right, bottom, left].some(function (side) {
-    return overflow[side] >= 0;
-  });
+    return overflow[side] >= 0
+  })
 }
 
-function hide(_ref) {
-  var state = _ref.state,
-      name = _ref.name;
-  var referenceRect = state.rects.reference;
-  var popperRect = state.rects.popper;
-  var preventedOffsets = state.modifiersData.preventOverflow;
-  var referenceOverflow = detectOverflow(state, {
+function hide (_ref) {
+  const state = _ref.state
+  const name = _ref.name
+  const referenceRect = state.rects.reference
+  const popperRect = state.rects.popper
+  const preventedOffsets = state.modifiersData.preventOverflow
+  const referenceOverflow = detectOverflow(state, {
     elementContext: 'reference'
-  });
-  var popperAltOverflow = detectOverflow(state, {
+  })
+  const popperAltOverflow = detectOverflow(state, {
     altBoundary: true
-  });
-  var referenceClippingOffsets = getSideOffsets(referenceOverflow, referenceRect);
-  var popperEscapeOffsets = getSideOffsets(popperAltOverflow, popperRect, preventedOffsets);
-  var isReferenceHidden = isAnySideFullyClipped(referenceClippingOffsets);
-  var hasPopperEscaped = isAnySideFullyClipped(popperEscapeOffsets);
+  })
+  const referenceClippingOffsets = getSideOffsets(referenceOverflow, referenceRect)
+  const popperEscapeOffsets = getSideOffsets(popperAltOverflow, popperRect, preventedOffsets)
+  const isReferenceHidden = isAnySideFullyClipped(referenceClippingOffsets)
+  const hasPopperEscaped = isAnySideFullyClipped(popperEscapeOffsets)
   state.modifiersData[name] = {
     referenceClippingOffsets: referenceClippingOffsets,
     popperEscapeOffsets: popperEscapeOffsets,
     isReferenceHidden: isReferenceHidden,
     hasPopperEscaped: hasPopperEscaped
-  };
+  }
   state.attributes.popper = Object.assign({}, state.attributes.popper, {
     'data-popper-reference-hidden': isReferenceHidden,
     'data-popper-escaped': hasPopperEscaped
-  });
+  })
 } // eslint-disable-next-line import/no-unused-modules
-
 
 export default {
   name: 'hide',
@@ -58,4 +57,4 @@ export default {
   phase: 'main',
   requiresIfExists: ['preventOverflow'],
   fn: hide
-};
+}

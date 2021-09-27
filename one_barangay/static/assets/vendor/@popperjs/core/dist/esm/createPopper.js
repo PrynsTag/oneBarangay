@@ -1,51 +1,51 @@
-import getCompositeRect from "./dom-utils/getCompositeRect.js";
-import getLayoutRect from "./dom-utils/getLayoutRect.js";
-import listScrollParents from "./dom-utils/listScrollParents.js";
-import getOffsetParent from "./dom-utils/getOffsetParent.js";
-import getComputedStyle from "./dom-utils/getComputedStyle.js";
-import orderModifiers from "./utils/orderModifiers.js";
-import debounce from "./utils/debounce.js";
-import validateModifiers from "./utils/validateModifiers.js";
-import uniqueBy from "./utils/uniqueBy.js";
-import getBasePlacement from "./utils/getBasePlacement.js";
-import mergeByName from "./utils/mergeByName.js";
-import detectOverflow from "./utils/detectOverflow.js";
-import { isElement } from "./dom-utils/instanceOf.js";
-import { auto } from "./enums.js";
-var INVALID_ELEMENT_ERROR = 'Popper: Invalid reference or popper argument provided. They must be either a DOM element or virtual element.';
-var INFINITE_LOOP_ERROR = 'Popper: An infinite loop in the modifiers cycle has been detected! The cycle has been interrupted to prevent a browser crash.';
-var DEFAULT_OPTIONS = {
+import getCompositeRect from './dom-utils/getCompositeRect.js'
+import getLayoutRect from './dom-utils/getLayoutRect.js'
+import listScrollParents from './dom-utils/listScrollParents.js'
+import getOffsetParent from './dom-utils/getOffsetParent.js'
+import getComputedStyle from './dom-utils/getComputedStyle.js'
+import orderModifiers from './utils/orderModifiers.js'
+import debounce from './utils/debounce.js'
+import validateModifiers from './utils/validateModifiers.js'
+import uniqueBy from './utils/uniqueBy.js'
+import getBasePlacement from './utils/getBasePlacement.js'
+import mergeByName from './utils/mergeByName.js'
+import detectOverflow from './utils/detectOverflow.js'
+import { isElement } from './dom-utils/instanceOf.js'
+import { auto } from './enums.js'
+const INVALID_ELEMENT_ERROR = 'Popper: Invalid reference or popper argument provided. They must be either a DOM element or virtual element.'
+const INFINITE_LOOP_ERROR = 'Popper: An infinite loop in the modifiers cycle has been detected! The cycle has been interrupted to prevent a browser crash.'
+const DEFAULT_OPTIONS = {
   placement: 'bottom',
   modifiers: [],
   strategy: 'absolute'
-};
+}
 
-function areValidElements() {
+function areValidElements () {
   for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-    args[_key] = arguments[_key];
+    args[_key] = arguments[_key]
   }
 
   return !args.some(function (element) {
-    return !(element && typeof element.getBoundingClientRect === 'function');
-  });
+    return !(element && typeof element.getBoundingClientRect === 'function')
+  })
 }
 
-export function popperGenerator(generatorOptions) {
+export function popperGenerator (generatorOptions) {
   if (generatorOptions === void 0) {
-    generatorOptions = {};
+    generatorOptions = {}
   }
 
-  var _generatorOptions = generatorOptions,
-      _generatorOptions$def = _generatorOptions.defaultModifiers,
-      defaultModifiers = _generatorOptions$def === void 0 ? [] : _generatorOptions$def,
-      _generatorOptions$def2 = _generatorOptions.defaultOptions,
-      defaultOptions = _generatorOptions$def2 === void 0 ? DEFAULT_OPTIONS : _generatorOptions$def2;
-  return function createPopper(reference, popper, options) {
+  const _generatorOptions = generatorOptions
+  const _generatorOptions$def = _generatorOptions.defaultModifiers
+  const defaultModifiers = _generatorOptions$def === void 0 ? [] : _generatorOptions$def
+  const _generatorOptions$def2 = _generatorOptions.defaultOptions
+  const defaultOptions = _generatorOptions$def2 === void 0 ? DEFAULT_OPTIONS : _generatorOptions$def2
+  return function createPopper (reference, popper, options) {
     if (options === void 0) {
-      options = defaultOptions;
+      options = defaultOptions
     }
 
-    var state = {
+    let state = {
       placement: 'bottom',
       orderedModifiers: [],
       options: Object.assign({}, DEFAULT_OPTIONS, defaultOptions),
@@ -56,128 +56,126 @@ export function popperGenerator(generatorOptions) {
       },
       attributes: {},
       styles: {}
-    };
-    var effectCleanupFns = [];
-    var isDestroyed = false;
+    }
+    let effectCleanupFns = []
+    let isDestroyed = false
     var instance = {
       state: state,
-      setOptions: function setOptions(options) {
-        cleanupModifierEffects();
-        state.options = Object.assign({}, defaultOptions, state.options, options);
+      setOptions: function setOptions (options) {
+        cleanupModifierEffects()
+        state.options = Object.assign({}, defaultOptions, state.options, options)
         state.scrollParents = {
           reference: isElement(reference) ? listScrollParents(reference) : reference.contextElement ? listScrollParents(reference.contextElement) : [],
           popper: listScrollParents(popper)
-        }; // Orders the modifiers based on their dependencies and `phase`
+        } // Orders the modifiers based on their dependencies and `phase`
         // properties
 
-        var orderedModifiers = orderModifiers(mergeByName([].concat(defaultModifiers, state.options.modifiers))); // Strip out disabled modifiers
+        const orderedModifiers = orderModifiers(mergeByName([].concat(defaultModifiers, state.options.modifiers))) // Strip out disabled modifiers
 
         state.orderedModifiers = orderedModifiers.filter(function (m) {
-          return m.enabled;
-        }); // Validate the provided modifiers so that the consumer will get warned
+          return m.enabled
+        }) // Validate the provided modifiers so that the consumer will get warned
         // if one of the modifiers is invalid for any reason
 
         if (false) {
-          var modifiers = uniqueBy([].concat(orderedModifiers, state.options.modifiers), function (_ref) {
-            var name = _ref.name;
-            return name;
-          });
-          validateModifiers(modifiers);
+          const modifiers = uniqueBy([].concat(orderedModifiers, state.options.modifiers), function (_ref) {
+            const name = _ref.name
+            return name
+          })
+          validateModifiers(modifiers)
 
           if (getBasePlacement(state.options.placement) === auto) {
-            var flipModifier = state.orderedModifiers.find(function (_ref2) {
-              var name = _ref2.name;
-              return name === 'flip';
-            });
+            const flipModifier = state.orderedModifiers.find(function (_ref2) {
+              const name = _ref2.name
+              return name === 'flip'
+            })
 
             if (!flipModifier) {
-              console.error(['Popper: "auto" placements require the "flip" modifier be', 'present and enabled to work.'].join(' '));
+              console.error(['Popper: "auto" placements require the "flip" modifier be', 'present and enabled to work.'].join(' '))
             }
           }
 
-          var _getComputedStyle = getComputedStyle(popper),
-              marginTop = _getComputedStyle.marginTop,
-              marginRight = _getComputedStyle.marginRight,
-              marginBottom = _getComputedStyle.marginBottom,
-              marginLeft = _getComputedStyle.marginLeft; // We no longer take into account `margins` on the popper, and it can
+          const _getComputedStyle = getComputedStyle(popper)
+          const marginTop = _getComputedStyle.marginTop
+          const marginRight = _getComputedStyle.marginRight
+          const marginBottom = _getComputedStyle.marginBottom
+          const marginLeft = _getComputedStyle.marginLeft // We no longer take into account `margins` on the popper, and it can
           // cause bugs with positioning, so we'll warn the consumer
 
-
           if ([marginTop, marginRight, marginBottom, marginLeft].some(function (margin) {
-            return parseFloat(margin);
+            return parseFloat(margin)
           })) {
-            console.warn(['Popper: CSS "margin" styles cannot be used to apply padding', 'between the popper and its reference element or boundary.', 'To replicate margin, use the `offset` modifier, as well as', 'the `padding` option in the `preventOverflow` and `flip`', 'modifiers.'].join(' '));
+            console.warn(['Popper: CSS "margin" styles cannot be used to apply padding', 'between the popper and its reference element or boundary.', 'To replicate margin, use the `offset` modifier, as well as', 'the `padding` option in the `preventOverflow` and `flip`', 'modifiers.'].join(' '))
           }
         }
 
-        runModifierEffects();
-        return instance.update();
+        runModifierEffects()
+        return instance.update()
       },
       // Sync update – it will always be executed, even if not necessary. This
       // is useful for low frequency updates where sync behavior simplifies the
       // logic.
       // For high frequency updates (e.g. `resize` and `scroll` events), always
       // prefer the async Popper#update method
-      forceUpdate: function forceUpdate() {
+      forceUpdate: function forceUpdate () {
         if (isDestroyed) {
-          return;
+          return
         }
 
-        var _state$elements = state.elements,
-            reference = _state$elements.reference,
-            popper = _state$elements.popper; // Don't proceed if `reference` or `popper` are not valid elements
+        const _state$elements = state.elements
+        const reference = _state$elements.reference
+        const popper = _state$elements.popper // Don't proceed if `reference` or `popper` are not valid elements
         // anymore
 
         if (!areValidElements(reference, popper)) {
           if (false) {
-            console.error(INVALID_ELEMENT_ERROR);
+            console.error(INVALID_ELEMENT_ERROR)
           }
 
-          return;
+          return
         } // Store the reference and popper rects to be read by modifiers
-
 
         state.rects = {
           reference: getCompositeRect(reference, getOffsetParent(popper), state.options.strategy === 'fixed'),
           popper: getLayoutRect(popper)
-        }; // Modifiers have the ability to reset the current update cycle. The
+        } // Modifiers have the ability to reset the current update cycle. The
         // most common use case for this is the `flip` modifier changing the
         // placement, which then needs to re-run all the modifiers, because the
         // logic was previously ran for the previous placement and is therefore
         // stale/incorrect
 
-        state.reset = false;
-        state.placement = state.options.placement; // On each update cycle, the `modifiersData` property for each modifier
+        state.reset = false
+        state.placement = state.options.placement // On each update cycle, the `modifiersData` property for each modifier
         // is filled with the initial data specified by the modifier. This means
         // it doesn't persist and is fresh on each update.
         // To ensure persistent data, use `${name}#persistent`
 
         state.orderedModifiers.forEach(function (modifier) {
-          return state.modifiersData[modifier.name] = Object.assign({}, modifier.data);
-        });
-        var __debug_loops__ = 0;
+          return state.modifiersData[modifier.name] = Object.assign({}, modifier.data)
+        })
+        let __debug_loops__ = 0
 
-        for (var index = 0; index < state.orderedModifiers.length; index++) {
+        for (let index = 0; index < state.orderedModifiers.length; index++) {
           if (false) {
-            __debug_loops__ += 1;
+            __debug_loops__ += 1
 
             if (__debug_loops__ > 100) {
-              console.error(INFINITE_LOOP_ERROR);
-              break;
+              console.error(INFINITE_LOOP_ERROR)
+              break
             }
           }
 
           if (state.reset === true) {
-            state.reset = false;
-            index = -1;
-            continue;
+            state.reset = false
+            index = -1
+            continue
           }
 
-          var _state$orderedModifie = state.orderedModifiers[index],
-              fn = _state$orderedModifie.fn,
-              _state$orderedModifie2 = _state$orderedModifie.options,
-              _options = _state$orderedModifie2 === void 0 ? {} : _state$orderedModifie2,
-              name = _state$orderedModifie.name;
+          const _state$orderedModifie = state.orderedModifiers[index]
+          const fn = _state$orderedModifie.fn
+          const _state$orderedModifie2 = _state$orderedModifie.options
+          const _options = _state$orderedModifie2 === void 0 ? {} : _state$orderedModifie2
+          const name = _state$orderedModifie.name
 
           if (typeof fn === 'function') {
             state = fn({
@@ -185,7 +183,7 @@ export function popperGenerator(generatorOptions) {
               options: _options,
               name: name,
               instance: instance
-            }) || state;
+            }) || state
           }
         }
       },
@@ -193,66 +191,66 @@ export function popperGenerator(generatorOptions) {
       // not necessary (debounced to run at most once-per-tick)
       update: debounce(function () {
         return new Promise(function (resolve) {
-          instance.forceUpdate();
-          resolve(state);
-        });
+          instance.forceUpdate()
+          resolve(state)
+        })
       }),
-      destroy: function destroy() {
-        cleanupModifierEffects();
-        isDestroyed = true;
+      destroy: function destroy () {
+        cleanupModifierEffects()
+        isDestroyed = true
       }
-    };
+    }
 
     if (!areValidElements(reference, popper)) {
       if (false) {
-        console.error(INVALID_ELEMENT_ERROR);
+        console.error(INVALID_ELEMENT_ERROR)
       }
 
-      return instance;
+      return instance
     }
 
     instance.setOptions(options).then(function (state) {
       if (!isDestroyed && options.onFirstUpdate) {
-        options.onFirstUpdate(state);
+        options.onFirstUpdate(state)
       }
-    }); // Modifiers have the ability to execute arbitrary code before the first
+    }) // Modifiers have the ability to execute arbitrary code before the first
     // update cycle runs. They will be executed in the same order as the update
     // cycle. This is useful when a modifier adds some persistent data that
     // other modifiers need to use, but the modifier is run after the dependent
     // one.
 
-    function runModifierEffects() {
+    function runModifierEffects () {
       state.orderedModifiers.forEach(function (_ref3) {
-        var name = _ref3.name,
-            _ref3$options = _ref3.options,
-            options = _ref3$options === void 0 ? {} : _ref3$options,
-            effect = _ref3.effect;
+        const name = _ref3.name
+        const _ref3$options = _ref3.options
+        const options = _ref3$options === void 0 ? {} : _ref3$options
+        const effect = _ref3.effect
 
         if (typeof effect === 'function') {
-          var cleanupFn = effect({
+          const cleanupFn = effect({
             state: state,
             name: name,
             instance: instance,
             options: options
-          });
+          })
 
-          var noopFn = function noopFn() {};
+          const noopFn = function noopFn () {}
 
-          effectCleanupFns.push(cleanupFn || noopFn);
+          effectCleanupFns.push(cleanupFn || noopFn)
         }
-      });
+      })
     }
 
-    function cleanupModifierEffects() {
+    function cleanupModifierEffects () {
       effectCleanupFns.forEach(function (fn) {
-        return fn();
-      });
-      effectCleanupFns = [];
+        return fn()
+      })
+      effectCleanupFns = []
     }
 
-    return instance;
-  };
+    return instance
+  }
 }
-export var createPopper = /*#__PURE__*/popperGenerator(); // eslint-disable-next-line import/no-unused-modules
+export var createPopper = /* #__PURE__ */popperGenerator() // eslint-disable-next-line import/no-unused-modules
 
-export { detectOverflow };
+export { detectOverflow }
