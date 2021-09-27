@@ -1,7 +1,11 @@
 """Custom class firestore_data."""
 import datetime
+import time
 
-from firebase_admin import firestore
+from firebase_admin import auth, firestore
+
+from custom_class.dateformatter import DateFormatter
+from custom_class.encrypter import Encrypter
 
 
 class FirestoreData:
@@ -20,11 +24,11 @@ class FirestoreData:
           lastname: str: user lastname
 
         Returns:
-          : resident information.
+          resident information.
         """
         user_list = []
 
-        user_collection = self.db.collection("users")
+        user_collection = self.db.collection("test_users")
         query = (
             user_collection.where("first_name", "==", firstname)
             .where("middle_name", "==", middlename)
@@ -34,7 +38,28 @@ class FirestoreData:
         for info in query:
             user_list.append(info.to_dict())
 
-        return user_list
+        if len(user_list) == 1:
+            return user_list
+        else:
+            f_name_result, results = self.query_list("first_name", firstname)
+
+            if results:
+                for info in f_name_result:
+                    user_list.append(info)
+
+            m_name_result, results = self.query_list("middle_name", middlename)
+
+            if results:
+                for info in m_name_result:
+                    user_list.append(info)
+
+            l_name_result, results = self.query_list("last_name", lastname)
+
+            if results:
+                for info in l_name_result:
+                    user_list.append(info)
+
+            return user_list
 
     def query_list(self, search_key: str, value: str):
         """Search user with specific key and value to compare.
@@ -62,7 +87,7 @@ class FirestoreData:
         """Delete all account."""
         account_ids = []
         appointment_ids = []
-        doc_ref_account = self.db.collection("users")
+        doc_ref_account = self.db.collection("test_users")
         doc_ref_appointment = self.db.collection("appointments")
 
         for result in doc_ref_account.stream():
@@ -75,13 +100,17 @@ class FirestoreData:
             for result in doc_ref_appointment_id:
                 appointment_ids.append(result.id)
 
-            # auth.delete_users(account_ids)
+            auth.delete_users(account_ids)
+
+            time.sleep(1)
 
         for id in account_ids:
             doc_ref_account.document(id).delete()
+            time.sleep(1)
 
         for id in appointment_ids:
             doc_ref_appointment.document(id).delete()
+            time.sleep(1)
 
     def search_verification(self):
         """Search account for verification."""
@@ -102,10 +131,9 @@ class FirestoreData:
           utc_offset: int:  (Default value = 0)
 
         Returns:
-          : get appointment list in firebase firestore
+          get appointment list in firebase firestore
         """
         count = 1
-        appointment_list = []
 
         year = int((str(date)).split(" ")[0].split("-")[0])
         month = int((str(date)).split(" ")[0].split("-")[1])
@@ -126,11 +154,13 @@ class FirestoreData:
 
         date_ref = (
             self.db.collection("appointments")
-            .where("start_appointment", ">", start_date_delta)
+            .where("start_appointment", ">=", start_date_delta)
             .where("start_appointment", "<=", end_date_delta)
             .order_by("start_appointment")
         )
         result = date_ref.get()
+
+        appointment_list = []
 
         for count, appointment in enumerate(result):
             count += 1
@@ -145,8 +175,7 @@ class FirestoreData:
           document_id: str: input user document id
 
         Returns:
-            : user appointment info
-        #
+          user appointment info
         """
         return self.db.collection("appointments").document(document_id).get().to_dict()
 
