@@ -102,6 +102,18 @@ class DateFormatter:
         if isinstance(self.full_date, datetime.datetime):
             return self.full_date.__str__()
 
+    def date_fb_convert_formatIt(self, date: datetime.datetime):
+        """Convert firebase DatetimeWithNanoseconds into python format date and time.
+
+        Args:
+          date: datetime.datetime: firebase date and time format (DatetimeWithNanoseconds)
+
+        Returns:
+            Converted date and time into string
+        """
+        if isinstance(self.full_date, datetime.datetime):
+            return self.full_date.__str__()
+
     def firebaseTime_formatIt(self, utc_offset: int = 0):
         """Convert firebase timestamp DatetimewithNanoseconds into python format date and time.
 
