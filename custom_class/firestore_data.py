@@ -1,8 +1,7 @@
 """Module for firestore operations."""
 import firebase_admin
-from firebase_admin import auth, credentials, firestore
-
 from auth.service_account import get_service_from_b64
+from firebase_admin import auth, credentials, firestore
 
 cred = credentials.Certificate(get_service_from_b64())
 default_app = firebase_admin.initialize_app(cred)
@@ -24,9 +23,7 @@ class FirestoreData:
         Returns: data of resident
         """
         user_collection = db.collection("users")
-        query = user_collection.where(
-            "resident", "in", ["1dy2QQQGjqYYwJAvHfbxYhr2vnI2"]
-        )
+        query = user_collection.where("resident", "in", ["1dy2QQQGjqYYwJAvHfbxYhr2vnI2"])
 
         return query
 
