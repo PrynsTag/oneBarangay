@@ -47,7 +47,7 @@ class Dummy:
           password: str: custom password
 
         Returns:
-          : add accounts in firebase authentication and firestore
+          add accounts in firebase authentication and firestore
         """
         for _ in range(0, num_range):
             first_name = fake.first_name()
@@ -108,7 +108,7 @@ class Dummy:
           utc_offset: int:  (Default value = None) offset for utc
 
         Returns:
-          : adds dummy accounts in firebase authentication and appointments in firebase firestore
+          adds dummy accounts in firebase authentication and appointments in firebase firestore
         """
         doc_ref_appointment = self.db.collection("appointments")
         month = month if 1 > month > 12 else datetime.datetime.now().month
@@ -237,7 +237,7 @@ class Dummy:
           minute: int: minute of document
 
         Returns:
-          : combined year, month, day, hour, and minute in document format
+          combined year, month, day, hour, and minute in document format
         """
         month = month if month >= 10 else f"0{month}"
         day = day if day >= 10 else f"0{day}"
