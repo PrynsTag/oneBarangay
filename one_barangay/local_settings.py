@@ -41,6 +41,7 @@ ALLOWED_HOSTS = ["127.0.0.1", os.getenv("APP_ENGINE_ALLOWED_HOST")]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
+DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
 
 # Application definition
 
@@ -97,9 +98,14 @@ LOGGING = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": [
+            "redis://127.0.0.1:6379/1",
+            "redis://127.0.0.1:6380/1",
+        ],
         "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CLIENT_CLASS": "django_redis.client.ShardClient",
+            "COMPRESSOR": "django_redis.compressors.lz4.Lz4Compressor",
+            "PARSER_CLASS": "redis.connection.HiredisParser",
         },
     }
 }
