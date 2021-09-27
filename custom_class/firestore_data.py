@@ -215,3 +215,17 @@ class FirestoreData:
             appointment_list.append(appointment.to_dict())
 
         return count, appointment_list
+
+    def search_document(self, document_id):
+        """Search appointment using document id.
+
+        Args:
+          document_id: document id of appointment
+
+        Returns:
+          appointment details using document id
+        """
+        appointment_ref = self.db.collection("appointments").document(document_id)
+        appointment = appointment_ref.get()
+
+        return appointment.to_dict()
