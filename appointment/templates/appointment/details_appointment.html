@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 {% extends "layouts/base.html" %}
+
 {% load poll_extras %}
 
 {% block title %}
@@ -10,21 +11,26 @@
 {% block content %}
     <h1>Appointment Details</h1>
 
+    <a href="{% url "appointment:appointment_resched" user_detail.document_id|base64_encode reschedule %}">Reschedule
+        Appointment</a>
+
     <ul>
         <li>Status: {{ user_detail.status }}</li>
-        <li>Name:</li>
-        <ul>
-            <li>First Name: {{ user_detail.first_name }}</li>
-            <li>Middle Name: {{ user_detail.middle_name }}</li>
-            <li>Last Name: {{ user_detail.last_name }}</li>
-        </ul>
+        <li>Name:
+            <ul>
+                <li>First Name: {{ user_detail.first_name }}</li>
+                <li>Middle Name: {{ user_detail.middle_name }}</li>
+                <li>Last Name: {{ user_detail.last_name }}</li>
+            </ul>
+        </li>
         <li>Account Type: {{ user_detail.account_type }}</li>
         <li>Contact Number: {{ user_detail.contact_no }}</li>
     </ul>
 
     <ul>
-        <li>Start Date: {{ user_detail.start_appointment|firebase_timestamp_format:8 }}</li>
-        <li>End Date: {{ user_detail.end_appointment|firebase_timestamp_format:8 }}</li>
+        <li>Appointment Date: {{ user_detail.start_appointment }}</li>
+        <li>Appointment Time: {{ user_detail.start_appointment|firebase_timestamp_format:8 }}
+            to {{ user_detail.end_appointment|firebase_timestamp_format:8 }}</li>
         <li>
             Document Type:
             <ul>
@@ -36,7 +42,7 @@
     </ul>
 
     <ul>
-        <li>Verification: {{ user_detail.appointment_image }}</li>
+        <li><img src="{{ user_detail.appointment_image }}" alt="ID Verification"></li>
     </ul>
 
     <form action="{% url "appointment:id_verification" user_detail.document_id|base64_encode %}" method="POST">
@@ -45,10 +51,52 @@
         <input type="submit" name="submit" value="Search">
     </form>
 
-    {% if user_verified %}
-        <h2>User was verified.</h2>
-        <a href="{% url "appointment:user_verified" document_id %}">Confirm</a>
-        <a href="{% url "appointment:view-appointment" back %}">Back</a>
+    {% if user_check %}
+        {% if user_verified %}
+            <h2>User was verified.</h2>
+
+            <table>
+                <tr>
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>Last Name</th>
+                </tr>
+                {% for user in user_list %}
+                    <tr>
+                        <td>{{ user.first_name }}</td>
+                        <td>{{ user.middle_name }}</td>
+                        <td>{{ user.last_name }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <a href="{% url "appointment:user_verified" document_id %}">Confirm</a>
+            <a href="{% url "appointment:view-appointment" back %}">Back</a>
+        {% else %}
+            <table>
+                <tr>
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>Last Name</th>
+                </tr>
+                {% for user in user_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url "appointment:id_verification_manual" user.user_uid %}">{{ user.first_name }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url "appointment:id_verification_manual" user.user_uid %}">{{ user.middle_name }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url "appointment:id_verification_manual" user.user_uid %}">{{ user.last_name }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <a href="javascript:void(0)">Confirm</a>
+            <a href="{% url "appointment:view-appointment" back %}">Back</a>
+        {% endif %}
     {% else %}
         <a href="javascript:void(0)">Confirm</a>
         <a href="{% url "appointment:view-appointment" back %}">Back</a>
