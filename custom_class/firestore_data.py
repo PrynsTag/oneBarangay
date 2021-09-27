@@ -437,3 +437,11 @@ class FirestoreData:
         )
 
         print("Settings for appointment is success")
+
+    def out_appointment_settings(self):
+        """Get admin appointment settings."""
+        settings_ref = (
+            self.db.collection("admin_settings").document("appointment").get()
+        )
+
+        return settings_ref.to_dict()
