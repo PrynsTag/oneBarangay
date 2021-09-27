@@ -44,10 +44,9 @@ class RecognizeCustomFormsSampleAsync:
             table = []
             header = {}
             for _, form in enumerate(forms):
-                count = 0
                 row = {}
-                for name, field in form.fields.items():
-                    if count >= 3:
+                for idx, (name, field) in enumerate(form.fields.items()):
+                    if idx >= 3:
                         for value in field.value:
                             for i, val in value.to_dict()["value"].items():
                                 data = val["value_data"]
@@ -106,7 +105,6 @@ class RecognizeCustomFormsSampleAsync:
                             "text": field.value,
                             "confidence": field.confidence,
                         }
-                    count += 1
             return header, table
 
 
