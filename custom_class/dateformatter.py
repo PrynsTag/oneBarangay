@@ -233,3 +233,24 @@ class DateFormatter:
             return minus_utc
         else:
             raise Http404("Invalid Operator")
+
+    # 20210926-0730
+    def documentid_to_datetime(self, document_id: str):
+        """Convert document id into date and time python format.
+
+        Args:
+          document_id: str: document id in firebase firestore appointment collection
+
+        Returns:
+            date and time
+        """
+        document_split = document_id.split("-")
+        year = int(document_split[0][:4])
+        month = int(document_split[0][-4:-2])
+        day = int(document_split[0][-2:])
+        hour = int(document_split[1][:2])
+        minute = int(document_split[1][2:])
+
+        return datetime.datetime(
+            year=year, month=month, day=day, hour=hour, minute=minute, second=0
+        )
