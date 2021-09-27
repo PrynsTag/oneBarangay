@@ -97,3 +97,16 @@ def firebase_timestamp_format(value, utc_offset: int = 0):
     result_utc = result_utc.strftime("%I:%M %p")
 
     return result_utc
+
+
+@register.filter("datetime_to_time")
+def datetime_to_time(value):
+    """Get time from date and time format.
+
+    Args:
+      value: datetime type
+
+    Returns:
+        time
+    """
+    return value.strftime("%I:%M %p")
