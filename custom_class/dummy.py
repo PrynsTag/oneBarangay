@@ -166,16 +166,22 @@ class Dummy:
                 image = fake.file_name(category="image", extension="jpeg")
                 try:
                     # Create Account in Firebase Authentication
-                    auth.create_user(email=email, password=password)
+                    # auth.create_user(email=email, password=password)
+                    pass
 
                 except AlreadyExistsError:
                     print("Account already exist.")
 
                 else:
                     # Get UID on created account in Firebase Authentication
-                    user_uid = auth.get_user_by_email(email=email).uid
+                    # user_uid = auth.get_user_by_email(email=email).uid
+                    user_uid = str(uuid.uuid4())
 
-                    doc_ref_account = self.db.collection("users").document(user_uid)
+                    print(f"User uid: {user_uid}")
+
+                    doc_ref_account = self.db.collection("test_users").document(
+                        user_uid
+                    )
 
                     # Adding user accounts in firestore
                     user_account_data = {
