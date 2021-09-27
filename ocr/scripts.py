@@ -1,4 +1,5 @@
 """Helper functions for OCR."""
+import copy
 import json
 import logging
 import math
@@ -15,6 +16,7 @@ class Script:
     def format_firestore_data(self, family_document_list):
         """Format RBI firestore data.
 
+        Query all the data from firestore and format for json writing.
         Args:
           family_document_list: A list of family in each document
 
@@ -22,16 +24,19 @@ class Script:
           The formatted data in dictionary.
         """
         # Split family_members and house_data
+
+        copy_family_document_list = copy.deepcopy(family_document_list)
+
         family_member_list = [
-            copy.pop("family_members")
-            for copy in family_document_list
-            if copy.get("family_members", None)
+            family_copy.pop("family_members")
+            for family_copy in copy_family_document_list
+            if family_copy.get("family_members", None)
         ]
 
         # Join house_data to each family_member
         family_member_rows = [
             house_data | family_member
-            for house_data, family in zip(family_document_list, family_member_list)
+            for house_data, family in zip(copy_family_document_list, family_member_list)
             for name, family_member in family.items()
         ]
 
@@ -56,7 +61,7 @@ class Script:
         with open(f"{filename}.json", "w", encoding="UTF-8") as file:
             json.dump(data, file)
 
-    def append_to_json(self, new_data, filename="rbi"):
+    def append_to_json(self, new_data, filename="data1"):
         """Write data to json file.
 
         Args:
