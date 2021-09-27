@@ -253,3 +253,161 @@ class FirestoreData:
         elif get_appointment["status"] == "get":
             appointment_ref.update({"status": "completed"})
             return True
+
+    def resched_appointment(
+        self,
+        year: int,
+        month: int,
+        day: int,
+        hour: int,
+        minute: int,
+        second: int,
+        document_id: str,
+        utc_offset: int,
+        datetime: datetime,
+        query_list: list,
+    ):
+        """Reschedule appointment.
+
+        Args:
+          year: int: year of appointment
+          month: int: month of appointment
+          day: int: day of appointment
+          hour: int: hour of appointment
+          minute: int: minute of appointment
+          second: int: second of appointment
+          document_id: str: document id of appointment in firebase firestore
+          utc_offset: int: specify timezone
+          datetime: datetime: package datetime
+          query_list: list: list down keys for firebase firestore in appointment collection
+
+        Returns:
+          'list of appointments with specific time and date'
+        """
+        start_day = DateFormatter().datetime_timedelta_hours(
+            year=year,
+            month=month,
+            day=day,
+            hour=hour,
+            minute=minute,
+            second=second,
+            utc_offset=utc_offset,
+            operator="-",
+        )
+
+        start_day = start_day - datetime.timedelta(days=1)
+
+        end_day = DateFormatter().datetime_timedelta_hours(
+            year=year,
+            month=month,
+            day=day,
+            hour=hour,
+            minute=minute,
+            second=second,
+            utc_offset=utc_offset,
+            operator="-",
+        )
+
+        appointment_ref = self.db.collection("appointments")
+        query_appointment = (
+            appointment_ref.where("start_appointment", ">", start_day)
+            .where("start_appointment", "<=", end_day)
+            .order_by("start_appointment", direction=firestore.Query.ASCENDING)
+        )
+
+        results = query_appointment.stream()
+
+        appointment_list = []
+
+        for appointment in results:
+            data_appointment = appointment.to_dict()
+
+            print(f"Data Appointment: {data_appointment}")
+
+            appointment_info = DateFormatter().datetime_firestore_utc(
+                query_key=query_list,
+                data_dict=data_appointment,
+                utc_offset=utc_offset,
+            )
+
+            data_appointment = appointment_info
+            appointment_list.append(appointment_info)
+
+        admin_ref = self.db.collection("admin_settings")
+        query_admin = admin_ref.document("appointment").get()
+        query_admin_result = query_admin.to_dict()
+        admin_start_appointment = query_admin_result[
+            "start_appointment"
+        ] + datetime.timedelta(hours=utc_offset)
+        admin_end_appointment = query_admin_result[
+            "end_appointment"
+        ] + datetime.timedelta(hours=utc_offset)
+
+        start_datetime = datetime.datetime(
+            year=year,
+            month=month,
+            day=day,
+            hour=admin_start_appointment.hour,
+            minute=query_admin_result["start_appointment"].minute,
+            second=query_admin_result["start_appointment"].second,
+        )
+
+        end_datetime = datetime.datetime(
+            year=year,
+            month=month,
+            day=day,
+            hour=admin_end_appointment.hour,
+            minute=query_admin_result["end_appointment"].minute,
+            second=query_admin_result["end_appointment"].second,
+        )
+
+        datetime_list = []
+
+        while start_datetime < end_datetime:
+            datetime_list.append(start_datetime)
+            start_datetime = start_datetime + datetime.timedelta(
+                minutes=query_admin_result["time_interval"]
+            )
+
+        check_available = []
+
+        # Adding available status on appointment list
+        for datetime_info in datetime_list:
+            exist = False
+            for appointment in appointment_list:
+                if datetime_info == appointment["start_appointment"]:
+                    appointment["available"] = False
+                    check_available.append(appointment)
+                    exist = True
+                    break
+
+            if exist:
+                continue
+            else:
+                check_available.append(
+                    {
+                        "available": True,
+                        "start_appointment": datetime_info,
+                        "end_appointment": datetime_info
+                        + datetime.timedelta(minutes=15),
+                    }
+                )
+
+        # For Current Appointment
+        encrypt = Encrypter(text=document_id).code_encoder()
+        current_user = DateFormatter().datetime_firestore_utc(
+            query_key=query_list,
+            data_dict=self.search_document(document_id=encrypt),
+            utc_offset=8,
+        )
+
+        check_current = []
+
+        for check_info in check_available:
+            if check_info["start_appointment"] == current_user["start_appointment"]:
+                check_info["current_user"] = True
+                check_current.append(check_info)
+            else:
+                check_current.append(check_info)
+
+        return check_current
