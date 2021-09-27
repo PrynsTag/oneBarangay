@@ -171,3 +171,47 @@ class FirestoreData:
 
         if len(user_list) == 1:
             return user_list[0]
+
+    def search_appointment_day(
+        self, year: int, month: int, day: int, utc_offset: int = 0
+    ):
+        """Search appointment using date.
+
+        Args:
+          year: int: year of appointment
+          month: int: month of appointment
+          day: int: day of appointment
+          utc_offset: int:  (Default value = 0)
+        Returns:
+          list of appointments in specific date.
+        """
+        count = 1
+
+        start_date = datetime.datetime.strptime(
+            f"{year}-{month}-{day - 1} {23}:{11}:{59}",
+            "%Y-%m-%d %H:%M:%S",
+        )
+
+        start_date_delta = start_date - datetime.timedelta(hours=utc_offset)
+
+        end_date = datetime.datetime.strptime(
+            f"{year}-{month}-{day} {23}:{11}:{59}", "%Y-%m-%d %H:%M:%S"
+        )
+
+        end_date_delta = end_date - datetime.timedelta(hours=utc_offset)
+
+        date_ref = (
+            self.db.collection("appointments")
+            .where("start_appointment", ">", start_date_delta)
+            .where("start_appointment", "<=", end_date_delta)
+            .order_by("start_appointment")
+        )
+        result = date_ref.get()
+
+        appointment_list = []
+
+        for count, appointment in enumerate(result):
+            count += 1
+            appointment_list.append(appointment.to_dict())
+
+        return count, appointment_list
