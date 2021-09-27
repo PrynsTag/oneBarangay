@@ -148,4 +148,5 @@ manage.py
 
 media/
 
-static/
+/static/
+!**/static/**
