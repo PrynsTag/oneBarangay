@@ -2,6 +2,8 @@
 import datetime
 import math
 
+from django.http import Http404
+
 
 class DateFormatter:
     """Split full date into date, time, and date & time."""
@@ -38,7 +40,7 @@ class DateFormatter:
           utc_offset: int:  (Default value = 0)
 
         Returns:
-            : date and time with added custom UTC
+            date and time with added custom UTC
         """
         datetime_split = str(self.full_date).split(" ")
         date_split = datetime_split[0].split("-")
@@ -77,7 +79,7 @@ class DateFormatter:
           utc_offset: int:  (Default value = 0)
 
         Returns:
-            : formatted date and time with added custom UTC
+          formatted date and time with added custom UTC
         """
         datetime_split = str(self.datetime_str).split(" ")
         date_split = datetime_split[0].split("-")
@@ -118,27 +120,27 @@ class DateFormatter:
         """Convert firebase timestamp DatetimewithNanoseconds into python format date and time.
 
         Args:
-          utc_offset: custom UTC
+          utc_offset: int:  (Default value = 0)
 
         Returns:
-            : python format date and time with custom UTC
+          python format date and time with custom UTC
         """
         appointment_converted = self.date_fb_convert()
         appointment_offset = self.firebase_utcOffset(
             date=appointment_converted, utc_offset=utc_offset
         )
 
-        return appointment_offset
+        return self.date_fb_convert_formatIt(date=appointment_offset)
 
     def firebase_utcOffset(self, date: str, utc_offset: int = 0):
         """Convert string and add UTC.
 
         Args:
-          date: str:
+          date: str: string type date
           utc_offset: int:  (Default value = 0)
 
         Returns:
-            : Full date and time with added custom UTC
+          Full date and time with added custom UTC
         """
         datetime_split = date.split(" ")
         date_split = datetime_split[0].split("-")
