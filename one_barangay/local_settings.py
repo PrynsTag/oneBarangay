@@ -43,8 +43,9 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
 
-# Application definition
+MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 
+# Application definition
 INSTALLED_APPS = [
     "one_barangay",
     "app",
@@ -186,7 +187,7 @@ GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
 GS_STATIC_BUCKET_NAME = GS_PROJECT_ID
 GS_BUCKET_NAME = GS_PROJECT_ID
 
-if os.getenv("RUNNER", None) == "main.py":
+if os.getenv("RUNNER", "") == "main.py":
     STATIC_URL = f"https://storage.googleapis.com/{GS_STATIC_BUCKET_NAME}/"
     MEDIA_URL = f"https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
