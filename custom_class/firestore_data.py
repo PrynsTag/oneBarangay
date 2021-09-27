@@ -411,3 +411,29 @@ class FirestoreData:
                 check_current.append(check_info)
 
         return check_current
+
+    def set_appointment_settings(
+        self,
+        start_appointment: datetime,
+        end_appointment: datetime,
+        time_interval: int = 15,
+    ):
+        """Set start, end and time interval of residents' appointments.
+
+        Args:
+          start_appointment: datetime:
+          end_appointment: datetime:
+          time_interval: int:  (Default value = 15)
+
+        Returns:
+            change appointment settings for admin.
+        """
+        self.db.collection("admin_settings").document("appointment").set(
+            {
+                "start_appointment": 7,
+                "end_appointment": 17,
+                "time_interval": 15,
+            }
+        )
+
+        print("Settings for appointment is success")
