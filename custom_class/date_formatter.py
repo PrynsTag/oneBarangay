@@ -18,4 +18,7 @@ class Date_Formatter:
         full_date = self.full_date
         formatted_date = self.formatted_date
         formatted_time = self.formatted_time
-        return f"Unformatted date: {full_date} Formatted date: {formatted_date} Formatted Time: {formatted_time}"
+        return (
+            f"Unformatted date: {full_date} Formatted date: "
+            f"{formatted_date} Formatted Time: {formatted_time}"
+        )
