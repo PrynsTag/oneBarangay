@@ -2,11 +2,10 @@
 import datetime
 from random import SystemRandom
 
+from auth.service_account import firebase_authentication
 from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
-
-from auth.service_account import firebase_authentication
 
 working_hours = [
     "1300",
@@ -135,9 +134,7 @@ class Dummy:
 
                 data = {
                     (str(time) if a < 1000 else str(time)): {
-                        "appointment_id": "{date}_{time}".format(
-                            date=str(date), time=str(time)
-                        ),
+                        "appointment_id": f"{str(date)}_{str(time)}",
                         "first_name": first_name,
                         "last_name": last_name,
                         "document": [document[crypto_gen.randrange(0, 3)]],
