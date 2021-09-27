@@ -17,7 +17,7 @@
                     <div class="col-lg-3 col-md-4 col-sm-12">
                         <div class="card">
                             <div class="file">
-                                <a href="{% url "scan_result" filename=file %}">
+                                <a href="{% url "scan_result" filename=file.name %}">
                                     <div class="hover">
                                         <button
                                             type="button"
@@ -28,15 +28,6 @@
                                         >
                                             <i class="fas fa-qrcode" aria-hidden="true"></i>
                                         </button>
-                                        <button
-                                            type="button"
-                                            class="btn btn-icon btn-danger"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            title="Delete File"
-                                        >
-                                            <i class="fas fa-trash"></i>
-                                        </button>
                                     </div>
                                     <div class="icon">
                                         <i class="fas fa-file-pdf"></i>
@@ -44,7 +35,7 @@
                                     <div class="file-name">
                                         <p class="m-b-5 text-muted">{{ file.name }}</p>
                                         <small>{{ file.size }}
-                                            <span class="date text-muted">Nov. 2 2017</span>
+                                            <span class="date text-muted">{{ file.last_modified }}</span>
                                         </small>
                                     </div>
                                 </a>
@@ -56,3 +47,27 @@
         </div>
     </div>
 {% endblock content %}
+{% block scripts %}
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    Swal.fire({
+                        icon: "success",
+                        title: "{{ message }}",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    Swal.fire({
+                        icon: "fail",
+                        title: "{{ message }}",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock %}
