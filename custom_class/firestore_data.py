@@ -229,3 +229,27 @@ class FirestoreData:
         appointment = appointment_ref.get()
 
         return appointment.to_dict()
+
+    def update_appointment_status(self, document_id):
+        """Change appointment/document status.
+
+        Args:
+          document_id: document id of appointment
+
+        Returns:
+          Change firebase firestore document status
+        """
+        appointment_ref = self.db.collection("appointments").document(document_id)
+        get_appointment = appointment_ref.get().to_dict()
+
+        if get_appointment["status"] == "request":
+            appointment_ref.update({"status": "process"})
+            return True
+
+        elif get_appointment["status"] == "process":
+            appointment_ref.update({"status": "get"})
+            return True
+
+        elif get_appointment["status"] == "get":
+            appointment_ref.update({"status": "completed"})
+            return True
