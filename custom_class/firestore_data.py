@@ -149,3 +149,25 @@ class FirestoreData:
         #
         """
         return self.db.collection("appointments").document(document_id).get().to_dict()
+
+    def search_appointment_userId(self, user_uid: str):
+        """Search appointemnt using user uid.
+
+        Args:
+          user_uid: str: input user's uid
+        Returns:
+          : appointment details of user
+        """
+        appointment_ref = (
+            self.db.collection("appointments")
+            .where("user_uid", "==", user_uid)
+            .stream()
+        )
+
+        user_list = []
+
+        for user in appointment_ref:
+            user_list.append(user.to_dict())
+
+        if len(user_list) == 1:
+            return user_list[0]
