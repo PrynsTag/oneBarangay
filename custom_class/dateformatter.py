@@ -157,3 +157,40 @@ class DateFormatter:
         result_utc = strp_datetime + datetime.timedelta(hours=utc_offset)
 
         return result_utc
+
+    def datetime_firestore_utc(
+        self, query_key: list, data_dict: dict, utc_offset: int = 0
+    ):
+        """Convert firebase firestore DatetimeWithNanoseconds into python format.
+
+        Args:
+          query_key: list: list of firebase keys
+          data_dict: dict: data from firebase firestore
+          utc_offset: int:  (Default value = 0)
+
+        Returns:
+            appointment details with python date and time format.
+        """
+        for key in query_key:
+            start_data = data_dict[key]
+            year, month, day, hour, minute, second = (
+                start_data.year,
+                start_data.month,
+                start_data.day,
+                start_data.hour,
+                start_data.minute,
+                start_data.second,
+            )
+            full_date = (
+                datetime.datetime(
+                    year=year,
+                    month=month,
+                    day=day,
+                    hour=hour,
+                    minute=minute,
+                    second=second,
+                )
+            ) + datetime.timedelta(hours=utc_offset)
+            data_dict[key] = full_date
+
+        return data_dict
