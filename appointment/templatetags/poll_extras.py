@@ -15,7 +15,7 @@ def base64_encode(value):
       value: Any string or texts
 
     Returns:
-        : base64 string
+      base64 string
     """
     value_bytes = value.encode("ascii")
     base64_bytes = base64.urlsafe_b64encode(value_bytes)
@@ -31,7 +31,7 @@ def date_formatter(value):
       value: Input date with underscore YYYY_MM_DD ("2021_09_08")
 
     Returns:
-        : Standard date ("April 18, 2021")
+      Standard date ("April 18, 2021")
     """
     split_date = value.split("_")
     date = datetime.datetime(int(split_date[0]), int(split_date[1]), int(split_date[2]))
@@ -47,7 +47,7 @@ def military_to_standard_time(value):
       value: str: Input military time (ex. "0100", "0200", "0300")
 
     Returns:
-        : standard time ("07:00 am")
+      standard time ("07:00 am")
     """
     hour_mod = int(value[:-2]) % 12
     hour_two_dig = int(value[:-2])
@@ -71,9 +71,10 @@ def firebase_timestamp_format(value, utc_offset: int = 0):
     Args:
       value: firebase date and time format
       utc_offset: int:  (Default value = 0)
+      utc_offset: int:  (Default value = 0)
 
     Returns:
-        : python format timestamp
+      python format timestamp
     """
     utc_split = str(value).split(" ")
     date_split = utc_split[0].split("-")
