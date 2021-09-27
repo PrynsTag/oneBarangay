@@ -67,6 +67,18 @@
                     <span class="sidebar-text">Dashboard</span>
                 </a>
             </li>
+            <li class="nav-item {% if 'dashboard' in segment %} active {% endif %}">
+                <a href="{% url "services:index" %}" class="nav-link">
+                    <span class="sidebar-icon">
+                        <svg id="bold" class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 40 40"
+                            xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                            <path d="M30.0003 9.99967H26.667C26.667 6.31634 23.6837 3.33301 20.0003 3.33301C16.317 3.33301 13.3337 6.31634 13.3337 9.99967H10.0003C8.16699 9.99967 6.66699 11.4997 6.66699 13.333V33.333C6.66699 35.1663 8.16699 36.6663 10.0003 36.6663H30.0003C31.8337 36.6663 33.3337 35.1663 33.3337 33.333V13.333C33.3337 11.4997 31.8337 9.99967 30.0003 9.99967ZM16.667 16.6663C16.667 17.583 15.917 18.333 15.0003 18.333C14.0837 18.333 13.3337 17.583 13.3337 16.6663V13.333H16.667V16.6663ZM20.0003 6.66634C21.8337 6.66634 23.3337 8.16634 23.3337 9.99967H16.667C16.667 8.16634 18.167 6.66634 20.0003 6.66634ZM26.667 16.6663C26.667 17.583 25.917 18.333 25.0003 18.333C24.0837 18.333 23.3337 17.583 23.3337 16.6663V13.333H26.667V16.6663Z"></path>
+                        </svg>
+                    </span>
+
+                    <span class="sidebar-text">Services</span>
+                </a>
+            </li>
             <li class="nav-item {% if 'ocr_files' in segment %} active {% endif %}">
                 <a href="/barangay-admin/ocr/upload" class="nav-link">
                     <span class="sidebar-icon">
@@ -87,10 +99,11 @@
                 <a href="/transactions.html" class="nav-link">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path><path
-                                fill-rule="evenodd"
-                                d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
-                                clip-rule="evenodd"></path></svg>
+                            xmlns="http://www.w3.org/2000/svg"><path
+                                d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path><path
+                                    fill-rule="evenodd"
+                                    d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                                    clip-rule="evenodd"></path></svg>
                     </span>
                     <span class="sidebar-text">Transactions</span>
                 </a>
