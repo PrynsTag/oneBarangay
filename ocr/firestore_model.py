@@ -86,3 +86,16 @@ class FirestoreModel:
         dummy_data = self.dummy.create_rbi()
         doc_ref_house_num = self.doc_ref_rbi.document(dummy_data["house_num"])
         doc_ref_house_num.set(dummy_data, merge=True)
+
+    def store_rbi(self, house_num, data):
+        """Store RBI document in firestore.
+
+        Args:
+          house_num: The house number of the RBI document.
+          data: The data to be stored.
+
+        Returns:
+          None.
+        """
+        doc_ref_house_num = self.doc_ref_rbi.document(house_num)
+        doc_ref_house_num.set(data, merge=True)
