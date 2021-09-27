@@ -194,3 +194,42 @@ class DateFormatter:
             data_dict[key] = full_date
 
         return data_dict
+
+    def datetime_timedelta_hours(
+        self,
+        year: int,
+        month: int,
+        day: int,
+        hour: int,
+        minute: int,
+        second: int,
+        utc_offset: int,
+        operator: str,
+    ):
+        """Date and time with custom timezone.
+
+        Args:
+          year: int: year of appointment
+          month: int: month of appointment
+          day: int: day of appointment
+          hour: int: hour of appointment
+          minute: int: minute of appointment
+          second: int: second of appointment
+          utc_offset: int: specify utc
+          operator: str: (+ or -) date add/subtract using timedelta
+
+        Returns:
+            datetime with custom timezone
+        """
+        set_datetime = datetime.datetime(
+            year=year, month=month, day=day, hour=hour, minute=minute, second=second
+        )
+
+        if operator == "+":
+            add_utc = set_datetime + datetime.timedelta(hours=utc_offset)
+            return add_utc
+        elif operator == "-":
+            minus_utc = set_datetime - datetime.timedelta(hours=utc_offset)
+            return minus_utc
+        else:
+            raise Http404("Invalid Operator")
