@@ -36,6 +36,28 @@ class FirestoreData:
 
         return user_list
 
+    def query_list(self, search_key: str, value: str):
+        """Search user with specific key and value to compare.
+
+        Args:
+          search_key: str: key dictionary in firebase firestore data
+          value: str: value to be search
+
+        Returns:
+          results searched in firebase firestore user collection
+        """
+        user_list = []
+        user_collection = self.db.collection("test_users")
+        query = user_collection.where(search_key, "==", value).stream()
+
+        for info in query:
+            user_list.append(info.to_dict())
+
+        if len(user_list) != 0:
+            return user_list, True
+        else:
+            return None, False
+
     def delete_account_auth(self):
         """Delete all account."""
         account_ids = []
