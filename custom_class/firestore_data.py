@@ -1,7 +1,9 @@
 """Module for firestore operations."""
 import firebase_admin
-from auth.service_account import get_service_from_b64
 from firebase_admin import auth, credentials, firestore
+
+from one_barangay.scripts.service_account import firestore_auth
+
 """Custom class firestore_data."""
 import datetime
 import time
@@ -11,13 +13,15 @@ from firebase_admin import auth, firestore
 from custom_class.dateformatter import DateFormatter
 from custom_class.encrypter import Encrypter
 
+auth = firestore_auth(name="appointment_app")
+
 
 class FirestoreData:
     """Manage firestore data."""
 
     def __init__(self):
         """Initialize firebase connection."""
-        self.db = firestore.client()
+        self.db = firestore.client(auth)
 
     def verify_identification(self, firstname: str, middlename: str, lastname: str):
         """For verification of identification.
@@ -123,9 +127,7 @@ class FirestoreData:
         for res in user_ref:
             print(res.to_dict())
 
-    def day_appointments(
-        self, date: datetime.date = datetime.date.today(), utc_offset: int = 0
-    ):
+    def day_appointments(self, date: datetime.date = datetime.date.today(), utc_offset: int = 0):
         """Get appointment date in firestore.
 
         You can also manually search the appointment just input the date (year, month, day)
@@ -192,9 +194,7 @@ class FirestoreData:
           : appointment details of user
         """
         appointment_ref = (
-            self.db.collection("appointments")
-            .where("user_uid", "==", user_uid)
-            .stream()
+            self.db.collection("appointments").where("user_uid", "==", user_uid).stream()
         )
 
         user_list = []
@@ -205,9 +205,7 @@ class FirestoreData:
         if len(user_list) == 1:
             return user_list[0]
 
-    def search_appointment_day(
-        self, year: int, month: int, day: int, utc_offset: int = 0
-    ):
+    def search_appointment_day(self, year: int, month: int, day: int, utc_offset: int = 0):
         """Search appointment using date.
 
         Args:
@@ -369,12 +367,12 @@ class FirestoreData:
         admin_ref = self.db.collection("admin_settings")
         query_admin = admin_ref.document("appointment").get()
         query_admin_result = query_admin.to_dict()
-        admin_start_appointment = query_admin_result[
-            "start_appointment"
-        ] + datetime.timedelta(hours=utc_offset)
-        admin_end_appointment = query_admin_result[
-            "end_appointment"
-        ] + datetime.timedelta(hours=utc_offset)
+        admin_start_appointment = query_admin_result["start_appointment"] + datetime.timedelta(
+            hours=utc_offset
+        )
+        admin_end_appointment = query_admin_result["end_appointment"] + datetime.timedelta(
+            hours=utc_offset
+        )
 
         start_datetime = datetime.datetime(
             year=year,
@@ -421,8 +419,7 @@ class FirestoreData:
                     {
                         "available": True,
                         "start_appointment": datetime_info,
-                        "end_appointment": datetime_info
-                        + datetime.timedelta(minutes=15),
+                        "end_appointment": datetime_info + datetime.timedelta(minutes=15),
                     }
                 )
 
@@ -473,8 +470,6 @@ class FirestoreData:
 
     def out_appointment_settings(self):
         """Get admin appointment settings."""
-        settings_ref = (
-            self.db.collection("admin_settings").document("appointment").get()
-        )
+        settings_ref = self.db.collection("admin_settings").document("appointment").get()
 
         return settings_ref.to_dict()

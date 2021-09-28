@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     "one_barangay",
     "app",
     "ocr",
+    "services",
+    "appointment",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.messages",
