@@ -13,9 +13,11 @@ exclude_patterns = [
     "/dist/*min.js",
     "bin/**",
     "**/node_modules/",
+    "node_modules/**",
     "js/**/*.min.js",
     "public/**,",
-    "dist/**"
+    "dist/**",
+    "one_barangay/static/**"
 ]
 
 [[analyzers]]
@@ -38,7 +40,8 @@ dialect = "typescript"
 dependency_file_paths = [
     "src/client/package.json",
     "src/server/package.json",
-    "app/package.json"
+    "app/package.json",
+    "package.json"
 ]
 
 [[analyzers]]
