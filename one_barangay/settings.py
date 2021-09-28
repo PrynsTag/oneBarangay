@@ -24,11 +24,10 @@ from sentry_sdk.integrations.django import DjangoIntegration
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env_file = os.path.join(BASE_DIR, ".env")
+load_dotenv()
 
 # Decode credential to JSON
-decoded_bytes = base64.b64decode(
-    os.environ.setdefault("GOOGLE_STORAGE_CREDENTIALS", "")
-)
+decoded_bytes = base64.b64decode(os.environ.setdefault("GOOGLE_STORAGE_CREDENTIALS", ""))
 decoded_str = str(decoded_bytes, "utf-8")
 GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
     ast.literal_eval(decoded_str)
@@ -39,7 +38,7 @@ if os.path.isfile(env_file):
 
     load_dotenv(env_file)
 # ...
-elif os.environ.get("GOOGLE_PROJECT_ID", None):
+elif os.environ.get("GOOGLE_PROJECT_ID", None):  # noqa: SIM106
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_PROJECT_ID")
 
@@ -63,8 +62,12 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1", os.getenv("APP_ENGINE_ALLOWED_HOST")]
 
-# Application definition
+SESSION_ENGINE = "django.contrib.sessions.backends.file"
 
+MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
+
+
+# Application definition
 INSTALLED_APPS = [
     "one_barangay",
     "appointment",
@@ -83,7 +86,6 @@ PRODUCTION_ENABLED = DEBUG
 
 if PRODUCTION_ENABLED is True:
     INSTALLED_APPS.append("django.contrib.admin")
-    INSTALLED_APPS.append("django.contrib.sessions")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -95,10 +97,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
 ROOT_URLCONF = "one_barangay.urls"
-TEMPLATE_DIR = os.path.join(
-    BASE_DIR, "one_barangay", "templates"
-)  # ROOT dir for templates
+TEMPLATE_DIR = os.path.join(BASE_DIR, "one_barangay", "templates")  # ROOT dir for templates
 
 TEMPLATES = [
     {
@@ -171,15 +174,15 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "services", "static"),
 ]
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-DEFAULT_FILE_STORAGE = "config.storage_backends.GoogleCloudMediaStorage"
+DEFAULT_FILE_STORAGE = "one_barangay.scripts.storage_backends.GoogleCloudMediaStorage"
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
 GS_STATIC_BUCKET_NAME = os.getenv("GS_STATIC_BUCKET_NAME")
 GS_BUCKET_NAME = GS_PROJECT_ID
 
-STATIC_URL = "https://storage.googleapis.com/{}/".format(GS_STATIC_BUCKET_NAME)
-MEDIA_URL = "https://storage.googleapis.com/{}/".format(GS_MEDIA_BUCKET_NAME)
+STATIC_URL = f"https://storage.googleapis.com/{GS_STATIC_BUCKET_NAME}/"
+MEDIA_URL = f"https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/"
 
 GS_DEFAULT_ACL = "publicRead"
 # Default primary key field type
@@ -187,7 +190,7 @@ GS_DEFAULT_ACL = "publicRead"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Sentry SDK`6789-=
+# Sentry SDK
 sentry_sdk.init(  # Proper Sentry Declaration pylint: disable=abstract-class-instantiated
     dsn="https://c8349ef8bcd74193a46472e19e629f47@o947343.ingest.sentry.io/5931305",
     integrations=[DjangoIntegration()],

@@ -1,3 +1,7 @@
+"""Module for firestore operations."""
+import firebase_admin
+from auth.service_account import get_service_from_b64
+from firebase_admin import auth, credentials, firestore
 """Custom class firestore_data."""
 import datetime
 import time

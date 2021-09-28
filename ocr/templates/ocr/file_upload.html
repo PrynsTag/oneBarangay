@@ -1,13 +1,29 @@
 {% extends "layouts/base.html" %}
 {% block title %} File Upload {% endblock %}
 {% load static %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{% static "/assets/vendor/dropzonejs/dist/dropzone.min.css" %}">
+    <link rel="stylesheet" href="{% static "/ocr/style.css" %}">
+{% endblock %}
 {% block content %}
     <div class="container">
         <h2 class="my-4">Add a new file</h2>
-        <form action="{% url "upload" %}" method="post" enctype="multipart/form-data">
+        <form action="{% url "upload" %}" class="dropzone dz" id="my-awesome-dropzone">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button class="btn btn-primary my-4" type="submit">Submit</button>
+            <div class="fallback">
+                <input name="files" type="file" multiple/>
+                <input type="hidden" id="url" data-url="{% url "files" %}" />
+            </div>
         </form>
+        <div class="d-flex justify-content-center">
+            <a class="btn btn-primary my-4 mr-4" id="scan" hidden href="{% url "ocr_files" %}">Proceed to Scan</a>
+            <button class="btn btn-primary my-4" id="submit" hidden type="submit">Upload</button>
+        </div>
+        <div id="preview"></div>
+
     </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static "/assets/vendor/dropzonejs/dist/dropzone.min.js" %}"></script>
+    <script src="{% static "/ocr/upload_file.js" %}"></script>
 {% endblock %}

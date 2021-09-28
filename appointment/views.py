@@ -1,5 +1,10 @@
 """Create your Appointment views here."""
 import datetime
+import logging
+
+from one_barangay.scripts.service_account import get_service_from_b64
+
+logger = logging.getLogger(__name__)
 
 # Firebase
 from django.shortcuts import Http404, HttpResponse, HttpResponseRedirect, render, reverse
