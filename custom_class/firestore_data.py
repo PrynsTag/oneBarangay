@@ -1,19 +1,15 @@
 """Module for firestore operations."""
-import firebase_admin
-from firebase_admin import auth, credentials, firestore
-
-from one_barangay.scripts.service_account import firestore_auth
-
-"""Custom class firestore_data."""
 import datetime
 import time
 
-from firebase_admin import auth, firestore
+import firebase_admin
+from firebase_admin import auth, credentials, firestore
 
 from custom_class.dateformatter import DateFormatter
 from custom_class.encrypter import Encrypter
+from one_barangay.scripts.service_account import firestore_auth
 
-auth = firestore_auth(name="appointment_app")
+firestore_auth = firestore_auth(name="appointment_firestore_app")
 
 
 class FirestoreData:
@@ -21,7 +17,7 @@ class FirestoreData:
 
     def __init__(self):
         """Initialize firebase connection."""
-        self.db = firestore.client(auth)
+        self.db = firestore.client(firestore_auth)
 
     def verify_identification(self, firstname: str, middlename: str, lastname: str):
         """For verification of identification.

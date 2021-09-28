@@ -76,7 +76,6 @@ MIDDLEWARE = [
 ROOT_URLCONF = "one_barangay.urls"
 TEMPLATE_DIR = os.path.join(BASE_DIR, "one_barangay", "templates")  # ROOT dir for templates
 
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -183,7 +182,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "ocr", "static"),
 ]
 
-
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
 GS_STATIC_BUCKET_NAME = GS_PROJECT_ID
@@ -200,7 +198,6 @@ else:
     MEDIA_URL = "/media/"
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-
 
 GS_DEFAULT_ACL = "publicRead"
 

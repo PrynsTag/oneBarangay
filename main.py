@@ -17,11 +17,11 @@ if __name__ == "__main__":
             workers=1,
         )
     else:
-        os.environ["FIRESTORE_DATASET"] = "rbi"
-        os.environ["FIRESTORE_EMULATOR_HOST"] = "127.0.0.1:8080"
-        os.environ["FIRESTORE_EMULATOR_HOST_PATH"] = "127.0.0.1:8080/firestore"
-        os.environ["FIRESTORE_HOST"] = "http://127.0.0.1:8080"
-        os.environ["FIRESTORE_PROJECT_ID"] = "onebarangay-malanday"
+        # os.environ["FIRESTORE_DATASET"] = "rbi"
+        # os.environ["FIRESTORE_EMULATOR_HOST"] = "127.0.0.1:8080"
+        # os.environ["FIRESTORE_EMULATOR_HOST_PATH"] = "127.0.0.1:8080/firestore"
+        # os.environ["FIRESTORE_HOST"] = "http://127.0.0.1:8080"
+        # os.environ["FIRESTORE_PROJECT_ID"] = "onebarangay-malanday"
 
         uvicorn.run(
             "main:app",
