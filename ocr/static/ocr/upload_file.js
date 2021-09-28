@@ -1,42 +1,39 @@
-const submitBtn = document.getElementById("submit")
-const removeLink = document.getElementsByClassName("dz-remove")
-const scanBtn = document.getElementById("scan")
+const submitBtn = document.getElementById('submit');
+const removeLink = document.getElementsByClassName('dz-remove');
+const scanBtn = document.getElementById('scan');
 
-Dropzone.autoDiscover = false
+Dropzone.autoDiscover = false;
 
-const myDropzone = new Dropzone("#my-awesome-dropzone", {
-    autoProcessQueue: false,
-    paramName: "files",
-    uploadMultiple: true,
-    parallelUploads: 10,
-    maxFileSize: 130000000,
-    addRemoveLinks: true,
-    acceptedFiles: "image/jpeg,image/png,image/jpg,image/tiff,application/pdf",
-    init: function () {
-        const myDropzone = this
+/* eslint no-undef:0 */
+const myDropzone = new Dropzone('#my-awesome-dropzone', {
+  autoProcessQueue: false,
+  paramName: 'files',
+  uploadMultiple: true,
+  parallelUploads: 10,
+  maxFileSize: 130000000,
+  addRemoveLinks: true,
+  acceptedFiles: 'image/jpeg,image/png,image/jpg,image/tiff,application/pdf',
+  init() {
+    this.on('addedfile', () => {
+      submitBtn.removeAttribute('hidden');
+    });
 
-        this.on("addedfile", file => {
-            console.log("A file has been added.");
-            submitBtn.removeAttribute("hidden")
-        });
+    submitBtn.addEventListener('click', () => {
+      myDropzone.processQueue();
+      submitBtn.hidden = true;
+    });
 
-        submitBtn.addEventListener("click", function () {
-            myDropzone.processQueue();
-            submitBtn.hidden = true
-        })
-
-        this.on("sending", function (file, xhr, formData) {
-            console.log("sending")
-            formData.append("fileData", JSON.stringify({
-                "last_modified": file.lastModifiedDate,
-                "size": file.upload.total,
-                "name": file.name,
-                "uuid": file.upload.uuid
-            }))
-        })
-        this.on("complete", function () {
-            removeLink[0].remove()
-            scanBtn.removeAttribute("hidden")
-        })
-    },
-})
+    this.on('sending', (file, xhr, formData) => {
+      formData.append('fileData', JSON.stringify({
+        last_modified: file.lastModifiedDate,
+        size: file.upload.total,
+        name: file.name,
+        uuid: file.upload.uuid,
+      }));
+    });
+    this.on('complete', () => {
+      removeLink[0].remove();
+      scanBtn.removeAttribute('hidden');
+    });
+  },
+});
