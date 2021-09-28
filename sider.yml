@@ -76,6 +76,7 @@ linter:
     ignore-disables: true
     report-needless-disables: true
     quiet: true
+    ignore-pattern: "**/assets/vendor/*"
     target: "**/*.{css,less,sass,scss,sss}"
 
 # Ignore specific files. Example:
