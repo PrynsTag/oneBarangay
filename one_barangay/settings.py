@@ -71,8 +71,6 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 INSTALLED_APPS = [
     "one_barangay",
     "appointment",
-    "bulksched",
-    "complaint",
     "ocr",
     "app",
     "services",
