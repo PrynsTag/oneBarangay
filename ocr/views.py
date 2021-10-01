@@ -13,6 +13,7 @@ from django.views.generic import FormView, TemplateView
 from dotenv import load_dotenv
 from google.api_core.exceptions import InvalidArgument
 
+from ocr.dummy_data import RBIDummy
 from ocr.firestore_model import FirestoreModel
 from ocr.form_recognizer import form_recognizer_runner
 from ocr.forms import UploadForm
@@ -243,8 +244,14 @@ class RBIView(TemplateView):
         Returns:
           : scan_result.html with context of detected text from table image.
         """
+        dummy_data = RBIDummy().create_rbi()
+
+        script = Script()
+        formatted_data = script.format_firestore_data([dummy_data])
+        script.append_to_json(formatted_data)
+
         firestore = FirestoreModel()
-        firestore.store_dummy_rbi()
+        firestore.store_dummy_rbi(dummy_data)  # false-positive pylint: disable=E1121
 
         try:
             if kwargs["page"] == "next_page":
