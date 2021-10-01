@@ -91,7 +91,7 @@
                         </div>
                         <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
                             <li class="nav-item me-2">
-                                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                                <a href="{% url "data_viz:dashboard" %}" class="nav-link">Dashboard</a>
                             </li>
                             <li class="nav-item me-2">
                                 <a href="page-sign-in.html" class="nav-link">Login</a>
@@ -142,7 +142,7 @@
                             </h2>
                             <!-- Button Modal -->
                             <div class="d-flex align-items-center justify-content-center mb-5">
-                                <a href="dashboard.html"
+                                <a href="{% url "data_viz:dashboard" %}"
                                     class="btn btn-secondary d-inline-flex align-items-center me-4">
                                     <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -322,7 +322,7 @@
                     </div>
                     <div class="row mb-5">
                         <div class="col-6 mb-5">
-                            <a href="dashboard.html" class="page-preview scale-up-2">
+                            <a href="{% url "data_viz:dashboard" %}" class="page-preview scale-up-2">
                                 <img alt="Dashboard page preview" class="shadow-lg rounded scale"
                                     src="{% static "/assets/img/themesberg.svg" %}">
                                 <div class="text-center show-on-hover rounded-bottom">
