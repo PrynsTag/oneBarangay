@@ -1,11 +1,18 @@
 """Helper functions for OCR."""
+import asyncio
 import copy
 import json
 import logging
 import math
+import os
 from datetime import datetime
 
 import pytz
+from dotenv import load_dotenv
+
+from one_barangay.scripts.google_cloud_storage import upload_to_gcs_runner
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -61,12 +68,13 @@ class Script:
         with open(f"{filename}.json", "w", encoding="UTF-8") as file:
             json.dump(data, file)
 
-    def append_to_json(self, new_data, filename="data1"):
+    def append_to_json(self, new_data, filename="data1", store_to_gcs=False):
         """Write data to json file.
 
         Args:
           filename: The name of the file without extension.
           new_data: The data you want to append to.
+          store_to_gcs: A boolean check to store the file to GCS.
 
         Returns:
           None.
@@ -74,10 +82,18 @@ class Script:
         with open(f"{filename}.json", encoding="UTF-8") as file:
             json_data = json.load(file)
 
-        json_data["rows"].append(new_data)
+        json_data["rows"] += new_data["rows"]
+        json_data["total"] = len(json_data["rows"])
+        # json_data["total"] += len(new_data["rows"])
+        json_data["totalNotFiltered"] = json_data["total"]
 
         with open(f"{filename}.json", "w", encoding="UTF-8") as file:
             json.dump(json_data, file)
+
+        if store_to_gcs:
+            asyncio.run(
+                upload_to_gcs_runner(f"{filename}.json", str(os.getenv("GS_STATIC_BUCKET_NAME")))
+            )
 
     def format_dictionary_file(self, dictionary_list):
         """Format a dictionary for to display.
