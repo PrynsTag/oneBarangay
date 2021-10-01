@@ -81,10 +81,9 @@ class FirestoreModel:
 
         return formatted_data
 
-    def store_dummy_rbi(self):
+    def store_dummy_rbi(self, dummy_data):
         """Store dummy RBI."""
-        dummy_data = self.dummy.create_rbi()
-        doc_ref_house_num = self.doc_ref_rbi.document(dummy_data["house_num"])
+        doc_ref_house_num = self.doc_ref_rbi.document(str(dummy_data["house_num"]))
         doc_ref_house_num.set(dummy_data, merge=True)
 
     def store_rbi(self, house_num, data):
