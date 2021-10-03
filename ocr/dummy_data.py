@@ -14,13 +14,13 @@ class RBIDummy:
         self.crypto_gen = SystemRandom()
         self.fake = Faker(["en_PH"])
 
-    def create_rbi(self):
+    def create_dummy_rbi(self):
         """Create RBI dummy data."""
         house_num = self.crypto_gen.randrange(100000, 999999)
         address = self.fake.address()
         date_accomplished = self.fake.date()
         last_name = self.fake.last_name()
-        created_at = self.fake.iso8601(tzinfo=pytz.timezone("Asia/Manila"))
+        created_at = datetime.now(tz=pytz.timezone("Asia/Manila")).isoformat()
 
         family_dictionary = {}
         for idx in range(0, self.crypto_gen.randint(1, 10)):
