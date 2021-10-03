@@ -3,6 +3,7 @@
 // import Form from '/node_modules/@uppy/form'
 // import Uppy from "/node_modules/@uppy/core"
 /* eslint no-undef:0 */
+/* eslint no-unused-vars:0 */
 const uppy = new Uppy.Core({
   id: 'uppy',
   autoProceed: false,
@@ -41,7 +42,3 @@ const uppy = new Uppy.Core({
     multipleResults: true,
     triggerUploadOnSubmit: true,
   });
-
-uppy.on('complete', (result) => {
-  console.log('Upload complete! We’ve uploaded these files:', result.successful);
-});
