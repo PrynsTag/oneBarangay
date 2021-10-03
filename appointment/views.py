@@ -6,20 +6,16 @@ from random import SystemRandom
 
 from django.shortcuts import render
 from faker import Faker
-from firebase_admin import auth
+from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
-from google.cloud import firestore
-from google.oauth2 import credentials
 
-from one_barangay.scripts.service_account import get_service_from_b64
+from one_barangay.scripts.service_account import firestore_auth
 
 logger = logging.getLogger(__name__)
 
 fake = Faker()
-
-cred = credentials.Credentials(get_service_from_b64())
-
-db = firestore.Client(credentials=cred)
+appointment_app = firestore_auth("appointment_app")
+db = firestore.client(appointment_app)
 
 working_hours = [
     "1300",
