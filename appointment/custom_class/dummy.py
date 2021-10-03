@@ -3,11 +3,16 @@ import datetime
 import uuid
 from random import SystemRandom
 
+from django.http import Http404
 from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
-from custom_class.encrypter import Encrypter
+from appointment.custom_class.encrypter import Encrypter
+from ocr.scripts import Script
+from one_barangay.scripts.service_account import firestore_auth
+
+auth_dummy = firestore_auth(name="dummy_app")
 
 account_types = ["admin", "barangay_worker", "resident"]
 
@@ -28,7 +33,7 @@ class Dummy:
 
     def __init__(self):
         """Initialize firebase connection."""
-        self.db = firestore.client()
+        self.db = firestore.client(auth_dummy)
 
     # Authentication Account and Firestore User Account
     def create_dummy_account(self, num_range: int, password: str):
@@ -50,14 +55,13 @@ class Dummy:
             email = fake.email(domain=None)
             user_uid = None
 
-            doc_ref = self.db.collection("test_users").document(f"{account_type}")
+            doc_ref = self.db.collection("users").document(f"{account_type}")
 
             try:
                 auth.create_user(email=email, password=password)
 
-            except AlreadyExistsError:
-                print("Account already exist.")
-
+            except AlreadyExistsError as e:
+                raise Http404 from e
             else:
                 user = auth.get_user_by_email(email=email)
                 user_uid = user.uid
@@ -78,7 +82,7 @@ class Dummy:
 
     def add_appointment_account(
         self,
-        password: str = "password123",
+        # password: str = "password123",
         year: int = datetime.date.today().year,
         month: int = datetime.date.today().month,
         day: int = datetime.date.today().day,
@@ -118,7 +122,6 @@ class Dummy:
             count = 1
 
             while temp_hour < time_end:
-                print(f"Dummy Count: {count}")
                 count += 1
 
                 local_datetime = datetime.datetime.strptime(
@@ -161,19 +164,15 @@ class Dummy:
                     # auth.create_user(email=email, password=password)
                     pass
 
-                except AlreadyExistsError:
-                    print("Account already exist.")
+                except AlreadyExistsError as e:
+                    raise Http404 from e
 
                 else:
                     # Get UID on created account in Firebase Authentication
                     # user_uid = auth.get_user_by_email(email=email).uid
                     user_uid = str(uuid.uuid4())
 
-                    print(f"User uid: {user_uid}")
-
-                    doc_ref_account = self.db.collection("test_users").document(
-                        user_uid
-                    )
+                    doc_ref_account = self.db.collection("users").document(user_uid)
 
                     # Adding user accounts in firestore
                     user_account_data = {
@@ -183,9 +182,12 @@ class Dummy:
                         "email": email,
                         "contact_no": contact_no,
                         "account_type": account_type,
-                        "created_on": datetime.datetime.now(),
+                        "created_on": str(datetime.datetime.now()),
+                        # "created_on": datetime.datetime.now().isoformat(),
                         "user_uid": user_uid,
                     }
+
+                    Script().write_to_json(data=user_account_data, filename="dummy")
 
                     doc_ref_account.set(user_account_data, merge=True)
 
@@ -238,9 +240,10 @@ class Dummy:
         Returns:
           combined year, month, day, hour, and minute in document format
         """
-        month = month if month >= 10 else f"0{month}"
-        day = day if day >= 10 else f"0{day}"
-        hour = hour if hour >= 10 else f"0{hour}"
-        minute = "00" if minute == 0 else minute
+        full_datetime = datetime.datetime(
+            year=year, month=month, day=day, hour=hour, minute=minute, second=0
+        )
 
-        return f"{year}{month}{day}-{hour}{minute}"
+        full_datetime_format = datetime.datetime.strftime(full_datetime, "%Y%m%d-%H%M")
+
+        return full_datetime_format
