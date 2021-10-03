@@ -32,7 +32,6 @@ urlpatterns = [
     path("get/<str:document_id>", views.get, name="get"),
     path("add_appointment", views.add_appointment, name="test_appointment"),
     path("delete_account", views.delete_account, name="delete_account"),
-    path("test_index", views.test_index, name="test_index"),
     path(
         "available/<str:old_document_id>/<str:new_document_id>", views.available, name="available"
     ),
