@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
+import logging
 import os
 import sys
 
 from google.auth.exceptions import DefaultCredentialsError
 
-from one_barangay.scripts.service_account import get_service_from_b64
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -29,21 +30,26 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
-    try:
-        import googleclouddebugger  # For GCP pylint: disable=import-outside-toplevel
+    if os.getenv("GAE_ENV", "").startswith("standard"):
+        try:
+            import googleclouddebugger  # For GCP pylint: disable=import-outside-toplevel
 
-        googleclouddebugger.enable(
-            breakpoint_enable_canary=True,
-            service_account_json_file=get_service_from_b64(),
-        )
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Cloud Debugger. "
-            "Are you sure its installed and "
-            "is available in your requirements.txt?"
-        ) from exc
-    except DefaultCredentialsError as e:
-        raise ImportError("The credential json or path is invalid..") from e
+            googleclouddebugger.enable(
+                module="oneBarangay",
+                version="v1.0",
+                breakpoint_enable_canary=True,
+            )
+            logger.info("Cloud Debugger started.")
+
+        except ImportError as exc:
+            logger.exception(
+                "Couldn't import Cloud Debugger. "
+                "Are you sure its installed and "
+                "is available in your requirements.txt?\n%s",
+                exc,
+            )
+        except DefaultCredentialsError as e:
+            logger.exception("The credential json or path is invalid.. %s", e)
 
 
 if __name__ == "__main__":
