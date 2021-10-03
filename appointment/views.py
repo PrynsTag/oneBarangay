@@ -424,5 +424,20 @@ def user_verified(request, document_id):
             )
 
             return HttpResponse("User Verified")
-        else:
-            print("session document id and document are not the same")
+def available(
+    request,
+    old_document_id,
+    new_document_id,
+):
+    """Reschedule appointment.
+
+    Args:
+      request: The URL request.
+      old_document_id: Recent document ID
+      new_document_id: New document ID
+
+    Returns:
+        None reschedule appointment
+    """
+    # check_result = firestoreQuery.reschedule(old_id=old_document_id, new_id=new_document_id)
+    return HttpResponse(f"OLD: {old_document_id} | NEW: {new_document_id}")
