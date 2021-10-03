@@ -71,7 +71,7 @@
             </table>
 
             <a href="{% url "appointment:user_verified" document_id %}">Confirm</a>
-            <a href="{% url "appointment:view-appointment" back %}">Back</a>
+            <a href="{% url "appointment:view_appointments" back %}">Back</a>
         {% else %}
             <table>
                 <tr>
@@ -87,7 +87,7 @@
                         <td>
                             <a href="{% url "appointment:id_verification_manual" user.user_uid %}">{{ user.middle_name }}</a>
                         </td>
-                        <td>
+                        <td>x
                             <a href="{% url "appointment:id_verification_manual" user.user_uid %}">{{ user.last_name }}</a>
                         </td>
                     </tr>
@@ -95,10 +95,10 @@
             </table>
 
             <a href="javascript:void(0)">Confirm</a>
-            <a href="{% url "appointment:view-appointment" back %}">Back</a>
+            <a href="{% url "appointment:view_appointments" back %}">Back</a>
         {% endif %}
     {% else %}
         <a href="javascript:void(0)">Confirm</a>
-        <a href="{% url "appointment:view-appointment" back %}">Back</a>
+        <a href="{% url "appointment:view_appointments" back %}">Back</a>
     {% endif %}
 {% endblock %}
