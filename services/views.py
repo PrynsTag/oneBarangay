@@ -4,7 +4,7 @@ import datetime
 
 from django.shortcuts import render
 
-from custom_class.firestore_data import FirestoreData
+from appointment.custom_class.firestore_data import FirestoreData
 
 
 def index(request):
