@@ -6,11 +6,9 @@ from . import views
 app_name = "appointment"
 
 urlpatterns = [
+    path("view_appointments/<str:date>", views.view_appointments, name="view_appointments"),
     path(
-        "view-appointment/<str:date>", views.view_appointment, name="view-appointment"
-    ),
-    path(
-        r"detail-appointment/<str:document_id>",
+        "detail-appointment/<str:document_id>",
         views.request,
         name="request",
     ),
@@ -26,7 +24,7 @@ urlpatterns = [
         name="id_verification_manual",
     ),
     path(
-        "appointment_resched/<str:document_id>/<str:date>",
+        "appointment_resched/<str:document_id>/<str:url_date>",
         views.appointment_resched,
         name="appointment_resched",
     ),
@@ -34,4 +32,8 @@ urlpatterns = [
     path("get/<str:document_id>", views.get, name="get"),
     path("add_appointment", views.add_appointment, name="test_appointment"),
     path("delete_account", views.delete_account, name="delete_account"),
+    path("test_index", views.test_index, name="test_index"),
+    path(
+        "available/<str:old_document_id>/<str:new_document_id>", views.available, name="available"
+    ),
 ]
