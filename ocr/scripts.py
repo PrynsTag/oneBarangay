@@ -1,16 +1,14 @@
 """Helper functions for OCR."""
-import asyncio
 import copy
 import json
 import logging
 import math
-import os
 from datetime import datetime
 
 import pytz
 from dotenv import load_dotenv
 
-from one_barangay.scripts.google_cloud_storage import upload_to_gcs_runner
+from one_barangay.scripts.storage_backends import AzureStorageBlob
 
 load_dotenv()
 
@@ -55,26 +53,13 @@ class Script:
 
         return formatted_data
 
-    def write_to_json(self, data, filename="rbi"):
-        """Write data to json file.
-
-        Args:
-          filename: The name of the file without extension.
-          data: A dictionary data.
-
-        Returns:
-          None.
-        """
-        with open(f"{filename}.json", "w", encoding="UTF-8") as file:
-            json.dump(data, file)
-
-    def append_to_json(self, new_data, filename="data1", store_to_gcs=False):
+    def append_to_local_json_file(self, new_data, filename="rbi_data", store_to_cloud=False):
         """Write data to json file.
 
         Args:
           filename: The name of the file without extension.
           new_data: The data you want to append to.
-          store_to_gcs: A boolean check to store the file to GCS.
+          store_to_cloud: A boolean check to store the file to GCS.
 
         Returns:
           None.
@@ -82,21 +67,18 @@ class Script:
         with open(f"{filename}.json", encoding="UTF-8") as file:
             json_data = json.load(file)
 
-        json_data["rows"] += new_data["rows"]
-        json_data["total"] = len(json_data["rows"])
-        # json_data["total"] += len(new_data["rows"])
-        json_data["totalNotFiltered"] = json_data["total"]
+            json_data["rows"] += new_data["rows"]
+            json_data["total"] = len(json_data["rows"])
+            json_data["totalNotFiltered"] = json_data["total"]
 
         with open(f"{filename}.json", "w", encoding="UTF-8") as file:
             json.dump(json_data, file)
 
-        if store_to_gcs:
-            asyncio.run(
-                upload_to_gcs_runner(f"{filename}.json", str(os.getenv("GS_STATIC_BUCKET_NAME")))
-            )
+        if store_to_cloud:
+            AzureStorageBlob().upload_local_json_file(f"{filename}.json")
 
-    def format_dictionary_file(self, dictionary_list):
-        """Format a dictionary for to display.
+    def format_file_upload_card(self, dictionary_list):
+        """Format uploaded file details for display.
 
         Args:
           dictionary_list: A list of dictionary to format.
