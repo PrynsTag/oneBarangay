@@ -1,0 +1,1 @@
+"""Custom class initialize."""
