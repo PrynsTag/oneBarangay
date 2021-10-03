@@ -188,7 +188,7 @@ GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
 GS_STATIC_BUCKET_NAME = GS_PROJECT_ID
 GS_BUCKET_NAME = GS_PROJECT_ID
 
-if os.getenv("RUNNER", "") == "main.py":
+if os.getenv("GAE_ENV", "").startswith("standard"):
     STATIC_URL = f"https://storage.googleapis.com/{GS_STATIC_BUCKET_NAME}/"
     MEDIA_URL = f"https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
