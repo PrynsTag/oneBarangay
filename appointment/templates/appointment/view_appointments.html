@@ -141,10 +141,6 @@
 
         <script type="text/javascript">
             let d = new Date(year ={{ curr_year }}, month = {{ curr_month }} -1, date ={{ curr_day }});
-            console.log({{ curr_year }});
-            console.log({{ curr_month }});
-            console.log({{ curr_day }});
-            console.log(d.toISOString());
 
             $("#basicDate").flatpickr({
                 dateFormat: "l, F d, Y",
@@ -164,6 +160,5 @@
                 }
             });
         </script>
-
     </body>
 </html>
