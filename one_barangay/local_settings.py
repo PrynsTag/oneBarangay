@@ -180,6 +180,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "one_barangay", "static"),
     os.path.join(BASE_DIR, "ocr", "static"),
+    os.path.join(BASE_DIR, "appointment", "static"),
 ]
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
