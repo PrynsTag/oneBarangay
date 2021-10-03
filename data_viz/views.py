@@ -112,5 +112,6 @@ class DataVizView(TemplateView):
             "rbi": {"count": num_recorded_rbi},
             "avg_salary": {"person": person_avg_salary, "household": f"{household_avg_salary:,}"},
             "social_class": {"labels": social_class_labels, "values": social_class_values},
+            "total_population": {"values": f"{len(df.index):,}"},
         }
         return data
