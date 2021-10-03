@@ -15,12 +15,13 @@ logger = logging.getLogger(__name__)
 def firestore_auth(name="firestore_app"):
     """Authenticate to cloud firestore."""
     try:
+        private_key = re.sub(r"/\\n/g", "\n", os.getenv("FIREBASE_PRIVATE_KEY"))
         cred = credentials.Certificate(
             {
                 "type": "service_account",
                 "token_uri": os.getenv("FIREBASE_TOKEN_URI"),
                 "project_id": os.getenv("FIREBASE_PROJECT_ID"),
-                "private_key": re.sub(r"/\\n/g", "\n", os.getenv("FIREBASE_PRIVATE_KEY")),
+                "private_key": private_key,
                 "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
             }
         )
