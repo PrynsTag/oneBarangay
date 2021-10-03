@@ -10,8 +10,8 @@ class DateFormatter:
 
     def __init__(
         self,
-        full_date: datetime.datetime = datetime.datetime.now(),
-        date: datetime.datetime = datetime.date.today(),
+        full_date: datetime.datetime,
+        date: datetime.date,
         datetime_str: str = "",
         document_str="",
         separator: str = " ",
@@ -25,10 +25,9 @@ class DateFormatter:
 
     def date_splitter(self):
         """Split full date and time into date."""
-        date_split = (str(self.full_date).split(" "))[0].split("-")
-        year = int(date_split[0])
-        month = int(date_split[1])
-        day = int(date_split[2])
+        year = self.full_date.year
+        month = self.full_date.month
+        day = self.full_date.day
 
         return datetime.date(year=year, month=month, day=day)
 
@@ -70,9 +69,9 @@ class DateFormatter:
         day = int(get_date[6:8])
         time_int = int(get_time)
 
-        return get_date, get_time, year, month, day, time_int
+        return year, month, day, time_int
 
-    def datetime_createdOn(self, utc_offset: int = 0):
+    def datetime_created_on(self, utc_offset: int = 0):
         """Format date and time from created_on.
 
         Args:
@@ -104,7 +103,7 @@ class DateFormatter:
         if isinstance(self.full_date, datetime.datetime):
             return self.full_date.__str__()
 
-    def date_fb_convert_formatIt(self, date: datetime.datetime):
+    def convert_nano_python(self):
         """Convert firebase DatetimeWithNanoseconds into python format date and time.
 
         Args:
@@ -116,7 +115,7 @@ class DateFormatter:
         if isinstance(self.full_date, datetime.datetime):
             return self.full_date.__str__()
 
-    def firebaseTime_formatIt(self, utc_offset: int = 0):
+    def firebase_time_format(self, utc_offset: int = 0):
         """Convert firebase timestamp DatetimewithNanoseconds into python format date and time.
 
         Args:
@@ -126,13 +125,15 @@ class DateFormatter:
           python format date and time with custom UTC
         """
         appointment_converted = self.date_fb_convert()
-        appointment_offset = self.firebase_utcOffset(
+        appointment_offset = self.firebase_utcoffset(
             date=appointment_converted, utc_offset=utc_offset
         )
 
-        return self.date_fb_convert_formatIt(date=appointment_offset)
+        self.date = appointment_offset
 
-    def firebase_utcOffset(self, date: str, utc_offset: int = 0):
+        return self.convert_nano_python()
+
+    def firebase_utcoffset(self, date: str, utc_offset: int = 0):
         """Convert string and add UTC.
 
         Args:
@@ -160,9 +161,7 @@ class DateFormatter:
 
         return result_utc
 
-    def datetime_firestore_utc(
-        self, query_key: list, data_dict: dict, utc_offset: int = 0
-    ):
+    def datetime_firestore_utc(self, query_key: list, data_dict: dict, utc_offset: int = 0):
         """Convert firebase firestore DatetimeWithNanoseconds into python format.
 
         Args:
@@ -227,14 +226,17 @@ class DateFormatter:
             year=year, month=month, day=day, hour=hour, minute=minute, second=second
         )
 
-        if operator == "+":
-            add_utc = set_datetime + datetime.timedelta(hours=utc_offset)
-            return add_utc
-        elif operator == "-":
-            minus_utc = set_datetime - datetime.timedelta(hours=utc_offset)
-            return minus_utc
-        else:
+        if operator not in ["+", "-"]:
             raise Http404("Invalid Operator")
+
+        else:
+            if operator == "+":
+                add_utc = set_datetime + datetime.timedelta(hours=utc_offset)
+                return add_utc
+
+            elif operator == "-":
+                minus_utc = set_datetime - datetime.timedelta(hours=utc_offset)
+                return minus_utc
 
     # 20210926-0730
     def documentid_to_datetime(self, document_id: str):
