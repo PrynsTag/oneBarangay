@@ -1,8 +1,12 @@
 """Py file for data_viz views."""
 import json
+import os
 
 import pandas as pd
+import requests
 from django.views.generic import TemplateView
+
+from one_barangay.scripts.storage_backends import AzureStorageBlob
 
 
 class DataVizView(TemplateView):
@@ -26,8 +30,11 @@ class DataVizView(TemplateView):
     def generate_stats(self):
         """Generate statistics based from RBI JSON file."""
         # ### Initial Setup
-        with open("data1.json", encoding="UTF-8") as json_file:
-            data = json.load(json_file)
+        if os.getenv("GAE_ENV", "").startswith("standard"):
+            data = json.loads(requests.get(AzureStorageBlob().file_url).text)
+        else:
+            with open("rbi_data.json", encoding="UTF-8") as json_file:
+                data = json.load(json_file)
 
         df = pd.DataFrame(data["rows"])
 
