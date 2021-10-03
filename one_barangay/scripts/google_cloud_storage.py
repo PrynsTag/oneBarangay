@@ -10,8 +10,6 @@ from dotenv import load_dotenv
 from gcloud.aio.storage import Storage
 from google.cloud import storage
 
-from one_barangay.scripts.service_account import get_service_from_b64
-
 load_dotenv()
 
 logger = logging.getLogger(__name__)
@@ -27,14 +25,14 @@ async def async_upload_to_bucket(
     Args:
       filepath: str: The path to the file to be uploaded.
       file_obj: The file object from reading a file
-      gcs_path: str: The bucket name from which to download to. (e.g. documents/photo)
+      gcs_path: str: The target bucket name and sub-folder in
+                     GCS to upload to. (e.g. documents/photo)
 
     Returns:
       The path to the uploaded file.
     """
-    service_account_path = get_service_from_b64()
     async with aiohttp.ClientSession() as session:
-        gcs_storage = Storage(service_file=service_account_path, session=session)  # skipcq
+        gcs_storage = Storage(session=session)  # skipcq
         gcs_filename = filepath.split("/")[-1]
         await gcs_storage.upload(gcs_path, gcs_filename, file_obj)
         return f"https://storage.googleapis.com/{gcs_path}/{urllib.parse.quote(gcs_filename)}"
@@ -48,7 +46,7 @@ async def upload_to_gcs_runner(
 
     Args:
       filepath: str: The path to the file to be uploaded.
-      gcs_path: str: The target bucket name in GCS.
+      gcs_path: str: The target bucket name and sub-folder in GCS.
 
     Returns:
       The path to the uploaded file.
