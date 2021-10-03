@@ -1,5 +1,6 @@
 """Py file for data_viz views."""
 import json
+import logging
 import os
 
 import pandas as pd
@@ -8,7 +9,10 @@ from django.views.generic import TemplateView
 
 from one_barangay.scripts.storage_backends import AzureStorageBlob
 
+logger = logging.getLogger(__name__)
 
+
+# TODO: Implement toggling of charts
 class DataVizView(TemplateView):
     """View dashboard.html."""
 
@@ -21,7 +25,7 @@ class DataVizView(TemplateView):
           **kwargs: Keyword arguments.
 
         Returns:
-          The statistics to be generated and displayed to dashboar.html
+          The statistics to be generated and displayed to dashboard.html
         """
         context = self.generate_stats()
 
@@ -46,14 +50,25 @@ class DataVizView(TemplateView):
         )
 
         # ### Convert Monthly Income to Int
-        df["monthly_income"] = (
-            df["monthly_income"]
-            .str.replace(",", "", regex=False)
-            .str.replace(" ", "", regex=False)
-            .str.replace(".", "", regex=False)
-        )
-        df["monthly_income"].fillna(0, inplace=True)
-        df["monthly_income"] = df["monthly_income"].astype("int")
+        try:
+            df["monthly_income"] = (
+                df["monthly_income"]
+                .str.replace(",", "", regex=False)
+                .str.replace(" ", "", regex=False)
+                .str.replace(".", "", regex=False)
+                .str.replace("$", "", regex=False)
+            )
+            df["monthly_income"] = pd.to_numeric(df["monthly_income"])
+        except ValueError as e:
+            mask = pd.to_numeric(df["monthly_income"], errors="coerce").isna()
+            not_converted = df.loc[mask, "monthly_income"].tolist()
+            logger.exception(e)
+            logger.exception("Not Converted: %s", not_converted)
+        finally:
+            df["monthly_income"] = pd.to_numeric(
+                df["monthly_income"], errors="coerce", downcast="float"
+            )
+            df["monthly_income"].fillna(0, inplace=True)
 
         # ### Create Age Groups Given Age
         # #### Calculate Age From Birth Date
@@ -76,10 +91,6 @@ class DataVizView(TemplateView):
         # ### Number of Civil Status per Category
         civil_status_labels = df.groupby("civil_status").size().index.values.tolist()
         civil_status_values = df.groupby("civil_status").size().values.tolist()
-
-        # ### Number of Members in Family
-        # house_num_labels = df["house_num"].value_counts().index.values
-        # house_num_values = df["house_num"].value_counts().values
 
         # ### Average Family Members in A house
         house_members_avg = df["house_num"].value_counts().mean().astype(int)
