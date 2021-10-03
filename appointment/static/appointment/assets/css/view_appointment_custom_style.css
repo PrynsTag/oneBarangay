@@ -1,0 +1,7 @@
+.date_picker {
+    border: none;
+    background-color: unset;
+}
+.date_picker:focus {
+    outline: none;
+}
