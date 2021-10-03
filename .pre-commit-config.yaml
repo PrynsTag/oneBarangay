@@ -129,6 +129,7 @@ repos:
           djangorestframework-stubs,
           django-stubs,
           django,
+          types-requests,
           sentry-sdk,
           python-dotenv,
           google-cloud-secret-manager,
