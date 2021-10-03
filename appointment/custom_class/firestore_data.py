@@ -2,11 +2,12 @@
 import datetime
 import time
 
-import firebase_admin
-from firebase_admin import auth, credentials, firestore
+from django.http import Http404
+from firebase_admin import auth, firestore
 
-from custom_class.dateformatter import DateFormatter
-from custom_class.encrypter import Encrypter
+from appointment.custom_class.dateformatter import DateFormatter
+from appointment.custom_class.dummy import Dummy
+from appointment.custom_class.encrypter import Encrypter
 from one_barangay.scripts.service_account import firestore_auth
 
 firestore_auth = firestore_auth(name="appointment_firestore_app")
@@ -26,13 +27,16 @@ class FirestoreData:
           firstname: str: user firstname
           middlename: str: user middlename
           lastname: str: user lastname
+          firstname: str:
+          middlename: str:
+          lastname: str:
 
         Returns:
-          resident information.
+            resident information.
         """
         user_list = []
 
-        user_collection = self.db.collection("test_users")
+        user_collection = self.db.collection("users")
         query = (
             user_collection.where("first_name", "==", firstname)
             .where("middle_name", "==", middlename)
@@ -71,12 +75,14 @@ class FirestoreData:
         Args:
           search_key: str: key dictionary in firebase firestore data
           value: str: value to be search
+          search_key: str:
+          value: str:
 
         Returns:
-          results searched in firebase firestore user collection
+            results searched in firebase firestore user collection
         """
         user_list = []
-        user_collection = self.db.collection("test_users")
+        user_collection = self.db.collection("users")
         query = user_collection.where(search_key, "==", value).stream()
 
         for info in query:
@@ -91,39 +97,43 @@ class FirestoreData:
         """Delete all account."""
         account_ids = []
         appointment_ids = []
-        doc_ref_account = self.db.collection("test_users")
+        doc_ref_account = self.db.collection("users")
         doc_ref_appointment = self.db.collection("appointments")
 
-        for result in doc_ref_account.stream():
-            account_ids.append(result.id)
+        for account_ref_result in doc_ref_account.stream():
+            account_ids.append(account_ref_result.id)
 
             doc_ref_appointment_id = doc_ref_appointment.where(
-                "user_uid", "==", result.id
+                "user_uid", "==", account_ref_result.id
             ).stream()
 
-            for result in doc_ref_appointment_id:
-                appointment_ids.append(result.id)
+            for appointment_result in doc_ref_appointment_id:
+                appointment_ids.append(appointment_result.id)
 
             auth.delete_users(account_ids)
 
             time.sleep(1)
 
-        for id in account_ids:
-            doc_ref_account.document(id).delete()
+        for account_id in account_ids:
+            doc_ref_account.document(account_id).delete()
             time.sleep(1)
 
-        for id in appointment_ids:
-            doc_ref_appointment.document(id).delete()
+        for appointment_id in appointment_ids:
+            doc_ref_appointment.document(appointment_id).delete()
             time.sleep(1)
 
     def search_verification(self):
         """Search account for verification."""
         user_ref = self.db.collection("test").where("age", "==", 22).get()
 
-        for res in user_ref:
-            print(res.to_dict())
+        user_list = []
 
-    def day_appointments(self, date: datetime.date = datetime.date.today(), utc_offset: int = 0):
+        for res in user_ref:
+            user_list.append(res.to_dict())
+
+        return user_ref
+
+    def day_appointments(self, date: datetime.date, utc_offset: int):
         """Get appointment date in firestore.
 
         You can also manually search the appointment just input the date (year, month, day)
@@ -131,22 +141,22 @@ class FirestoreData:
         Args:
           date: datetime.date:  (Default value = datetime.date.today())
           utc_offset: int:  (Default value = 0)
+          date: datetime.date:  (Default value = datetime.date.today())
+          utc_offset: int:  (Default value = 0)
 
         Returns:
-          get appointment list in firebase firestore
+            get appointment list in firebase firestore
         """
-        count = 1
-
-        year = int((str(date)).split(" ")[0].split("-")[0])
-        month = int((str(date)).split(" ")[0].split("-")[1])
-        day = int((str(date)).split(" ")[0].split("-")[2])
+        year = date.year
+        month = date.month
+        day = date.day
 
         start_date = datetime.datetime.strptime(
-            f"{year}-{month}-{day - 1} {23}:{11}:{59}",
+            f"{year}-{month}-{day} {23}:{11}:{59}",
             "%Y-%m-%d %H:%M:%S",
         )
 
-        start_date_delta = start_date - datetime.timedelta(hours=utc_offset)
+        start_date_delta = start_date - datetime.timedelta(days=1, hours=utc_offset)
 
         end_date = datetime.datetime.strptime(
             f"{year}-{month}-{day} {23}:{11}:{59}", "%Y-%m-%d %H:%M:%S"
@@ -164,10 +174,10 @@ class FirestoreData:
 
         appointment_list = []
 
-        for count, appointment in enumerate(result):
-            count += 1
+        for appointment in result:
             appointment_list.append(appointment.to_dict())
 
+        count = len(appointment_list)
         return count, appointment_list
 
     def search_appointment(self, document_id: str):
@@ -175,19 +185,21 @@ class FirestoreData:
 
         Args:
           document_id: str: input user document id
+          document_id: str:
 
         Returns:
-          user appointment info
+            user appointment info
         """
         return self.db.collection("appointments").document(document_id).get().to_dict()
 
-    def search_appointment_userId(self, user_uid: str):
+    def search_appointment_userid(self, user_uid: str):
         """Search appointemnt using user uid.
 
         Args:
-          user_uid: str: input user's uid
+          user_uid: str:
+
         Returns:
-          : appointment details of user
+            appointment details of user
         """
         appointment_ref = (
             self.db.collection("appointments").where("user_uid", "==", user_uid).stream()
@@ -208,9 +220,13 @@ class FirestoreData:
           year: int: year of appointment
           month: int: month of appointment
           day: int: day of appointment
+          year: int:
+          month: int:
+          day: int:
           utc_offset: int:  (Default value = 0)
+
         Returns:
-          list of appointments in specific date.
+            list of appointments in specific date.
         """
         count = 1
 
@@ -237,36 +253,40 @@ class FirestoreData:
 
         appointment_list = []
 
-        for count, appointment in enumerate(result):
-            count += 1
+        for result_count, appointment in result:
+            count = result_count + 1
             appointment_list.append(appointment.to_dict())
 
         return count, appointment_list
 
-    def search_document(self, document_id):
+    def search_document(self, document_id: str, collection_name: str):
         """Search appointment using document id.
 
         Args:
           document_id: document id of appointment
+          document_id: str:
+          collection_name: str:
 
         Returns:
-          appointment details using document id
+            appointment details using document id
         """
-        appointment_ref = self.db.collection("appointments").document(document_id)
+        appointment_ref = self.db.collection(collection_name).document(document_id)
         appointment = appointment_ref.get()
 
         return appointment.to_dict()
 
-    def update_appointment_status(self, document_id):
+    def update_appointment_status(self, document_id: str, collection_name: str):
         """Change appointment/document status.
 
         Args:
           document_id: document id of appointment
+          document_id: str:
+          collection_name: str:
 
         Returns:
-          Change firebase firestore document status
+            Change firebase firestore document status
         """
-        appointment_ref = self.db.collection("appointments").document(document_id)
+        appointment_ref = self.db.collection(collection_name).document(document_id)
         get_appointment = appointment_ref.get().to_dict()
 
         if get_appointment["status"] == "request":
@@ -291,7 +311,6 @@ class FirestoreData:
         second: int,
         document_id: str,
         utc_offset: int,
-        datetime: datetime,
         query_list: list,
     ):
         """Reschedule appointment.
@@ -307,11 +326,23 @@ class FirestoreData:
           utc_offset: int: specify timezone
           datetime: datetime: package datetime
           query_list: list: list down keys for firebase firestore in appointment collection
+          year: int:
+          month: int:
+          day: int:
+          hour: int:
+          minute: int:
+          second: int:
+          document_id: str:
+          utc_offset: int:
+          query_list: list:
 
         Returns:
-          'list of appointments with specific time and date'
+            'list of appointments with specific time and date'
         """
-        start_day = DateFormatter().datetime_timedelta_hours(
+        full_date = datetime.datetime.now()
+        date = datetime.date.today()
+
+        start_day = DateFormatter(full_date=full_date, date=date).datetime_timedelta_hours(
             year=year,
             month=month,
             day=day,
@@ -324,7 +355,7 @@ class FirestoreData:
 
         start_day = start_day - datetime.timedelta(days=1)
 
-        end_day = DateFormatter().datetime_timedelta_hours(
+        end_day = DateFormatter(full_date=full_date, date=date).datetime_timedelta_hours(
             year=year,
             month=month,
             day=day,
@@ -349,9 +380,9 @@ class FirestoreData:
         for appointment in results:
             data_appointment = appointment.to_dict()
 
-            print(f"Data Appointment: {data_appointment}")
-
-            appointment_info = DateFormatter().datetime_firestore_utc(
+            appointment_info = DateFormatter(
+                full_date=full_date, date=date
+            ).datetime_firestore_utc(
                 query_key=query_list,
                 data_dict=data_appointment,
                 utc_offset=utc_offset,
@@ -411,19 +442,31 @@ class FirestoreData:
             if exist:
                 continue
             else:
+                # Not exists(datetime_info): 2021-10-02 16:15:00
+                new_document_id = Encrypter(
+                    text=Dummy().document_id(
+                        year=datetime_info.year,
+                        month=datetime_info.month,
+                        day=datetime_info.day,
+                        hour=datetime_info.hour,
+                        minute=datetime_info.minute,
+                    )
+                ).code_encoder()
+
                 check_available.append(
                     {
                         "available": True,
                         "start_appointment": datetime_info,
                         "end_appointment": datetime_info + datetime.timedelta(minutes=15),
+                        "document_id": new_document_id,
                     }
                 )
 
         # For Current Appointment
         encrypt = Encrypter(text=document_id).code_encoder()
-        current_user = DateFormatter().datetime_firestore_utc(
+        current_user = DateFormatter(full_date=full_date, date=date).datetime_firestore_utc(
             query_key=query_list,
-            data_dict=self.search_document(document_id=encrypt),
+            data_dict=self.search_document(document_id=encrypt, collection_name="appointments"),
             utc_offset=8,
         )
 
@@ -440,8 +483,8 @@ class FirestoreData:
 
     def set_appointment_settings(
         self,
-        start_appointment: datetime,
-        end_appointment: datetime,
+        start_appointment: datetime.datetime,
+        end_appointment: datetime.datetime,
         time_interval: int = 15,
     ):
         """Set start, end and time interval of residents' appointments.
@@ -450,22 +493,51 @@ class FirestoreData:
           start_appointment: datetime:
           end_appointment: datetime:
           time_interval: int:  (Default value = 15)
+          start_appointment: datetime.datetime:
+          end_appointment: datetime.datetime:
+          time_interval: int:  (Default value = 15)
 
         Returns:
             change appointment settings for admin.
         """
         self.db.collection("admin_settings").document("appointment").set(
             {
-                "start_appointment": 7,
-                "end_appointment": 17,
-                "time_interval": 15,
+                "start_appointment": start_appointment,
+                "end_appointment": end_appointment,
+                "time_interval": time_interval,
             }
         )
-
-        print("Settings for appointment is success")
 
     def out_appointment_settings(self):
         """Get admin appointment settings."""
         settings_ref = self.db.collection("admin_settings").document("appointment").get()
 
         return settings_ref.to_dict()
+
+    def reschedule(self, old_id, new_id):
+        """Reschedule appointment.
+
+        Args:
+          old_id: old document id
+          new_id: new document id
+
+        Returns:
+            None change appointment time
+        """
+        old_data = self.search_appointment(document_id=old_id)
+        # new_date_time = datetime.datetime.strptime(
+        #     Encrypter(text=new_id).code_decoder(), "%Y%m%d-%H%M"
+        # )
+
+        start_appointment = Encrypter(text=new_id).code_decoder()
+
+        # end_appointment = start_appointment + datetime.timedelta(minutes=15)
+        #
+        # created_on = datetime.datetime.now()
+
+        new_data = old_data
+        new_data["start_appointment"] = start_appointment
+
+        # print(start_appointment)
+
+        raise Http404("test reschedule")
