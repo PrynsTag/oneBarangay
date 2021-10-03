@@ -15,6 +15,7 @@ if __name__ == "__main__":
             port=os.getenv("PORT"),
             host="127.0.0.1",
             workers=1,
+            lifespan="off",
         )
     else:
         os.environ["FIRESTORE_DATASET"] = "rbi"
