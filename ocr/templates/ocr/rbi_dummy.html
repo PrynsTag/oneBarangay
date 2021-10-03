@@ -3,6 +3,11 @@
 {% load static %}
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
+    <link href="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.css" %}" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <link href="{% static "/assets/vendor/fontawesome/css/fontawesome.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "/assets/vendor/fontawesome/css/brands.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "/assets/vendor/fontawesome/css/solid.css" %}" rel="stylesheet" type="text/css">
@@ -10,8 +15,8 @@
 {% block content %}
     <div class="d-flex justify-content-between w-100 flex-wrap pt-4">
         <div class="mb-3 mb-lg-0">
-            <h1 class="h4">List of Record of Barangay Inhabitants</h1>
-            <p class="mb-0">List of RBI in the database.</p>
+            <h1 class="h4">Generate Dummy RBI</h1>
+            <p class="mb-0">Generate a list of dummy RBI.</p>
         </div>
         <div>
             <a href="#" class="btn btn-outline-gray">
@@ -19,61 +24,36 @@
             </a>
         </div>
     </div>
-    <div class="py-4">
-        <a href="upload">
-            <button type="button" class="btn btn-primary d-inline-flex align-items-center">
-                <i class="fas fa-qrcode pe-2" aria-hidden="true"></i>
-                Scan
-            </button>
-        </a>
-        <button type="button" id="bold" class="btn btn-success d-inline-flex align-items-center">
-            <i class="fas fa-edit pe-1" aria-hidden="true"></i>
-            <span class="text-light">Edit</span>
-        </button>
-        <button type="button" class="btn btn-info d-inline-flex align-items-center">
-            <i class="fas fa-sync pe-1" aria-hidden="true"></i>
-            Refresh
-        </button>
-        <button type="button" class="btn btn-danger d-inline-flex align-items-center">
-            <i class="fas fa-times pe-2" aria-hidden="true"></i>
-            Cancel
-        </button>
+    <div class="py-4 d-flex text-center justify-content-center">
+        <form action="{% url "dummy_rbi" %}" method="POST" id="dummyForm" class="form-group w-25">
+            {% csrf_token %}
+            <label for="numRBI">How many RBI to Generate?</label>
+            <div class="input-group">
+                <button type="submit" form="dummyForm" class="btn btn-primary input-group-text">
+                    <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                </button>
+                <input type="number" class="form-control" name="dummyCount" id="numRBI">
+            </div>
+        </form>
     </div>
-    <nav aria-label="Page Navigation">
-        <ul class="pagination justify-content-center">
-            <li class="page-item">
-                <a href="{% url "rbi" "prev_page" first_created_at %}">
-                    <button class="page-link" aria-label="Previous">
-                        <span aria-hidden="true">Previous</span>
-                    </button>
-                </a>
-            </li>
-            <li class="page-item">
-                <a href="{% url "rbi" "next_page" last_created_at %}">
-                    <button class="page-link" aria-label="Next">
-                        <span aria-hidden="true">Next</span>
-                    </button>
-                </a>
-            </li>
-        </ul>
-    </nav>
-    <div class="card border-0 shadow mb-4">
+
+    <div class="card border-0 shadow mb-4 position-relative">
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-responsive overflow-hidden">
                 <table
                     id="table"
-                    class="table table-centered table-nowrap mb-0 rounded table-bordered table-striped table-hover"
                     data-pagination="true"
                     data-toggle="table"
                     data-search="true"
                     data-show-columns="true"
+                    data-page-list="[10, 25, 50, 100, all]"
                 >
                     <thead class="table-dark">
                         <tr>
-                            <th data-sortable="true" data-field="house_num" class="border-0">HOUSE #</th>
-                            <th data-sortable="true" data-field="created_at" class="border-0">CREATED AT</th>
+                            <th data-field="house_num">HOUSE #</th>
+                            <th data-field="created_at" data-formatter="createdFormatter" class="border-0">CREATED AT</th>
                             <th data-field="address" class="border-0">ADDRESS</th>
-                            <th data-field="date" class="border-0">DATE</th>
+                            <th data-field="date_accomplished" data-formatter="dateFormatter" class="border-0">DATE</th>
                             <th data-field="last_name" class="border-0">LAST NAME (APELYIDO)</th>
                             <th data-field="first_name" class="border-0">FIRST NAME (PANGALAN)</th>
                             <th data-field="middle_name" class="border-0">MIDDLE NAME</th>
@@ -87,8 +67,8 @@
                             <th data-field="remarks" class="border-0">REMARKS</th>
                         </tr>
                     </thead>
-                    {% for member in family_members %}
-                        <tbody>
+                    <tbody>
+                        {% for member in generated_dummy %}
                             <tr>
                                 <td class="fw-bold d-flex align-items-center">{{ member.house_num }}</td>
                                 <td>{{ member.created_at }}</td>
@@ -106,10 +86,13 @@
                                 <td>{{ member.monthly_income }}</td>
                                 <td>{{ member.remarks }}</td>
                             </tr>
-                        </tbody>
-                    {% endfor %}
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 {% endblock content %}
+{% block scripts %}
+    <script src="{% static "ocr/js/rbi_dummy_table.js" %}"></script>
+{% endblock %}

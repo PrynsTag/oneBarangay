@@ -2,6 +2,7 @@
 import asyncio
 import json
 import logging
+import os
 from datetime import datetime
 
 from django.contrib import messages
@@ -18,6 +19,7 @@ from ocr.firestore_model import FirestoreModel
 from ocr.form_recognizer import form_recognizer_runner
 from ocr.forms import UploadForm
 from ocr.scripts import Script
+from one_barangay.scripts.storage_backends import AzureStorageBlob
 
 load_dotenv()
 
@@ -29,7 +31,6 @@ class FileUploadView(FormView):
 
     form_class = UploadForm
     template_name = "ocr/file_upload.html"
-    success_url = "ocr/ocr_files.html"
 
     def __init__(self):
         """Initialize FileUploadView class variables."""
@@ -217,6 +218,7 @@ class SaveScanResultView(FormView):
 
             logger.info("RBI Document saved!")
             messages.add_message(request, messages.SUCCESS, "RBI Document is saved!")
+
         except InvalidArgument as e:
             logger.exception("RBI document not saved! %s", e)
             messages.add_message(request, messages.ERROR, "RBI document not saved!")
@@ -230,50 +232,43 @@ class RBITableView(TemplateView):
     template_name = "ocr/rbi_table.html"
 
 
-class RBIView(TemplateView):
-    """View for RBI."""
 
-    template_name = "ocr/rbi_result.html"
+class DummyRBIView(FormView):
+    """View for rbi_dummy.html."""
 
-    def get_context_data(self, **kwargs):
-        """Get context data and run form recognizer.
+    form_class = UploadForm
+    template_name = "ocr/rbi_dummy.html"
+
+    def post(self, request, *args, **kwargs):
+        """POST method to render dummy rbi.
 
         Args:
-          **kwargs: Additional keyword argument.
+          request: The URL request.
+          *args: Additional arguments.
+          **kwargs: Additional keyword arguments.
 
         Returns:
-          : scan_result.html with context of detected text from table image.
+          The rbi_dummy.html along with the generated dummy list.
         """
-        dummy_data = RBIDummy().create_rbi()
-
-        script = Script()
-        formatted_data = script.format_firestore_data([dummy_data])
-        script.append_to_json(formatted_data)
+        generated_dummy_list = []
+        dummy_count = int(request.POST["dummyCount"])
 
         firestore = FirestoreModel()
-        firestore.store_dummy_rbi(dummy_data)  # false-positive pylint: disable=E1121
+        script = Script()
+        azure_storage = AzureStorageBlob()
 
-        try:
-            if kwargs["page"] == "next_page":
-                family_members = firestore.rbi_next_page(kwargs["created_at"])
+        for _ in range(dummy_count):
+            dummy_data = RBIDummy().create_dummy_rbi()
+            formatted_data = script.format_firestore_data([dummy_data])
+
+            generated_dummy_list += formatted_data["rows"]
+
+            if os.getenv("GAE_ENV", "").startswith("standard"):
+                json_data = azure_storage.append_to_json_data(formatted_data["rows"])
+                azure_storage.upload_json_data(json_data)
             else:
-                family_members = firestore.rbi_previous_page(kwargs["created_at"])
-        except KeyError:
-            family_members = firestore.rbi_current_page()
+                script.append_to_local_json_file(formatted_data)
 
-        try:
-            last_created_at = family_members["rows"][-1]["created_at"]
-            first_created_at = family_members["rows"][0]["created_at"]
+            firestore.store_rbi(dummy_data)
 
-            data = {
-                "family_members": family_members["rows"],
-                "last_created_at": last_created_at,
-                "first_created_at": first_created_at,
-            }
-        except IndexError:
-            data = {
-                "family_members": family_members,
-                "last_created_at": None,
-                "first_created_at": None,
-            }
-        return data
+        return render(request, self.template_name, {"generated_dummy": generated_dummy_list})
