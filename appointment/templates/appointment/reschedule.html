@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+{% load poll_extras %}
+{% load static %}
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Reschedule Appointment</title>
+
+        <!-- Vendors -->
+        <link href="{% static "/assets/vendor/sweetalert2/dist/sweetalert2.min.css" %}" rel="stylesheets" type="text/css">
+        <link href="{% static "/assets/vendor/notyf/notyf.min.css" %}" rel="stylesheet" type="text/css">
+
+        <!-- Vendors -->
+        <link href="{% static "/assets/vendor/sweetalert2/dist/sweetalert2.min.css" %}" rel="stylesheets" type="text/css">
+        <link href="{% static "/assets/vendor/notyf/notyf.min.css" %}" rel="stylesheet" type="text/css">
+
+        <!-- Stylesheets -->
+        <link href="{% static "/assets/css/volt.css" %}" rel="stylesheet" type="text/css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+        <!-- Custom Style -->
+        <link rel="stylesheet" href="{% static "appointment/assets/css/view_appointment_custom_style.css" %}">
+    </head>
+    <body>
+
+        {% include "includes/sidebar.html" %}
+
+        <main class="content">
+            {% include "includes/navigation.html" %}
+
+            <h1>Reschedule Appointments</h1>
+
+            <h2><input class="date_picker" type="text" id="basicDate" data-input></h2>
+
+            {% if is_today %}
+                <a href="javascript:void(0);" disabled="true">Previous</a>
+            {% else %}
+                <a href="{% url "appointment:appointment_resched" document_id previous %}">Previous</a>
+            {% endif %}
+            <a href="{% url "appointment:appointment_resched" document_id current_date %}">Current</a>
+            <a href="{% url "appointment:appointment_resched" document_id today %}">Today</a>
+            <a href="{% url "appointment:appointment_resched" document_id next %}">Next</a>
+
+            <table>
+                <tr>
+                    <th>Time</th>
+                    <th>Status</th>
+                </tr>
+
+                {% for appointment in appointment_list %}
+                    <tr>
+                        {% if appointment.current_user %}
+                            <td>{{ appointment.start_appointment }}-{{ appointment.end_appointment }}</td>
+                            <td>Current Appointment</td>
+                        {% else %}
+                            {% if appointment.available %}
+                                <td>
+                                    <a href="{% url "appointment:available" document_id appointment.document_id %}">{{ appointment.start_appointment }}-{{ appointment.end_appointment }}</a>
+                                </td>
+                                <td>
+                                    <a href="{% url "appointment:available" document_id appointment.document_id %}">Available</a>
+                                </td>
+                            {% else %}
+                                <td>{{ appointment.start_appointment }}-{{ appointment.end_appointment }}</td>
+                                <td>Reserved</td>
+                            {% endif %}
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+
+            {% include "includes/settings-box.html" %}
+            {% include "includes/footer.html" %}
+        </main>
+
+
+        <!-- jQuery -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+            integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <!--  Flatpickr  -->
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+        <script type="text/javascript">
+            let d = new Date(year ={{ curr_year }}, month = {{ curr_month }}, date ={{ curr_day }});
+            {#console.log("{{ curr_day }}");#}
+            console.log(d.toISOString());
+
+            $("#basicDate").flatpickr({
+                dateFormat: "l, F d, Y",
+                minDate: "today",
+                defaultDate: d.toISOString(),
+                onChange: function (selectedDates, dateStr, instance) {
+                    let dConsole = new Date(dateStr);
+                    let year = dConsole.getFullYear();
+                    let month = dConsole.getMonth();
+                    let date = dConsole.getDate();
+
+                    let pathName = (window.location.pathname);
+                    pathName = pathName.split("/");
+                    pathName[pathName.length - 1] = `${year}-${month + 1}-${date}`;
+                    pathName = pathName.join("/");
+                    let full_URL = window.location.origin + pathName;
+                    window.location.href = full_URL;
+                }
+            });
+        </script>
+    </body>
+</html>
