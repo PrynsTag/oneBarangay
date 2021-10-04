@@ -70,13 +70,12 @@ linter:
 
   # stylelint example. See https://help.sider.review/tools/css/stylelint
   stylelint:
-    root_dir: one_barangay/static/assets/css
     npm_install: false
+    config: .stylelintrc.yaml
     ignore-path: .gitignore
     ignore-disables: true
     report-needless-disables: true
     quiet: true
-    ignore-pattern: "**/assets/vendor/*"
     target: "**/*.{css,less,sass,scss,sss}"
 
 # Ignore specific files. Example:
