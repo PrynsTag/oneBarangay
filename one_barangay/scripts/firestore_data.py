@@ -1,18 +1,23 @@
 """Module for firestore operations."""
-import firebase_admin
-from auth.service_account import get_service_from_b64
-from firebase_admin import auth, credentials, firestore
+import datetime
+import logging
 
-cred = credentials.Certificate(get_service_from_b64())
-default_app = firebase_admin.initialize_app(cred)
+from firebase_admin import auth, firestore
 
-db = firestore.client(default_app)
+from one_barangay.scripts.service_account import firestore_auth
+
+appointment_app = firestore_auth("test_app")
+logger = logging.getLogger(__name__)
 
 
 class FirestoreData:
     """Manage firestore data."""
 
-    def verify_identification(self, firstname=None, middlename=None, lastname=None):
+    def __init__(self):
+        """Initialize FirestoreData properties."""
+        self.db = firestore.client(appointment_app)
+
+    def verify_identification(self):
         """For identification verification.
 
         Args:
@@ -22,7 +27,7 @@ class FirestoreData:
 
         Returns: data of resident
         """
-        user_collection = db.collection("users")
+        user_collection = self.db.collection("users")
         query = user_collection.where("resident", "in", ["1dy2QQQGjqYYwJAvHfbxYhr2vnI2"])
 
         return query
@@ -31,8 +36,8 @@ class FirestoreData:
         """Delete all account."""
         account_ids = []
         appointment_ids = []
-        doc_ref_account = db.collection("users")
-        doc_ref_appointment = db.collection("appointments")
+        doc_ref_account = self.db.collection("users")
+        doc_ref_appointment = self.db.collection("appointments")
 
         for result in doc_ref_account.stream():
             account_ids.append(result.id)
@@ -41,41 +46,38 @@ class FirestoreData:
                 "user_uid", "==", result.id
             ).stream()
 
-            for result in doc_ref_appointment_id:
-                appointment_ids.append(result.id)
+            for appointment_id in doc_ref_appointment_id:
+                appointment_ids.append(appointment_id.id)
 
             auth.delete_users(account_ids)
 
-        for id in account_ids:
-            doc_ref_account.document(id).delete()
+        for acc_id in account_ids:
+            doc_ref_account.document(acc_id).delete()
 
-        for id in appointment_ids:
-            doc_ref_appointment.document(id).delete()
+        for app_id in appointment_ids:
+            doc_ref_appointment.document(app_id).delete()
 
     def search_verification(self):
         """Search age for verification."""
-        user_ref = db.collection("test").where("age", "==", 22).get()
+        user_ref = self.db.collection("test").where("age", "==", 22).get()
 
         for res in user_ref:
-            print(res.to_dict())
+            logger.info(res.to_dict())
 
     def test_search_date(self):
         """Search date for testing only."""
-        import datetime
-
         start_date = datetime.datetime(year=2021, month=9, day=15, hour=23, minute=59)
-
         end_date = datetime.datetime(year=2021, month=9, day=16, hour=23, minute=59)
 
-        print(f"Start Date: {start_date}")
-        print(f"End Date: {end_date}")
+        logger.info("Start Date: %s", start_date)
+        logger.info("End Date: %s", end_date)
 
         date_ref = (
-            db.collection("test_appointment")
+            self.db.collection("test_appointment")
             .where("start_appointment", ">", start_date)
             .where("end_appointment", "<", end_date)
         )
         result = date_ref.get()
 
         for count, result in enumerate(result):
-            print(f"Count: {count} {result.to_dict()}")
+            logger.info("Count: %s %s", count, result.to_dict())

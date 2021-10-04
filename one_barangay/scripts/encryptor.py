@@ -2,7 +2,7 @@
 import base64
 
 
-class Encrypter:
+class Encryptor:
     """This class encrypts and decrypts texts."""
 
     def __init__(self, text: str):

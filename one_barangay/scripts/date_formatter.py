@@ -1,7 +1,9 @@
 """Module to formate date."""
+from dataclasses import dataclass
 
 
-class Date_Formatter:
+@dataclass
+class DateFormatter:
     """Split full date into date, time, and date & time."""
 
     def __init__(self, full_date: str, separator: str):

@@ -1,11 +1,17 @@
 """Dummy class to generate dummy data."""
 import datetime
+import logging
 from random import SystemRandom
 
-from auth.service_account import firebase_authentication
 from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
+
+from one_barangay.scripts.service_account import firestore_auth
+
+appointment_app = firestore_auth("dummy_appointment_app")
+
+logger = logging.getLogger(__name__)
 
 working_hours = [
     "1300",
@@ -35,6 +41,12 @@ status = ["request", "in_progress", "get", "completed"]
 class Dummy:
     """Create dummy data."""
 
+    def __init__(self):
+        """Initialize Dummy Appointment Properties."""
+        self.db = firestore.client(appointment_app)
+        self.crypto_gen = SystemRandom()
+        self.fake = Faker(["en_PH"])
+
     def create_dummy_account(self, num_range: int, password: str):
         """Create dummy account using firebase.
 
@@ -44,25 +56,20 @@ class Dummy:
 
         Returns: add dummy accounts in firebase firestore
         """
-        cryptogen = SystemRandom()
-        app = firebase_authentication()
-        db = firestore.client(app)
-        fake = Faker()
-
         for _ in range(0, num_range):
-            first_name = fake.first_name()
-            last_name = fake.last_name()
-            contact_no = fake.phone_number()
-            account_type = account_types[cryptogen.randrange(0, 3)]
-            email = fake.email(domain=None)
+            first_name = self.fake.first_name()
+            last_name = self.fake.last_name()
+            contact_no = self.fake.phone_number()
+            account_type = account_types[self.crypto_gen.randrange(0, 3)]
+            email = self.fake.email(domain=None)
 
-            doc_ref = db.collection("users").document(f"{account_type}")
+            doc_ref = self.db.collection("users").document(f"{account_type}")
 
             try:
                 auth.create_user(email=email, password=password)
 
             except AlreadyExistsError:
-                print("Account already exist.")
+                logger.exception("Account already exist.")
 
             else:
                 user = auth.get_user_by_email(email=email)
@@ -88,29 +95,24 @@ class Dummy:
           password: str:  default password 'password123'
         Returns: adds dummy accounts in firebase authentication and firebase firestore
         """
-        crypto_gen = SystemRandom()
-        app = firebase_authentication()
-        db = firestore.client(app)
-        fake = Faker()
-
         for a in range(700, 1701, 100):
-            first_name = fake.first_name()
-            last_name = fake.last_name()
-            contact_no = fake.phone_number()
-            account_type = account_types[crypto_gen.randrange(0, 3)]
-            email = fake.email(domain=None)
-            sentence = fake.sentence(nb_words=10)
-            image = fake.file_name(category="image", extension="jpeg")
+            first_name = self.fake.first_name()
+            last_name = self.fake.last_name()
+            contact_no = self.fake.phone_number()
+            account_type = account_types[self.crypto_gen.randrange(0, 3)]
+            email = self.fake.email(domain=None)
+            sentence = self.fake.sentence(nb_words=10)
+            image = self.fake.file_name(category="image", extension="jpeg")
             date = (datetime.datetime.now()).strftime("%Y_%m_%d")
             time = f"0{str(a)}" if a < 1000 else str(a)
 
-            doc_ref_account = db.collection("users").document("resident")
+            doc_ref_account = self.db.collection("users").document("resident")
 
             try:
                 auth.create_user(email=email, password=password)
 
             except AlreadyExistsError:
-                print("Account already exist.")
+                logger.exception("Account already exist.")
 
             else:
                 user_uid = (auth.get_user_by_email(email=email)).uid
@@ -128,7 +130,7 @@ class Dummy:
 
                 doc_ref_account.set(data, merge=True)
 
-                doc_ref_appointment = db.collection("appointments").document(
+                doc_ref_appointment = self.db.collection("appointments").document(
                     str((datetime.datetime.now()).strftime("%Y_%m_%d"))
                 )
 
@@ -137,8 +139,8 @@ class Dummy:
                         "appointment_id": f"{str(date)}_{str(time)}",
                         "first_name": first_name,
                         "last_name": last_name,
-                        "document": [document[crypto_gen.randrange(0, 3)]],
-                        "status": status[crypto_gen.randrange(0, 4)],
+                        "document": [document[self.crypto_gen.randrange(0, 3)]],
+                        "status": status[self.crypto_gen.randrange(0, 4)],
                         "user_uid": user_uid,
                         "account_type": account_type,
                         "appointment_date": date,
