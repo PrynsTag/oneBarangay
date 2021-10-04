@@ -33,7 +33,7 @@ plugins = [
     "ember",
     "meteor"
 ]
-environment = ["nodejs", "browser", "jest"]
+environment = ["nodejs", "browser", "jest", "jquery"]
 module_system = "es-modules"
 style_guide = "airbnb"
 dialect = "typescript"
@@ -69,8 +69,4 @@ enabled = true
 
 [[transformers]]
 name = "black"
-enabled = true
-
-[[transformers]]
-name = "standardjs"
 enabled = true
