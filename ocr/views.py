@@ -27,6 +27,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
+# TODO: Use Django Forms for displaying html forms.
 class FileUploadView(FormView):
     """View for file upload."""
 
@@ -99,6 +100,7 @@ class OCRFilesView(TemplateView):
         return {"files": self.request.session["files"]}
 
 
+# TODO: Change color of feedback depending on confidence level.
 class ScanResultView(TemplateView):
     """View for scan_result.html."""
 
