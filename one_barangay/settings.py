@@ -96,6 +96,8 @@ MIDDLEWARE = [
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
+LOGGING_CONFIG = None
+
 ROOT_URLCONF = "one_barangay.urls"
 TEMPLATE_DIR = os.path.join(BASE_DIR, "one_barangay", "templates")  # ROOT dir for templates
 
