@@ -1,0 +1,2 @@
+---
+ignoreFiles: ["**/*.js", "one_barangay/static/assets/*", "node_modules/*"]
