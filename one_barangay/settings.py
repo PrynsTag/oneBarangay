@@ -8,8 +8,6 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import ast
-import base64
 import io
 import os
 from pathlib import Path
@@ -17,28 +15,24 @@ from pathlib import Path
 import sentry_sdk
 from dotenv import load_dotenv
 from google.cloud import secretmanager
-from google.oauth2 import service_account
 from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from one_barangay.scripts.service_account import gcloud_auth
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env_file = os.path.join(BASE_DIR, ".env")
-load_dotenv()
-
-# Decode credential to JSON
-decoded_bytes = base64.b64decode(os.environ.get("GOOGLE_STORAGE_CREDENTIALS"))
-decoded_str = str(decoded_bytes, "utf-8")
-GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-    ast.literal_eval(decoded_str)
-)
 
 if os.path.isfile(env_file):
     # Use a local secret file, if provided
-
     load_dotenv(env_file)
+
+    GS_CREDENTIALS = gcloud_auth()
 # ...
 elif os.environ.get("GOOGLE_PROJECT_ID", None):  # noqa: SIM106
+    GS_CREDENTIALS = gcloud_auth()
+
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_PROJECT_ID")
 
@@ -65,7 +59,6 @@ ALLOWED_HOSTS = ["127.0.0.1", os.getenv("APP_ENGINE_ALLOWED_HOST")]
 SESSION_ENGINE = "django.contrib.sessions.backends.file"
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
-
 
 # Application definition
 INSTALLED_APPS = [
