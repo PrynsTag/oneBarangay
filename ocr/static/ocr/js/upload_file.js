@@ -1,8 +1,8 @@
-const submitBtn = document.getElementById('submit')
-const removeLink = document.getElementsByClassName('dz-remove')
-const scanBtn = document.getElementById('scan')
+const submitBtn = document.getElementById('submit');
+const removeLink = document.getElementsByClassName('dz-remove');
+const scanBtn = document.getElementById('scan');
 
-Dropzone.autoDiscover = false
+Dropzone.autoDiscover = false;
 
 /* eslint no-undef:0 */
 const myDropzone = new Dropzone('#my-awesome-dropzone', {
@@ -13,27 +13,27 @@ const myDropzone = new Dropzone('#my-awesome-dropzone', {
   maxFileSize: 130000000,
   addRemoveLinks: true,
   acceptedFiles: 'image/jpeg,image/png,image/jpg,application/pdf',
-  init () {
+  init() {
     this.on('addedfile', () => {
-      submitBtn.removeAttribute('hidden')
-    })
+      submitBtn.removeAttribute('hidden');
+    });
 
     submitBtn.addEventListener('click', () => {
-      myDropzone.processQueue()
-      submitBtn.hidden = true
-    })
+      myDropzone.processQueue();
+      submitBtn.hidden = true;
+    });
 
     this.on('sending', (file, xhr, formData) => {
       formData.append('fileData', JSON.stringify({
         last_modified: file.lastModifiedDate,
         size: file.upload.total,
         name: file.name,
-        uuid: file.upload.uuid
-      }))
-    })
+        uuid: file.upload.uuid,
+      }));
+    });
     this.on('complete', () => {
-      removeLink[0].remove()
-      scanBtn.removeAttribute('hidden')
-    })
-  }
-})
+      removeLink[0].remove();
+      scanBtn.removeAttribute('hidden');
+    });
+  },
+});
