@@ -16,23 +16,23 @@ const uppy = new Uppy.Core({
     maxNumberOfFiles: null,
     minNumberOfFiles: null,
     allowedFileTypes: null,
-    requiredMetaFields: [],
+    requiredMetaFields: []
   },
   meta: {},
   // onBeforeFileAdded: (currentFile, files) => currentFile,
   // onBeforeUpload: (files) => {
   // },
   locale: {},
-  infoTimeout: 5000,
+  infoTimeout: 5000
 }).use(Uppy.Dashboard, {
   inline: true,
   target: '#drag-drop-area',
-  showProgressDetails: true,
+  showProgressDetails: true
 })
   .use(Uppy.XHRUpload, {
     endpoint: '{% url "upload" %}',
     formData: true,
-    fieldName: 'files',
+    fieldName: 'files'
   })
   .use(Uppy.Form, {
     target: '#file-upload',
@@ -40,5 +40,5 @@ const uppy = new Uppy.Core({
     getMetaFromForm: true,
     addResultToForm: true,
     multipleResults: true,
-    triggerUploadOnSubmit: true,
-  });
+    triggerUploadOnSubmit: true
+  })
