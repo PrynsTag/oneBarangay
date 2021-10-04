@@ -119,6 +119,7 @@ repos:
           - python-dotenv
           - google-cloud-secret-manager
           - google-api-python-client
+          - firebase_admin
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.910
@@ -133,7 +134,7 @@ repos:
           sentry-sdk,
           python-dotenv,
           google-cloud-secret-manager,
-          google-api-python-client
+          firebase_admin
         ]
 
   - repo: https://github.com/asottile/pyupgrade
