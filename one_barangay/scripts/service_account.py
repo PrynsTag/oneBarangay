@@ -13,17 +13,16 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-def firestore_auth(b64_env_name="GOOGLE_STORAGE_CREDENTIALS", name="firestore_app"):
+def firestore_auth(name="firestore_app", b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
     """Authenticate to cloud firestore using base64 decoder.
 
     Args:
-      b64_env_name: (Default value = "GOOGLE_STORAGE_CREDENTIALS")
+      b64_env_name:
+        (Default value = "GOOGLE_STORAGE_CREDENTIALS") A environment variable with base64 value.
       name: (Default value = "firestore_app") The name of the app if called multiple times.
 
     Returns:
       A newly initialized instance of App.
-    Raises:
-      ValueError -  If any of the provided arguments are invalid.
     """
     try:
         decoded_bytes = base64.b64decode(os.getenv(b64_env_name))

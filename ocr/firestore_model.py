@@ -9,7 +9,7 @@ from ocr.dummy_data import RBIDummy
 from ocr.scripts import Script
 from one_barangay.scripts.service_account import firestore_auth
 
-firestore_app = firestore_auth()
+firestore_app = firestore_auth("ocr_app")
 
 
 class FirestoreModel:
