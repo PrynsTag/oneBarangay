@@ -95,6 +95,7 @@ def request(request, document_id):
     year, month, day, time_int = DateFormatter(
         full_date=full_date, date=date, document_str=encrypter
     ).document_splitter()
+    current_user_date = datetime.date(year=year, month=month, day=day)
 
     try:
         datetime.date(year=year, month=month, day=day)
@@ -103,6 +104,7 @@ def request(request, document_id):
         raise Http404 from invalid_time
 
     else:
+
         if 0 < time_int < 2300:
             appointment_detail = firestoreQuery.search_appointment(document_id=document_id)
 
@@ -144,7 +146,7 @@ def request(request, document_id):
                             "user_list": user_list,
                             "amount": 100,
                             "form": form,
-                            "back": str(datetime.date(year=year, month=month, day=day)),
+                            "back": datetime.datetime.strftime(current_user_date, "%Y-%m-%d"),
                             "document_id": document_id,
                         },
                     )
@@ -161,7 +163,7 @@ def request(request, document_id):
                             "user_list": user_list,
                             "amount": 100,
                             "form": form,
-                            "back": str(datetime.date(year=year, month=month, day=day)),
+                            "back": datetime.datetime.strftime(current_user_date, "%Y-%m-%d"),
                         },
                     )
             else:
@@ -174,7 +176,7 @@ def request(request, document_id):
                         "user_detail": appointment_detail,
                         "amount": 100,
                         "form": form,
-                        "back": str(datetime.date(year=year, month=month, day=day)),
+                        "back": datetime.datetime.strftime(current_user_date, "%Y-%m-%d"),
                         "user_check": False,
                     },
                 )
@@ -216,18 +218,19 @@ def appointment_resched(request, document_id, url_date):
         query_list=["start_appointment", "end_appointment", "created_on"],
     )
 
+    resched_list_rows = firestoreQuery.data_col_row(user_list=resched_list, row=6)
+
     next_date = current_date + datetime.timedelta(days=1)
     previous_date = current_date - datetime.timedelta(days=1)
     current_date_document = DateFormatter(full_date=full_date, date=date).documentid_to_datetime(
         document_id=encrypter
     )
-
     return render(
         request,
         "appointment/reschedule.html",
         {
             "current_date": current_date_document.date(),
-            "appointment_list": resched_list,
+            "appointment_list": resched_list_rows,
             "next": next_date.date(),
             "previous": previous_date.date(),
             "current": current_date.date(),
@@ -299,7 +302,7 @@ def user_resched(request, document_id):
 
 
 def id_verification(request, document_id):
-    """Check user ID for verification.
+    """Check user ID for verification.IST.
 
     Args:
       request: The URL request.
