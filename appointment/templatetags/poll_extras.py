@@ -84,6 +84,26 @@ def firebase_timestamp_format(value, utc_offset: int = 0):
     return datetime_to_time(result_utc)
 
 
+@register.filter("firebase_datetime_format")
+def firebase_datetime_format(value, utc_offset: int = 0):
+    """Convert firebase firestore timestamp format into python.
+
+    Args:
+      value: firebase date and time format
+      utc_offset: int:  (Default value = 0)
+      utc_offset: int:  (Default value = 0)
+
+    Returns:
+      python format timestamp
+    """
+    value_str = str(value)
+    full_datetime_stripe = datetime.datetime.strptime(value_str, "%Y-%m-%d %H:%M:%S%z")
+
+    result_utc = full_datetime_stripe + datetime.timedelta(hours=utc_offset)
+
+    return datetime.datetime.strftime(result_utc, "%B %d, %Y")
+
+
 @register.filter("datetime_to_time")
 def datetime_to_time(value):
     """Get time from date and time format.
