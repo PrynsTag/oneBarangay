@@ -17,9 +17,9 @@ from dotenv import load_dotenv
 from google.cloud import secretmanager
 from sentry_sdk.integrations.django import DjangoIntegration
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 from one_barangay.scripts.service_account import gcloud_auth
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env_file = os.path.join(BASE_DIR, ".env")
@@ -31,10 +31,10 @@ if os.path.isfile(env_file):
 elif os.environ.get("GOOGLE_PROJECT_ID", None):  # noqa: SIM106
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_PROJECT_ID")
+    settings_name = os.environ.get("SETTINGS_NAME")
+    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
 
     client = secretmanager.SecretManagerServiceClient()
-    settings_name = os.environ.get("SETTINGS_NAME", "oneBarangay-ENV-Variables")
-    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
 
     load_dotenv(stream=io.StringIO(payload))
