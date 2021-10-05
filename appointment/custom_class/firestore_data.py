@@ -567,3 +567,43 @@ class FirestoreData:
             temp_list = []
 
         return f_list
+
+    def resched_timedelta(
+        self,
+        data: dict,
+        start_appointment: datetime.datetime,
+        decrypt_document_id: str,
+        key_timedelta: list,
+        operator: str,
+        utc_offset: int,
+    ):
+        """Reschedule appointment with custom UTC offset.
+
+        Args:
+          data: data of user
+          start_appointment: date of start appointment
+          decrypt_document_id: decrypted document id
+          key_timedelta: key from firebase data fields
+          operator: specify add or subtract ("+" or "-")
+          utc_offset: preferred UTC
+
+        Returns:
+            New data dictionary and change all of the value from key field
+        """
+        full_date = datetime.datetime.now()
+        date = full_date.date()
+
+        admin_settings = self.out_appointment_settings()
+        admin_time_interval = admin_settings["time_interval"]
+        data["start_appointment"] = start_appointment
+        data["end_appointment"] = start_appointment + datetime.timedelta(
+            minutes=admin_time_interval
+        )
+        data["created_on"] = datetime.datetime.now()
+        data["document_id"] = decrypt_document_id
+
+        timedelta_data = DateFormatter(full_date=full_date, date=date).dict_format_utcoffset(
+            data=data, key_timedelta=key_timedelta, operator=operator, utc_offset=utc_offset
+        )
+
+        return timedelta_data
