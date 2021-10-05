@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "app",
     "authentication",
     "ocr",
+    "user_profile",
     "data_viz",
 ]
 
@@ -131,6 +132,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "authentication", "static"),
     os.path.join(BASE_DIR, "ocr", "static"),
     os.path.join(BASE_DIR, "data_viz", "static"),
+    os.path.join(BASE_DIR, "user_profile", "static"),
 ]
 
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
