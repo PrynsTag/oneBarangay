@@ -18,6 +18,8 @@ __pycache__/
 # Ignored by the build system
 /setup.cfg
 #!include:.gitignore
+
+# Ignore GitHub Files
 README.md
 LICENSE
 .yamllint.yml
@@ -33,7 +35,23 @@ templates
 app.yaml.sh
 local-process.yml
 .gitattributes
-#explicitly include
+simple_cors_server.py
+sider.yml
+rbi_data.json
+pyproject.toml
+package-lock.json
+package.json
+mypy.ini
+local-requirements.txt
+cors.json
+.stylelintrc.yaml
+.restyled.yaml
+.pylintrc
+.eslintignore
+.eslintrc.json
+**/migrations
+
+# Explicitly include
 !one_barangay/settings.py
 !manage.py
 !**/templates
