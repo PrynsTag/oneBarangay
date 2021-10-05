@@ -607,3 +607,15 @@ class FirestoreData:
         )
 
         return timedelta_data
+
+    def delete_document(self, document_id: str, collection_name: str):
+        """Delete document.
+
+        Args:
+          document_id: document id in firebase firestore collection
+          collection_name: firebase firestore collection name
+
+        Returns:
+            None deletes only document id and data fields
+        """
+        self.db.collection(collection_name).document(document_id).delete()
