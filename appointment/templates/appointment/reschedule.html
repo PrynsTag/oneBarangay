@@ -106,27 +106,36 @@
 
 
         <script type="text/javascript">
-            let d = new Date(year ={{ curr_year }}, month = {{ curr_month }}, date ={{ curr_day }});
-            {#console.log("{{ curr_day }}");#}
-            console.log(d.toISOString());
 
-            $("#basicDate").flatpickr({
-                dateFormat: "l, F d, Y",
-                minDate: "today",
-                defaultDate: d.toISOString(),
-                onChange: function (selectedDates, dateStr, instance) {
-                    let dConsole = new Date(dateStr);
-                    let year = dConsole.getFullYear();
-                    let month = dConsole.getMonth();
-                    let date = dConsole.getDate();
+            $(document).ready(function () {
 
-                    let pathName = (window.location.pathname);
-                    pathName = pathName.split("/");
-                    pathName[pathName.length - 1] = `${year}-${month + 1}-${date}`;
-                    pathName = pathName.join("/");
-                    let full_URL = window.location.origin + pathName;
-                    window.location.href = full_URL;
-                }
+                <!-- Date Picker -->
+                let d = new Date(year ={{ curr_year }}, month = {{ curr_month }}, date ={{ curr_day }});
+
+                $("#basicDate").flatpickr({
+                    dateFormat: "l, F d, Y",
+                    minDate: "today",
+                    defaultDate: d.toISOString(),
+                    onChange: function (selectedDates, dateStr, instance) {
+                        let dConsole = new Date(dateStr);
+                        let year = dConsole.getFullYear();
+                        let month = dConsole.getMonth();
+                        let date = dConsole.getDate();
+
+                        let pathName = (window.location.pathname);
+                        pathName = pathName.split("/");
+                        pathName[pathName.length - 1] = `${year}-${month + 1}-${date}`;
+                        pathName = pathName.join("/");
+                        let full_URL = window.location.origin + pathName;
+                        window.location.href = full_URL;
+                    }
+                });
+
+                <!-- Time picker -->
+                $('.cell').click(function () {
+                    $('.cell').removeClass('select');
+                    $(this).addClass('select');
+                });
             });
         </script>
     </body>
