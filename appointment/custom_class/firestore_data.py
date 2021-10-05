@@ -619,3 +619,16 @@ class FirestoreData:
             None deletes only document id and data fields
         """
         self.db.collection(collection_name).document(document_id).delete()
+
+    def new_document_data(self, collection_name: str, document_id: str, document_data: dict):
+        """Add new document and data fields.
+
+        Args:
+          collection_name: collection name in firebase firestore
+          document_id: document id in firebase firestore
+          document_data: data in dictionary
+
+        Returns:
+            None adds new document id and data field
+        """
+        self.db.collection(collection_name).document(document_id).set(document_data)
