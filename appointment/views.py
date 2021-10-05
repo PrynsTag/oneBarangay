@@ -241,6 +241,63 @@ def appointment_resched(request, document_id, url_date):
     )
 
 
+def user_resched(request, document_id):
+    """Reschedule user's appointment.
+
+    Args:
+      request: The URL request.
+      document_id: document id in firebase firestore
+
+    Returns:
+        None reschedule the user's appointment
+    """
+    if request.method == "POST":
+        full_date = datetime.datetime.now()
+        date = full_date.date()
+        old_document_id = document_id
+        new_document_id = request.POST.get("time")
+        decrpyt_document_id = Encrypter(text=new_document_id).code_decoder()
+        new_document_datetime = DateFormatter(
+            full_date=full_date, date=date
+        ).documentid_to_datetime(document_id=decrpyt_document_id)
+        new_document_date = new_document_datetime.date()
+
+        old_document_data = firestoreQuery.search_document(
+            document_id=old_document_id, collection_name="appointments"
+        )
+
+        new_data = firestoreQuery.resched_timedelta(
+            data=old_document_data,
+            start_appointment=new_document_datetime,
+            decrypt_document_id=decrpyt_document_id,
+            key_timedelta=["start_appointment", "end_appointment", "created_on"],
+            operator="-",
+            utc_offset=8,
+        )
+
+        # Delete Document Data
+        firestoreQuery.delete_document(
+            document_id=old_document_id, collection_name="appointments"
+        )
+
+        # Add document for reschedule
+        firestoreQuery.new_document_data(
+            collection_name="appointments", document_id=new_document_id, document_data=new_data
+        )
+
+        return HttpResponseRedirect(
+            reverse(
+                "appointment:appointment_resched",
+                kwargs={"document_id": new_document_id, "url_date": new_document_date},
+            )
+        )
+
+    else:
+        return HttpResponseRedirect(
+            reverse("appointment:request", kwargs={"document_id": document_id})
+        )
+
+
 def id_verification(request, document_id):
     """Check user ID for verification.
 
