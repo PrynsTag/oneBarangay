@@ -258,3 +258,41 @@ class DateFormatter:
         return datetime.datetime(
             year=year, month=month, day=day, hour=hour, minute=minute, second=0
         )
+
+    def python_to_fb_datetime(self, utc_offset: int, operator: str):
+        """Convert python date with custom utc offset for firebase firestore timestamp.
+
+        Args:
+          utc_offset: utc offset depends on timezone
+          operator: add or remove ("+" or "-")
+
+        Returns:
+            Date & time with added custom timezone in minutes
+        """
+        if operator not in ["+", "-"]:
+            raise Http404("Invalid Operator")
+        else:
+            if operator == "+":
+                return self.full_date + datetime.timedelta(hours=utc_offset)
+            else:
+                return self.full_date - datetime.timedelta(hours=utc_offset)
+
+    def dict_format_utcoffset(
+        self, data: dict, key_timedelta: list, operator: str, utc_offset: int
+    ):
+        """Convert all of the key fields in the dictionary.
+
+        Args:
+          data: user data in dictionary type of data store
+          key_timedelta: list of key fields from firebase firestore
+          operator: add or subtract("+" or "-")
+          utc_offset: specify custom timezone
+
+        Returns:
+            Data in dictionary with converted date & time
+        """
+        for key in key_timedelta:
+            self.full_date = data[key]
+            data[key] = self.python_to_fb_datetime(utc_offset=utc_offset, operator=operator)
+
+        return data
