@@ -36,7 +36,7 @@ elif os.environ.get("GOOGLE_PROJECT_ID", None):  # noqa: SIM106
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_PROJECT_ID")
 
-    client = secretmanager.SecretManagerServiceClient(credentials=GS_CREDENTIALS)
+    client = secretmanager.SecretManagerServiceClient()
     settings_name = os.environ.get("SETTINGS_NAME", "oneBarangay-ENV-Variables")
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
