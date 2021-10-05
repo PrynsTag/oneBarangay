@@ -30,7 +30,7 @@ if os.path.isfile(env_file):
 
 elif os.environ.get("GOOGLE_PROJECT_ID", None):  # noqa: SIM106
     # Pull secrets from Secret Manager
-    project_id = os.environ.get("GOOGLE_PROJECT_ID")
+    project_id = os.environ.get("SECRET_MANAGER_PROJECT_ID")
     settings_name = os.environ.get("SETTINGS_NAME")
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
 
