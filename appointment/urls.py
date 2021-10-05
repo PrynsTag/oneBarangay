@@ -28,6 +28,7 @@ urlpatterns = [
         views.appointment_resched,
         name="appointment_resched",
     ),
+    path("user_resched/<str:document_id>", views.user_resched, name="user_resched"),
     path("process/<str:document_id>", views.process, name="process"),
     path("get/<str:document_id>", views.get, name="get"),
     path("add_appointment", views.add_appointment, name="test_appointment"),
