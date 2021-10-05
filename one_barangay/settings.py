@@ -28,11 +28,7 @@ if os.path.isfile(env_file):
     # Use a local secret file, if provided
     load_dotenv(env_file)
 
-    GS_CREDENTIALS = gcloud_auth()
-# ...
 elif os.environ.get("GOOGLE_PROJECT_ID", None):  # noqa: SIM106
-    GS_CREDENTIALS = gcloud_auth()
-
     # Pull secrets from Secret Manager
     project_id = os.environ.get("GOOGLE_PROJECT_ID")
 
@@ -169,6 +165,8 @@ STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 DEFAULT_FILE_STORAGE = "one_barangay.scripts.storage_backends.GoogleCloudMediaStorage"
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
+GS_CREDENTIALS = gcloud_auth()
+
 GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
 GS_STATIC_BUCKET_NAME = os.getenv("GS_STATIC_BUCKET_NAME")
 GS_BUCKET_NAME = GS_PROJECT_ID
