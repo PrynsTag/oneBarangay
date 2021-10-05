@@ -28,7 +28,7 @@
     </ul>
 
     <ul>
-        <li>Appointment Date: {{ user_detail.start_appointment }}</li>
+        <li>Appointment Date: {{ user_detail.start_appointment|firebase_datetime_format:8 }}</li>
         <li>Appointment Time: {{ user_detail.start_appointment|firebase_timestamp_format:8 }}
             to {{ user_detail.end_appointment|firebase_timestamp_format:8 }}</li>
         <li>
