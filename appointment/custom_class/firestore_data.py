@@ -541,3 +541,29 @@ class FirestoreData:
         # print(start_appointment)
 
         raise Http404("test reschedule")
+
+    def data_col_row(self, user_list: list, row: int):
+        """Convert data list into two dimensional list.
+
+        Args:
+          user_list: list of user info
+          row: number of rows per column
+
+        Returns:
+            two dimensional list
+        """
+        f_list = []
+        temp_list: list = []
+
+        for user in user_list:
+            if len(temp_list) <= row:
+                temp_list.append(user)
+            else:
+                f_list.append(temp_list)
+                temp_list = []
+
+        if len(temp_list) != 0:
+            f_list.append(temp_list)
+            temp_list = []
+
+        return f_list
