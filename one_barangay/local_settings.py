@@ -49,6 +49,7 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 INSTALLED_APPS = [
     "one_barangay",
     "app",
+    "authentication",
     "ocr",
     "data_viz",
     "django.contrib.auth",
@@ -179,6 +180,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "one_barangay", "static"),
+    os.path.join(BASE_DIR, "authentication", "static"),
     os.path.join(BASE_DIR, "ocr", "static"),
     os.path.join(BASE_DIR, "data_viz", "static"),
 ]
