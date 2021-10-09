@@ -87,13 +87,13 @@
                                 <a href="{% url "data_viz:dashboard" %}" class="nav-link">Dashboard</a>
                             </li>
                             <li class="nav-item me-2">
-                                <a href="page-sign-in.html" class="nav-link">Login</a>
+                                <a href="{% url "auth:sign_in" %}" class="nav-link">Login</a>
                             </li>
                             <li class="nav-item me-2">
-                                <a href="page-sign-up.html" class="nav-link">Register</a>
+                                <a href="{% url "auth:sign_up" %}" class="nav-link">Register</a>
                             </li>
                             <li class="nav-item">
-                                <a href="page-lock.html" class="nav-link">Lock</a>
+                                <a href="{% url "auth:lock_account" %}" class="nav-link">Lock</a>
                             </li>
                         </ul>
                     </div>
@@ -225,8 +225,9 @@
                         <div class="row justify-content-between align-items-center">
                             <div class="col-lg-5 order-lg-2 mb-5 mb-lg-0">
                                 <h2 class="h1">Bootstrap 5</h2>
-                                <p class="mb-4 lead fw-bold">Latest version of Bootstrap without jQuery</p>
-                                <p class="mb-4">oneBarangay is built using the latest version of Bootstrap 5 and we only used Vanilla JS & JQuery for everything including the plugins</p>
+                                <p class="mb-4 lead fw-bold">Latest version of Bootstrap with jQuery</p>
+                                <p class="mb-4">oneBarangay is built using the latest version of Bootstrap 5 and we only used
+                                    Vanilla JS & JQuery for everything including the plugins</p>
                             </div>
                             <div class="col-lg-6 order-lg-1">
                                 <img alt="Front pages overview"
@@ -234,8 +235,8 @@
                             </div>
                         </div>
                         <div class="col-lg-5 mb-5 mb-lg-0">
-                            <h2 class="h1 d-flex align-items-center">Kanban Board <span
-                                class="ms-3 mb-0 fs-6 badge badge-lg rounded-pill text-gray-800 bg-secondary">Pro</span>
+                            <h2 class="h1 d-flex align-items-center">Kanban Board <!--<span
+                                class="ms-3 mb-0 fs-6 badge badge-lg rounded-pill text-gray-800 bg-secondary">Pro</span>-->
                             </h2>
                             <p class="mb-4 lead fw-bold">Advanced FullCalendar.js integration</p>
                             <p class="mb-4">We created a fully editable calendar where you can add, edit and delete events for
@@ -248,7 +249,8 @@
                                 </svg>
                                 Demo
                             </a>
-                            <a href="#" target="_blank" class="btn btn-outline-primary"><span class="fas fa-book me-2"></span> Guide</a>
+                            <a href="#" target="_blank" class="btn btn-outline-primary"><span class="fas fa-book me-2"></span>
+                                Guide</a>
                         </div>
                         <div class="col-lg-6">
                             <img src="{% static "/assets/img/mockup-kanban-presentation.png" %}" alt="Kanban Preview">
@@ -256,8 +258,8 @@
                     </div>
                     <div class="row justify-content-between align-items-center mb-5 mb-lg-7">
                         <div class="col-lg-5 order-lg-2 mb-5 mb-lg-0">
-                            <h2 class="h1 d-flex align-items-center">Mapbox <span
-                                class="ms-3 mb-0 fs-6 badge badge-lg rounded-pill text-gray-800 bg-secondary">Pro</span>
+                            <h2 class="h1 d-flex align-items-center">Mapbox <!--<span
+                                class="ms-3 mb-0 fs-6 badge badge-lg rounded-pill text-gray-800 bg-secondary">Pro</span>-->
                             </h2>
                             <p class="mb-4 lead fw-bold">Markers and cards integration with Leaflet.js</p>
                             <p class="mb-4">You can use this map to add markers with custom cards and show them on a map using
@@ -280,8 +282,8 @@
                     </div>
                     <div class="row justify-content-between align-items-center mb-5 mb-lg-7">
                         <div class="col-lg-5 mb-5 mb-lg-0">
-                            <h2 class="h1 d-flex align-items-center">Calendar <span
-                                class="ms-3 mb-0 fs-6 badge badge-lg rounded-pill text-gray-800 bg-secondary">Pro</span>
+                            <h2 class="h1 d-flex align-items-center">Calendar <!--<span
+                                class="ms-3 mb-0 fs-6 badge badge-lg rounded-pill text-gray-800 bg-secondary">Pro</span>-->
                             </h2>
                             <p class="mb-4 lead fw-bold">Advanced FullCalendar.js integration</p>
                             <p class="mb-4">We created a fully editable calendar where you can add, edit and delete events for
@@ -309,8 +311,9 @@
                     <div class="row justify-content-center mb-5 mb-lg-6">
                         <div class="col-12 text-center">
                             <h2 class="h1 px-lg-5">10 hand-crafted pages</h2>
-                            <p class="lead px-lg-10">Every page from oneBarangay has been carefully built to provide all the necessary
-                                pages your startup will require</p>
+                            <p class="lead px-lg-10">Every page from oneBarangay has been carefully built to provide all the
+                                necessary
+                                pages your barangay will require.</p>
                         </div>
                     </div>
                     <div class="row mb-5">
@@ -594,7 +597,7 @@
                                             d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zM243.8 381.4c0 43.6-25.6 63.5-62.9 63.5-33.7 0-53.2-17.4-63.2-38.5l34.3-20.7c6.6 11.7 12.6 21.6 27.1 21.6 13.8 0 22.6-5.4 22.6-26.5V237.7h42.1v143.7zm99.6 63.5c-39.1 0-64.4-18.6-76.7-43l34.3-19.8c9 14.7 20.8 25.6 41.5 25.6 17.4 0 28.6-8.7 28.6-20.8 0-14.4-11.4-19.5-30.7-28l-10.5-4.5c-30.4-12.9-50.5-29.2-50.5-63.5 0-31.6 24.1-55.6 61.6-55.6 26.8 0 46 9.3 59.8 33.7L368 290c-7.2-12.9-15-18-27.1-18-12.3 0-20.1 7.8-20.1 18 0 12.6 7.8 17.7 25.9 25.6l10.5 4.5c35.8 15.3 55.9 31 55.9 66.2 0 37.8-29.8 58.6-69.7 58.6z"></path>
                                     </svg>
                                     <h5 class="fw-bold text-primary">Vanilla JS</h5>
-                                    <p class="mb-0 text-gray-600">jQuery is not a required dependency for oneBarangay</p>
+                                    <p class="mb-0 text-gray-600">jQuery is a functionality dependency for oneBarangay</p>
                                 </div>
                             </div>
                         </div>
@@ -761,7 +764,8 @@
                                 </li>
                                 <li class="d-flex align-items-center mb-1" data-bs-toggle="tooltip" data-bs-placement="left"
                                     title="Development workflow commands. We have them well documented.">
-                                    <svg class="icon icon-sm me-2 text-warning svg-inline--fa fa-js-square fa-w-14" aria-hidden="true" focusable="false"
+                                    <svg class="icon icon-sm me-2 text-warning svg-inline--fa fa-js-square fa-w-14"
+                                        aria-hidden="true" focusable="false"
                                         data-prefix="fab" data-icon="js-square"
                                         role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                                         <path fill="currentColor"
@@ -845,7 +849,7 @@
                             </div>
                             <p class="mt-4 text-white text-center">Looks unfamiliar? Don’t worry! Our <a
                                 class="text-white text-decoration-underline fw-bolder"
-                                href="https://onebarangay-malanday.df.r.appspot.com/" target="_blank">documentation</a>
+                                href="#" target="_blank">documentation</a>
                                 has got you covered.</p>
                         </div>
                     </div>
@@ -877,313 +881,336 @@
                     </div>
                     <div class="row mt-6">
                         <div class="col-12 col-md-6 col-lg-4 mb-5 mb-lg-0">
-                            <div class="card shadow border-0 p-4">
-                                <!-- Header -->
-                                <div class="card-header bg-white border-0 pb-0">
-                                    <span class="d-block">
-                                        <span class="h2 text-primary fw-bold align-top">Free Demo</span>
-                                    </span>
-                                </div>
-                                <!-- End Header -->
-                                <!-- Content -->
-                                <div class="card-body">
-                                    <ul class="list-group list-group-flush price-list">
-                                        <li class="list-group-item border-0 ps-0"><strong>100</strong> Components</li>
-                                        <li class="list-group-item border-0 ps-0"><strong>11</strong> Example Pages</li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Advanced sidebar
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Kanban Drag and Drop
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            MapBox
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Calendar
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            SVG Map
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Widgets
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0 pb-0">
-                                            <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Premium Support
-                                        </li>
-                                    </ul>
-                                </div>
-                                <!-- End Content -->
+                            <!--<div class="card shadow border-0 p-4">
+                                {#                                <!-- Header -->#}
+                            <div class="card-header bg-white border-0 pb-0">
+                                <span class="d-block">
+                                    <span class="h2 text-primary fw-bold align-top">Free Demo</span>
+                                </span>
                             </div>
+                            {#                                <!-- End Header -->#}
+                            {#                                <!-- Content -->#}
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush price-list">
+                                    <li class="list-group-item border-0 ps-0"><strong>100</strong> Components</li>
+                                    <li class="list-group-item border-0 ps-0"><strong>11</strong> Example Pages</li>
+                                    <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                        <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        Advanced sidebar
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                        <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        Kanban Drag and Drop
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                        <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        MapBox
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                        <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        Calendar
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                        <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        SVG Map
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                        <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        Widgets
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center border-0 ps-0 pb-0">
+                                        <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        Premium Support
+                                    </li>
+                                </ul>
+                            </div>
+                            {#                                <!-- End Content -->#}
+                        </div> -->
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 mb-5 mb-lg-0">
+                        <!--<div class="card shadow border-0 p-4 py-5 mt-lg-n5">
+                            {#                                <!-- Header -->#}
+                        <div class="card-header bg-white border-0 pb-0">
+                            <span class="d-block">
+                                <span class="h2 text-primary fw-bold align-top">Pro Version</span>
+                            </span>
                         </div>
-                        <div class="col-12 col-md-6 col-lg-4 mb-5 mb-lg-0">
-                            <div class="card shadow border-0 p-4 py-5 mt-lg-n5">
-                                <!-- Header -->
-                                <div class="card-header bg-white border-0 pb-0">
-                                    <span class="d-block">
-                                        <span class="h2 text-primary fw-bold align-top">Pro Version</span>
-                                    </span>
-                                </div>
-                                <!-- End Header -->
-                                <!-- Content -->
-                                <div class="card-body">
-                                    <ul class="list-group list-group-flush price-list">
-                                        <li class="list-group-item bg-white border-0 ps-0"><strong>1000+</strong> Components
-                                        </li>
-                                        <li class="list-group-item bg-white border-0 ps-0"><strong>21</strong> Example Pages
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Advanced sidebar
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Kanban Drag and Drop
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            MapBox
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Calendar
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            SVG Map
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 ps-0">
-                                            <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Widgets
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-center border-0 border-0 ps-0 pb-0">
-                                            <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            Premium Support
-                                        </li>
-                                    </ul>
-                                </div>
-                                <a href="https://onebarangay-malanday.df.r.appspot.com/" target="_blank"
-                                    class="btn btn-secondary d-flex align-items-center justify-content-center mb-0 mt-2">oneBarangay Dashboard
-                                    <svg class="icon icon-xs ms-1" fill="currentColor" viewBox="0 0 20 20"
+                        {#                                <!-- End Header -->#}
+                        {#                                <!-- Content -->#}
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush price-list">
+                                <li class="list-group-item bg-white border-0 ps-0"><strong>1000+</strong> Components
+                                </li>
+                                <li class="list-group-item bg-white border-0 ps-0"><strong>21</strong> Example Pages
+                                </li>
+                                <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                    <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
-                                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd"></path>
                                     </svg>
-                                </a>
-                                <!-- End Content -->
-                            </div>
+                                    Advanced sidebar
+                                </li>
+                                <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                    <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    Kanban Drag and Drop
+                                </li>
+                                <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                    <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    MapBox
+                                </li>
+                                <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                    <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    Calendar
+                                </li>
+                                <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                    <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    SVG Map
+                                </li>
+                                <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                    <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    Widgets
+                                </li>
+                                <li class="list-group-item d-flex align-items-center border-0 border-0 ps-0 pb-0">
+                                    <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    Premium Support
+                                </li>
+                            </ul>
                         </div>
-                    </div>
-                    <div class="mt-lg-6 row">
-                        <div class="text-center col-12">
-                            <h2 class="h5 text-gray fw-normal mb-4">Available in the following technologies:</h2>
-                            <div>
-                                <a class="me-3 card-link"
-                                    href="https://#"
-                                    target="_blank">
-                                    <img alt="bootstrap5-logo"
-                                        class="image image-sm"
-                                        src="{% static "/assets/img/technologies/bootstrap-5-logo.svg" %}"
-                                    >
-                                </a>
-                                <a class="me-3 card-link" href="#"
-                                    target="_blank">
-                                    <img alt="react-logo"
-                                        class="image image-sm"
-                                        src="{% static "/assets/img/technologies/react-logo.svg" %}"
-                                    >
-                                </a>
-                                <a class="me-3 card-link" href="#"
-                                    target="_blank">
-                                    <img alt="flask-logo" class="image
-                                        image-sm"
-                                        src="{% static "/assets/img/technologies/flask-logo.svg" %}"
-                                    >
-                                </a>
-                                <a class="me-3 card-link" href="https://onebarangay-malanday.df.r.appspot.com/"
-                                    target="_blank">
-                                    <img alt="django-logo"
-                                        class="image image-sm"
-                                        src="{% static "/assets/img/technologies/django-logo.svg" %}">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-
-        <footer class="footer py-6 bg-gray-800 text-white">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-4">
-                        <img class="navbar-brand-dark mb-4" height="35" src="https://storage.googleapis.com/onebarangay-media/alpha-logo-red.png"
-                            alt="Logo light">
-                        <p>OneBarangay is a Government Document Issuing app right in your browser. Built with Google Cloud for serverless service.</p>
-                        <ul class="social-buttons mb-5 mb-lg-0">
-                            <li>
-                                <a href="https://twitter.com/" aria-label="twitter social link"
-                                    class="icon-white me-2">
-                                    <span class="fab fa-twitter"></span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://www.facebook.com/" class="icon-white me-2"
-                                    aria-label="facebook social link">
-                                    <span class="fab fa-facebook"></span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://github.com/PrynsTag/oneBarangay" aria-label="github social link" class="icon-white me-2">
-                                    <span class="fab fa-github"></span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="icon-white" aria-label="dribbble social link">
-                                    <span class="fab fa-dribbble"></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-6 col-md-2 mb-5 mb-lg-0">
-                        <span class="h5">ALPHA</span>
-                        <ul class="links-vertical mt-2">
-                            <li><a target="_blank" href="#">Blog</a></li>
-                            <li><a target="_blank" href="#">Products</a></li>
-                            <li><a target="_blank" href="#">About Us</a></li>
-                            <li><a target="_blank" href="#">Contact Us</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-6 col-md-2 mb-5 mb-lg-0">
-                        <span class="h5">Other</span>
-                        <ul class="links-vertical mt-2">
-                            <li><a href="#"
-                                target="_blank">Docs
-                                <span class="badge badge-sm bg-secondary text-dark ms-2">v1.0</span></a></li>
-                            <li><a href="#"
-                                target="_blank">Changelog</a></li>
-                            <li><a target="_blank" href="#">License</a>
-                            </li>
-                            <li><a target="_blank" href="#">Support</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-12 col-md-4 mb-5 mb-lg-0">
-                        <span class="h5 mb-3 d-block">Subscribe</span>
-                        <form action="#">
-                            <div class="form-row mb-2">
-                                <div class="col-12">
-                                    <input type="email" class="form-control mb-2" placeholder="example@company.com" name="email"
-                                        aria-label="Subscribe form" required>
-                                </div>
-                                <div class="col-12 d-grid">
-                                    <button type="submit" class="btn btn-secondary" data-loading-text="Sending">
-                                        <span>Subscribe</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                        <p class="text-muted font-small m-0">We’ll never share your details. See our <a class="text-white"
-                            href="#">Privacy
-                            Policy</a></p>
-                    </div>
-                </div>
-                <hr class="bg-gray-700 my-5">
-                <div class="row">
-                    <div class="col mb-md-0">
-                        <a href="https://onebarangay-malanday.df.r.appspot.com/" target="_blank" class="d-flex justify-content-center">
-                            <img src="https://storage.googleapis.com/onebarangay-media/alpha-logo-red.png" height="35" class="mb-4"
-                                alt="ALPHA Logo">
+                        <a href="https://onebarangay-malanday.df.r.appspot.com/" target="_blank"
+                            class="btn btn-secondary d-flex align-items-center justify-content-center mb-0 mt-2">oneBarangay Dashboard
+                            <svg class="icon icon-xs ms-1" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+                                <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+                            </svg>
                         </a>
-                        <div class="d-flex text-center justify-content-center align-items-center" role="contentinfo">
-                            <p class="fw-normal font-small mb-0">
-                                &copy; oneBarangay 2020-<span class="current-year">2021</span> - coded by <a target="_blank"
-                                    href="https://onebarangay-malanday.df.r.appspot.com/">ALPHA</a>.
-                            </p>
-                        </div>
+                        {#                                <!-- End Content -->#}
+                    </div>-->
+                </div>
+            </div>
+            <div class="mt-lg-6 row">
+                <div class="text-center col-12">
+                    <h2 class="h5 text-gray fw-normal mb-4">Made with the following technologies:</h2>
+                    <div>
+                        <a class="me-3 card-link"
+                            href="https://getbootstrap.com/"
+                            target="_blank">
+                            <img alt="bootstrap5-logo"
+                                class="image image-sm"
+                                src="{% static "/assets/img/technologies/bootstrap-5-logo.svg" %}"
+                            >
+                        </a>
+                        <a class="me-3 card-link"
+                            href="https://sass-lang.com/"
+                            target="_blank">
+                            <img alt="sass-logo"
+                                class="image image-sm"
+                                src="{% static "/assets/img/technologies/sass-logo.svg" %}"
+                            >
+                        </a>
+                        <a class="me-3 card-link"
+                            href="https://#"
+                            target="_blank">
+                            <img alt="javascript-logo"
+                                class="image image-sm"
+                                src="{% static "/assets/img/technologies/js-logo.svg" %}"
+                            >
+                        </a>
+                        <a class="me-3 card-link"
+                            href="https://#"
+                            target="_blank">
+                            <img alt="jquery-logo"
+                                class="image image-sm"
+                                src="{% static "/assets/img/technologies/jquery-logo.svg" %}"
+                            >
+                        </a>
+                        <a class="me-3 card-link"
+                            href="https://cloud.google.com/"
+                            target="_blank">
+                            <img alt="google-cloud-logo"
+                                class="image image-sm"
+                                src="{% static "/assets/img/technologies/google-cloud-logo.svg" %}"
+                            >
+                        </a>
+                        <a class="me-3 card-link" href="https://www.djangoproject.com/"
+                            target="_blank">
+                            <img alt="django-logo"
+                                class="image image-sm"
+                                src="{% static "/assets/img/technologies/django-logo.svg" %}"
+                            >
+                        </a>
                     </div>
                 </div>
             </div>
-        </footer>
+        </div>
+    </section>
+</main>
 
-        {% include 'includes/scripts.html' %}
+<footer class="footer py-6 bg-gray-800 text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <img class="navbar-brand-dark mb-4" height="35"
+                    src="https://storage.googleapis.com/onebarangay-media/alpha-logo-red.png"
+                    alt="Logo light">
+                <p>OneBarangay is a Government Document Issuing app right in your browser. Built with Google Cloud for
+                    serverless service.</p>
+                <ul class="social-buttons mb-5 mb-lg-0">
+                    <li>
+                        <a href="https://twitter.com/" aria-label="twitter social link"
+                            class="icon-white me-2">
+                            <span class="fab fa-twitter"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.facebook.com/" class="icon-white me-2"
+                            aria-label="facebook social link">
+                            <span class="fab fa-facebook"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/PrynsTag/oneBarangay" aria-label="github social link"
+                            class="icon-white me-2">
+                            <span class="fab fa-github"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="icon-white" aria-label="dribbble social link">
+                            <span class="fab fa-dribbble"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-6 col-md-2 mb-5 mb-lg-0">
+                <span class="h5">ALPHA</span>
+                <ul class="links-vertical mt-2">
+                    <li><a target="_blank" href="#">Blog</a></li>
+                    <li><a target="_blank" href="#">Products</a></li>
+                    <li><a target="_blank" href="#">About Us</a></li>
+                    <li><a target="_blank" href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md-2 mb-5 mb-lg-0">
+                <span class="h5">Other</span>
+                <ul class="links-vertical mt-2">
+                    <li><a href="#"
+                        target="_blank">Docs
+                        <span class="badge badge-sm bg-secondary text-dark ms-2">v1.0</span></a></li>
+                    <li><a href="#"
+                        target="_blank">Changelog</a></li>
+                    <li><a target="_blank" href="#">License</a>
+                    </li>
+                    <li><a target="_blank" href="#">Support</a></li>
+                </ul>
+            </div>
+            <div class="col-12 col-md-4 mb-5 mb-lg-0">
+                <span class="h5 mb-3 d-block">Subscribe</span>
+                <form action="#">
+                    <div class="form-row mb-2">
+                        <div class="col-12">
+                            <input type="email" class="form-control mb-2" placeholder="example@company.com" name="email"
+                                aria-label="Subscribe form" required>
+                        </div>
+                        <div class="col-12 d-grid">
+                            <button type="submit" class="btn btn-secondary" data-loading-text="Sending">
+                                <span>Subscribe</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <p class="text-muted font-small m-0">We’ll never share your details. See our <a class="text-white"
+                    href="#">Privacy
+                    Policy</a></p>
+            </div>
+        </div>
+        <hr class="bg-gray-700 my-5">
+        <div class="row">
+            <div class="col mb-md-0">
+                <a href="https://onebarangay-malanday.df.r.appspot.com/" target="_blank"
+                    class="d-flex justify-content-center">
+                    <img src="https://storage.googleapis.com/onebarangay-media/alpha-logo-red.png" height="35"
+                        class="mb-4"
+                        alt="ALPHA Logo">
+                </a>
+                <div class="d-flex text-center justify-content-center align-items-center" role="contentinfo">
+                    <p class="fw-normal font-small mb-0">
+                        &copy; oneBarangay 2020-<span class="current-year">2021</span> - coded by <a target="_blank"
+                            href="https://onebarangay-malanday.df.r.appspot.com/">ALPHA</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
 
-    </body>
+{% include 'includes/scripts.html' %}
+
+</body>
 </html>
