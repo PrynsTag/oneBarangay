@@ -581,6 +581,23 @@ def add_appointment(request):
     return HttpResponseRedirect(reverse("services:index"))
 
 
+def add_appointment_manual(request, year, month, day):
+    """For date testing only.
+
+    Args:
+      request: Returns: add date in firestore
+
+    Returns:
+        add account in firebase authentication and firestore
+    """
+    firestore_add_date = Dummy()
+    firestore_add_date.add_appointment_account(
+        time_interval=15, utc_offset=8, year=year, month=month, day=day
+    )
+
+    return HttpResponseRedirect(reverse("services:index"))
+
+
 def delete_account(request):
     """Delete accounts in authentication and firestore.
 
