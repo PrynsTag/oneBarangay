@@ -536,6 +536,22 @@ def create_document(request, document_id, document_name):
         )
 
 
+def remove_document_session(request, date):
+    """Remove document session.
+
+    Args:
+      request: The URL request.
+      date: date of user's appointment
+
+    Returns:
+        Removes all of the active session
+    """
+    for key in list(request.session.keys()):
+        del request.session[key]
+
+    return HttpResponseRedirect(reverse("appointment:view_appointments", kwargs={"date": date}))
+
+
 
 def get(request, document_id):
     """Notify resident if document is already completed.
