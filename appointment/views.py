@@ -2,12 +2,16 @@
 import datetime
 import logging
 
+from dateutil.relativedelta import relativedelta
+
 # Firebase
 from django.http import Http404
 from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse
 
 from appointment.custom_class.dateformatter import DateFormatter
+
+# from appointment.custom_class.document import Document
 from appointment.custom_class.dummy import Dummy
 from appointment.custom_class.encrypter import Encrypter
 from appointment.custom_class.firestore_data import FirestoreData
@@ -311,7 +315,6 @@ def id_verification(request, document_id):
     Returns:
         change document status
     """
-    document_id_decrypt = Encrypter(text=document_id).code_decoder()
     date = datetime.date.today()
 
     if request.method == "POST":
@@ -345,7 +348,7 @@ def id_verification(request, document_id):
                     request.session["user_check"] = True
                     request.session["user_verified"] = True
                     request.session["user_list"] = user_results
-                    request.session["document_id"] = document_id_decrypt
+                    request.session["document_id"] = document_id
 
                     return HttpResponseRedirect(
                         reverse(
@@ -356,7 +359,7 @@ def id_verification(request, document_id):
                 elif len(user_results) > 1:
                     request.session["user_check"] = True
                     request.session["user_verified"] = False
-                    request.session["document_id"] = document_id_decrypt
+                    request.session["document_id"] = document_id
                     request.session["user_list"] = user_results
 
                     return HttpResponseRedirect(
@@ -426,7 +429,14 @@ def process(request, document_id):
     Returns:
         document
     """
-    return HttpResponse(f"Status: Process, Document ID: {document_id}")
+    user_data = firestoreQuery.search_appointment(document_id=document_id)
+
+    return render(
+        request,
+        "appointment/document_process.html",
+        {"user_data": user_data},
+    )
+
 
 def document_data(request, document_id, document_name):
     """Get all of the data for the issuing of document.
@@ -552,7 +562,6 @@ def remove_document_session(request, date):
     return HttpResponseRedirect(reverse("appointment:view_appointments", kwargs={"date": date}))
 
 
-
 def get(request, document_id):
     """Notify resident if document is already completed.
 
@@ -612,7 +621,7 @@ def delete_account(request):
     return HttpResponse("Account Deleted")
 
 
-def user_verified(request, document_id):
+def user_verify(request, document_id):
     """Check user existence.
 
     Args:
@@ -622,14 +631,11 @@ def user_verified(request, document_id):
     Returns:
         Change user's document status
     """
-    document_id_decode = Encrypter(text=document_id).code_decoder()
-
     if "user_verified" in request.session and "document_id" in request.session:
 
         session_document_id = request.session["document_id"]
 
-        if session_document_id == document_id_decode:
-            # user_uid = request.session["user_list"][0]["user_uid"]
+        if session_document_id == document_id:
 
             change_docu_status = firestoreQuery.update_appointment_status(
                 document_id=document_id, collection_name="appointments"
