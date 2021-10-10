@@ -428,6 +428,58 @@ def process(request, document_id):
     """
     return HttpResponse(f"Status: Process, Document ID: {document_id}")
 
+def create_document(request, document_id, document_name):
+    """Create a document.
+
+    Args:
+        request: The URL request.
+        document_id: document id of appointment
+        document_name: name of document
+
+    Returns:
+        document
+    """
+    if document_name == "barangay-certificate":
+        date = request.POST.get("date")
+        firstname = request.POST.get("firstname")
+        middlename = request.POST.get("middlename")
+        lastname = request.POST.get("lastname")
+        address = request.POST.get("address")
+        year = request.POST.get("year")
+        issued_for = request.POST.get("issued")
+        conforme = request.POST.get("conforme")
+        ctc_no = request.POST.get("ctc_no")
+        region = request.POST.get("region")
+        or_no = request.POST.get("or_no")
+        amount = request.POST.get("amount")
+        valid_until = request.POST.get("validity")
+        prepared_by = request.POST.get("prepared_by")
+
+        request.session["barangay-certificate"] = {
+            "date": date,
+            "firstname": firstname,
+            "middlename": middlename,
+            "lastname": lastname,
+            "address": address,
+            "year": year,
+            "issued_for": issued_for,
+            "conforme": conforme,
+            "ctc_no": ctc_no,
+            "region": region,
+            "or_no": or_no,
+            "amount": amount,
+            "valid_until": valid_until,
+            "prepared_by": prepared_by,
+        }
+
+        return HttpResponseRedirect(
+            reverse(
+                "appointment:document_data",
+                kwargs={"document_id": document_id, "document_name": document_name},
+            )
+        )
+
+
 
 def get(request, document_id):
     """Notify resident if document is already completed.
