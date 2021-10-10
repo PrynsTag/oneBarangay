@@ -27,7 +27,7 @@ class Encrypter:
             raise Http404 from incorrect_code
 
     def code_decoder(self):
-        """Convert text to base64."""
+        """Convert base64 to text."""
         try:
             value_bytes = self.text.encode("ascii")
             base64_bytes = base64.urlsafe_b64decode(value_bytes)
