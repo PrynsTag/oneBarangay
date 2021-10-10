@@ -428,6 +428,62 @@ def process(request, document_id):
     """
     return HttpResponse(f"Status: Process, Document ID: {document_id}")
 
+def document_data(request, document_id, document_name):
+    """Get all of the data for the issuing of document.
+
+    Args:
+      request: The URL request.
+      document_id: document id of appointment
+      document_name: name of document
+
+    Returns:
+        Renders barangay certificate
+    """
+    # document_query_data = firestoreQuery.active_document(document_slug=document_name)
+
+    if document_name == "barangay-certificate":
+        user_data = firestoreQuery.search_appointment(document_id=document_id)
+
+        check_data = "barangay-certificate" in request.session
+
+        date_today = datetime.date.today()
+        current_date = date_today.strftime("%Y-%m-%d")
+        validity_date = (date_today + relativedelta(months=+6)).strftime("%Y-%m-%d")
+
+        if check_data:
+            active_document_data = firestoreQuery.active_document(document_slug=document_name)
+
+            return render(
+                request,
+                "appointment/barangay_certificate.html",
+                {
+                    "document_id": document_id,
+                    "document_name": document_name,
+                    "user_data": user_data,
+                    "current_date": current_date,
+                    "validity_date": validity_date,
+                    "check_data": check_data,
+                    "session_data": request.session["barangay-certificate"] if check_data else "",
+                    "document_settings": active_document_data,
+                },
+            )
+
+        else:
+            return render(
+                request,
+                "appointment/barangay_certificate.html",
+                {
+                    "document_id": document_id,
+                    "document_name": document_name,
+                    "user_data": user_data,
+                    "current_date": current_date,
+                    "validity_date": validity_date,
+                    "check_data": check_data,
+                    "session_data": request.session["barangay-certificate"] if check_data else "",
+                },
+            )
+
+
 def create_document(request, document_id, document_name):
     """Create a document.
 
