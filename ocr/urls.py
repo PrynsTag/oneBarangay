@@ -14,10 +14,5 @@ urlpatterns = [
     ),
     path("save_result", views.SaveScanResultView.as_view(), name="save_result"),
     path("", views.RBITableView.as_view(), name="rbi_table"),
-    path("rbi", views.RBIView.as_view(), name="rbi"),
-    path(
-        "<str:page>/<str:created_at>/",
-        views.RBIView.as_view(),
-        name="rbi",
-    ),
+    path("dummy_rbi", views.DummyRBIView.as_view(), name="dummy_rbi"),
 ]

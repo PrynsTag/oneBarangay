@@ -8,8 +8,6 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import ast
-import base64
 import io
 import os
 from pathlib import Path
@@ -17,34 +15,26 @@ from pathlib import Path
 import sentry_sdk
 from dotenv import load_dotenv
 from google.cloud import secretmanager
-from google.oauth2 import service_account
 from sentry_sdk.integrations.django import DjangoIntegration
+
+from one_barangay.scripts.service_account import gcloud_auth
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env_file = os.path.join(BASE_DIR, ".env")
-load_dotenv()
-
-# Decode credential to JSON
-decoded_bytes = base64.b64decode(os.environ.setdefault("GOOGLE_STORAGE_CREDENTIALS", ""))
-decoded_str = str(decoded_bytes, "utf-8")
-GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-    ast.literal_eval(decoded_str)
-)
 
 if os.path.isfile(env_file):
     # Use a local secret file, if provided
-
     load_dotenv(env_file)
-# ...
+
 elif os.environ.get("GOOGLE_PROJECT_ID", None):  # noqa: SIM106
     # Pull secrets from Secret Manager
-    project_id = os.environ.get("GOOGLE_PROJECT_ID")
-
-    client = secretmanager.SecretManagerServiceClient(credentials=GS_CREDENTIALS)
-    settings_name = os.environ.get("SETTINGS_NAME", "oneBarangay-ENV-Variables")
+    project_id = os.environ.get("SECRET_MANAGER_PROJECT_ID")
+    settings_name = os.environ.get("SETTINGS_NAME")
     name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+
+    client = secretmanager.SecretManagerServiceClient()
     payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
 
     load_dotenv(stream=io.StringIO(payload))
@@ -66,7 +56,6 @@ SESSION_ENGINE = "django.contrib.sessions.backends.file"
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 
-
 # Application definition
 INSTALLED_APPS = [
     "one_barangay",
@@ -75,6 +64,7 @@ INSTALLED_APPS = [
     "app",
     "services",
     "django.contrib.sessions",
+    "data_viz",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.messages",
@@ -97,6 +87,8 @@ MIDDLEWARE = [
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
+LOGGING_CONFIG = None
 
 ROOT_URLCONF = "one_barangay.urls"
 TEMPLATE_DIR = os.path.join(BASE_DIR, "one_barangay", "templates")  # ROOT dir for templates
@@ -170,11 +162,15 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "one_barangay", "static"),
     os.path.join(BASE_DIR, "ocr", "static"),
     os.path.join(BASE_DIR, "services", "static"),
+    os.path.join(BASE_DIR, "data_viz", "static"),
 ]
+
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 DEFAULT_FILE_STORAGE = "one_barangay.scripts.storage_backends.GoogleCloudMediaStorage"
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
+GS_CREDENTIALS = gcloud_auth()
+
 GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
 GS_STATIC_BUCKET_NAME = os.getenv("GS_STATIC_BUCKET_NAME")
 GS_BUCKET_NAME = GS_PROJECT_ID

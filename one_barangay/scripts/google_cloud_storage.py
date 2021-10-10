@@ -10,58 +10,58 @@ from dotenv import load_dotenv
 from gcloud.aio.storage import Storage
 from google.cloud import storage
 
-from one_barangay.scripts.service_account import get_service_from_b64
-
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 
 async def async_upload_to_bucket(
     filepath: str,
     file_obj,
-    target_bucket_name: str,
-    bucket_folder: str,
+    gcs_path: str,
 ):
     """Upload files to bucket.
 
     Args:
       filepath: str: The path to the file to be uploaded.
       file_obj: The file object from reading a file
-      target_bucket_name: str: The bucket name from which to download to.
-      bucket_folder: str: The folder from the bucket name from which to download to.
+      gcs_path: str: The target bucket name and sub-folder in
+                     GCS to upload to. (e.g. documents/photo)
 
     Returns:
       The path to the uploaded file.
     """
-    service_account_path = get_service_from_b64()
     async with aiohttp.ClientSession() as session:
-        gcs_storage = Storage(service_file=service_account_path, session=session)  # skipcq
+        gcs_storage = Storage(session=session)  # skipcq
         gcs_filename = filepath.split("/")[-1]
-        await gcs_storage.upload(target_bucket_name, f"{bucket_folder}/{gcs_filename}", file_obj)
-        return f"https://storage.googleapis.com/\
-                {target_bucket_name}/{bucket_folder}/\
-                {urllib.parse.quote(gcs_filename)}"
+        await gcs_storage.upload(gcs_path, gcs_filename, file_obj)
+        return f"https://storage.googleapis.com/{gcs_path}/{urllib.parse.quote(gcs_filename)}"
 
 
-async def upload_to_gcs_runner(filepath: str):
+async def upload_to_gcs_runner(
+    filepath: str,
+    gcs_path: str,
+):
     """Call the 'async_upload_to_bucket'.
 
     Args:
       filepath: str: The path to the file to be uploaded.
+      gcs_path: str: The target bucket name and sub-folder in GCS.
 
     Returns:
       The path to the uploaded file.
     """
-    target_bucket_name = str(os.getenv("GS_MEDIA_BUCKET_NAME"))
-    bucket_folder = str(os.getenv("FILE_BUCKET_FOLDER"))
+    # target_bucket_name = target_bucket_name
+    # bucket_folder = bucket_folder
     try:
         async with AIOFile(filepath, mode="rb") as afp:
             f = await afp.read()
-            path = await async_upload_to_bucket(filepath, f, target_bucket_name, bucket_folder)
+            path = await async_upload_to_bucket(filepath, f, gcs_path)
             return path
     except FileNotFoundError as e:
-        raise FileNotFoundError("File not found. Make sure the file exists.") from e
+        logger.exception("File not found. Make sure the file exists. %s", e)
     except OSError as e:
-        logging.exception("File not uploaded. %s", e)
+        logger.exception("File not uploaded. %s", e)
 
 
 def download_from_gcs(
@@ -93,9 +93,9 @@ def download_from_gcs(
 
         logging.info("%s downloaded to %s.", filename, destination)
     except FileNotFoundError as e:
-        raise FileNotFoundError("File not found. Make sure the file exists.") from e
+        logger.exception("File not found. Make sure the file exists. %s", e)
     except OSError as e:
-        logging.exception("%s not downloaded. %s", filename, e)
+        logger.exception("%s not downloaded. %s", filename, e)
 
 
 # if __name__ == "__main__":

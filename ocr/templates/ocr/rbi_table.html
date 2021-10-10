@@ -4,25 +4,17 @@
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="{% static "/assets/vendor/fontawesome/css/fontawesome.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "/assets/vendor/fontawesome/css/brands.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "/assets/vendor/fontawesome/css/solid.css" %}" rel="stylesheet" type="text/css">
-
     <link href="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.css" %}" rel="stylesheet" type="text/css">
-
     <link href="{% static "/assets/vendor/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css" %}" rel="stylesheet" type="text/css">
-
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.js" %}"></script>
-
     <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/copy-rows/bootstrap-table-copy-rows.min.js" %}"></script>
-
     <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/mobile/bootstrap-table-mobile.min.js" %}"></script>
     <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js" %}"></script>
     <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.js" %}"></script>
-
-
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="{% static "/assets/vendor/bootstrap-table/dist/locale/bootstrap-table-en-US.min.js" %}"></script>
@@ -41,10 +33,17 @@
     </div>
 
     <div class="buttons pb-4">
-        <a href="upload">
+        <a href="{% url "upload" %}">
             <button type="button" class="btn btn-primary d-inline-flex align-items-center">
                 <i class="fas fa-qrcode pe-2" aria-hidden="true"></i>
                 Scan
+            </button>
+        </a>
+
+        <a href="{% url "dummy_rbi" %}">
+            <button type="button" class="btn btn-primary d-inline-flex align-items-center">
+                <i class="fas fa-robot pe-2" aria-hidden="true"></i>
+                Generate Dummy
             </button>
         </a>
     </div>
@@ -53,7 +52,6 @@
             <div class="table-responsive overflow-hidden">
                 <table
                     id="table"
-                    class=" table-centered table-nowrap mb-0 rounded table-bordered table-hover"
                     data-toolbar="#toolbar"
                     data-search="true"
                     data-buttons-order="['paginationSwitch', 'refresh', 'toggle', 'fullscreen', 'add', 'edit', 'export', 'copy', 'sort', 'columns']"
@@ -77,257 +75,28 @@
                     data-toolbar-align="end"
                     data-pagination-loop="true"
                     data-id-field="house_num"
+                    data-id-table="advancedTable"
+                    data-advanced-search="true"
+                    data-search-accent-neutralise="true"
+                    data-search-highlight="true"
                     data-page-list="[10, 25, 50, 100, all]"
                     data-show-footer="true"
-                    data-url="https://storage.googleapis.com/onebarangay-malanday/data1.json"
+                    data-auto-refresh="true"
+                    data-url="{{ url }}"
+                    data-cache="false"
+                    data-reorderable-columns="true"
                     data-response-handler="responseHandler">
                 </table>
-                <script>
-                    const $table = $('#table');
-                    const $remove = $('#remove');
-                    let selections = [];
-
-                    function getIdSelections() {
-                        return $.map($table.bootstrapTable('getSelections'), function (row) {
-                            return row.id
-                        })
-                    }
-
-                    function responseHandler(res) {
-                        $.each(res.rows, function (i, row) {
-                            row.state = $.inArray(row.id, selections) !== -1
-                        })
-                        return res
-                    }
-
-                    function detailFormatter(index, row) {
-                        const html = [];
-                        $.each(row, function (key, value) {
-                            html.push('<p><b>' + key + ':</b> ' + value + '</p>')
-                        })
-                        return html.join('')
-                    }
-
-                    function operateFormatter(value, row, index) {
-                        return [
-                            '<a class="remove" href="javascript:void(0)" title="Remove">',
-                            '<i class="fas fa-trash"></i>',
-                            '</a>'
-                        ].join('')
-                    }
-
-                    window.operateEvents = {
-                        'click .remove': function (e, value, row, index) {
-                            $table.bootstrapTable('remove', {
-                                field: 'id',
-                                values: [row.id]
-                            })
-                        }
-                    }
-
-                    function totalTextFormatter(data) {
-                        return 'Total'
-                    }
-
-                    function totalNameFormatter(data) {
-                        return data.length
-                    }
-
-                    function initTable() {
-                        $table.bootstrapTable('destroy').bootstrapTable({
-                            smartDisplay: true,
-                            sortReset: true,
-                            stickyHeader: true,
-                            stickyHeaderOffsetLeft: parseInt($('body').css('padding-left'), 10),
-                            stickyHeaderOffsetRight: parseInt($('body').css('padding-right'), 10),
-                            theadClasses: "thead-dark",
-                            columns: [
-                                [{
-                                    field: 'state',
-                                    checkbox: true,
-                                    rowspan: 1,
-                                    align: 'center',
-                                    valign: 'middle'
-                                }, {
-                                    field: "created_at",
-                                    title: 'Date Created',
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                    sortable: true,
-                                    footerFormatter: totalNameFormatter,
-
-                                }, {
-                                    field: "house_num",
-                                    title: 'House #',
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                    sortable: true,
-                                },{
-                                    field: "date",
-                                    title: 'Date Filled',
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                    sortable: true,
-                                }, {
-                                    field: "address",
-                                    title: 'House Address',
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                    sortable: true,
-                                }, {
-                                    field: 'first_name',
-                                    title: 'First Name',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'middle_name',
-                                    title: 'Middle Name',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'last_name',
-                                    title: 'Last Name',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'ext',
-                                    title: 'Ext',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'sex',
-                                    title: 'Gender',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'birth_date',
-                                    title: 'Birth Date',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'birth_place',
-                                    title: 'Birth Place',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'civil_status',
-                                    title: 'Civil Status',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'monthly_income',
-                                    title: 'Monthly Income',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'citizenship',
-                                    title: 'Citizenship',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'remarks',
-                                    title: 'Relationship to Head',
-                                    sortable: true,
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                },{
-                                    field: 'operate',
-                                    title: 'Item Operate',
-                                    rowspan: 2,
-                                    align: 'center',
-                                    valign: 'middle',
-                                    clickToSelect: false,
-                                    events: window.operateEvents,
-                                    formatter: operateFormatter
-                                }],
-                                []
-                            ]
-                        })
-                        $table.on('check.bs.table uncheck.bs.table ' +
-                            'check-all.bs.table uncheck-all.bs.table',
-                            function () {
-                                $remove.prop('disabled', !$table.bootstrapTable('getSelections').length)
-
-
-                                // save your data, here just save the current page
-                                selections = getIdSelections()
-                                // push or splice the selections if you want to save all data selections
-                            })
-                        $table.on('all.bs.table', function (e, name, args) {
-                            console.log(name, args)
-                        })
-                    }
-
-                    function customButtons () {
-                        return {
-                            btnDelete: {
-                                name: "delete",
-                                text: 'Delete a number of rows',
-                                icon: 'fas fa-trash',
-                                event: () => {
-                                    const ids = getIdSelections();
-                                    $table.bootstrapTable('remove', {
-                                        field: 'id',
-                                        values: ids,
-                                    })
-                                },
-                                attributes: {
-                                    title: 'Delete a number of rows',
-                                    id: "remove",
-                                }
-                            },
-                            btnEdit: {
-                                name: "edit",
-                                text: 'Edit a row',
-                                icon: 'fas fa-edit',
-                                event: function () {
-                                    alert('Do some stuff to e.g. edit a row')
-                                },
-                                attributes: {
-                                    title: 'Edit a row in the table',
-                                    id: "edit",
-                                }
-                            }
-                        }
-                    }
-
-                    $(function() {
-                        initTable()
-                        customButtons()
-                    })
-                </script>
             </div>
         </div>
     </div>
 {% endblock content %}
 {% block scripts %}
+    <script src="{% static "ocr/js/rbi_table.js" %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/toolbar/bootstrap-table-toolbar.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
 {% endblock scripts %}

@@ -20,7 +20,7 @@ urlpatterns = [
     path("", include("app.urls")),
     path("barangay-admin/appointment/", include("appointment.urls")),
     path("barangay-admin/services/", include("services.urls")),
+    path("barangay-admin/dashboard", include("data_viz.urls")),
     # path("barangay-admin/announcement", include("announcement.urls")),
     # path("barangay-admin/user-management", include("user-management.urls")),
-    # path("barangay-admin/data-viz", include("data-viz.urls")),
 ]

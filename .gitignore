@@ -150,3 +150,6 @@ media/
 
 /static/
 !**/static/**
+/node_modules/
+
+chart.ipynb

@@ -1,4 +1,5 @@
 """Dummy class to generate dummy data."""
+from datetime import date, datetime
 from random import SystemRandom
 
 import pytz
@@ -13,13 +14,13 @@ class RBIDummy:
         self.crypto_gen = SystemRandom()
         self.fake = Faker(["en_PH"])
 
-    def create_rbi(self):
+    def create_dummy_rbi(self):
         """Create RBI dummy data."""
         house_num = self.crypto_gen.randrange(100000, 999999)
         address = self.fake.address()
-        date = self.fake.date()
+        date_accomplished = self.fake.date()
         last_name = self.fake.last_name()
-        created_at = self.fake.iso8601(tzinfo=pytz.timezone("Asia/Manila"))
+        created_at = datetime.now(tz=pytz.timezone("Asia/Manila")).isoformat()
 
         family_dictionary = {}
         for idx in range(0, self.crypto_gen.randint(1, 10)):
@@ -27,8 +28,15 @@ class RBIDummy:
             middle_name = self.fake.last_name()
             ext = self.fake.suffix()
             birth_place = self.fake.city()
-            birth_date = self.fake.date_of_birth(minimum_age=18, maximum_age=60).strftime(
+            birth_date = self.fake.date_of_birth(minimum_age=0, maximum_age=60).strftime(
                 "%B %d, %Y"
+            )
+            today = date.today()
+            birth_date_dt = datetime.strptime(birth_date, "%B %d, %Y")
+            age = (
+                today.year
+                - birth_date_dt.year
+                - ((today.month, today.day) < (birth_date_dt.month, birth_date_dt.day))
             )
             sex = self.crypto_gen.choice(["M", "F"])
             civil_status = self.crypto_gen.choice(
@@ -41,7 +49,10 @@ class RBIDummy:
                 ]
             )
             citizenship = self.crypto_gen.choice(["Filipino", "Foreigner"])
-            monthly_income = f"{self.crypto_gen.randrange(10000, 1000000):,}"
+            if age > 18:
+                monthly_income = f"{self.crypto_gen.randrange(0, 200000):,}"
+            else:
+                monthly_income = f"{0:,}"
 
             if idx == 0:
                 remarks = "Father"
@@ -68,6 +79,6 @@ class RBIDummy:
             "house_num": house_num,
             "created_at": created_at,
             "address": address,
-            "date_accomplished": date,
+            "date_accomplished": date_accomplished,
             "family_members": family_dictionary,
         }

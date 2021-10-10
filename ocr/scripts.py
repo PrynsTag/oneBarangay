@@ -6,6 +6,11 @@ import math
 from datetime import datetime
 
 import pytz
+from dotenv import load_dotenv
+
+from one_barangay.scripts.storage_backends import AzureStorageBlob
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -48,25 +53,13 @@ class Script:
 
         return formatted_data
 
-    def write_to_json(self, data, filename="rbi"):
-        """Write data to json file.
-
-        Args:
-          filename: The name of the file without extension.
-          data: A dictionary data.
-
-        Returns:
-          None.
-        """
-        with open(f"{filename}.json", "w", encoding="UTF-8") as file:
-            json.dump(data, file)
-
-    def append_to_json(self, new_data, filename="data1"):
+    def append_to_local_json_file(self, new_data, filename="rbi_data", store_to_cloud=False):
         """Write data to json file.
 
         Args:
           filename: The name of the file without extension.
           new_data: The data you want to append to.
+          store_to_cloud: A boolean check to store the file to GCS.
 
         Returns:
           None.
@@ -74,13 +67,18 @@ class Script:
         with open(f"{filename}.json", encoding="UTF-8") as file:
             json_data = json.load(file)
 
-        json_data["rows"].append(new_data)
+            json_data["rows"] += new_data["rows"]
+            json_data["total"] = len(json_data["rows"])
+            json_data["totalNotFiltered"] = json_data["total"]
 
         with open(f"{filename}.json", "w", encoding="UTF-8") as file:
             json.dump(json_data, file)
 
-    def format_dictionary_file(self, dictionary_list):
-        """Format a dictionary for to display.
+        if store_to_cloud:
+            AzureStorageBlob().upload_local_json_file(f"{filename}.json")
+
+    def format_file_upload_card(self, dictionary_list):
+        """Format uploaded file details for display.
 
         Args:
           dictionary_list: A list of dictionary to format.

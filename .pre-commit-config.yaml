@@ -10,7 +10,7 @@ ci:
   autofix_prs: true
   autoupdate_commit_msg: "bump[pre-commit.ci]: auto-update pre-commit hooks"
   autoupdate_schedule: weekly
-  skip: [ ]
+  skip: [pylint, mypy, eslint]
   submodules: false
 
 repos:
@@ -101,7 +101,11 @@ repos:
         additional_dependencies:
           - eslint@latest
           - eslint-config-standard@latest
-        exclude: ".*\/vendor.*"
+        exclude: |
+            (?x)^(
+                .*\/vendor.*|
+                .*one_barangay\/static\/assets\/.*\.js
+            )$
 
   - repo: https://github.com/pycqa/pylint
     rev: v2.11.1
@@ -115,6 +119,7 @@ repos:
           - python-dotenv
           - google-cloud-secret-manager
           - google-api-python-client
+          - firebase_admin
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.910
@@ -125,14 +130,15 @@ repos:
           djangorestframework-stubs,
           django-stubs,
           django,
+          types-requests,
           sentry-sdk,
           python-dotenv,
           google-cloud-secret-manager,
-          google-api-python-client
+          firebase_admin
         ]
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.28.0
+    rev: v2.29.0
     hooks:
       - id: pyupgrade
         args: [ "--py36-plus", "--py37-plus", "--py38-plus", "--py39-plus" ]

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "ocr",
     "services",
     "appointment",
+    "data_viz",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.messages",
@@ -181,6 +182,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "one_barangay", "static"),
     os.path.join(BASE_DIR, "ocr", "static"),
     os.path.join(BASE_DIR, "appointment", "static"),
+    os.path.join(BASE_DIR, "data_viz", "static"),
 ]
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
@@ -188,7 +190,7 @@ GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
 GS_STATIC_BUCKET_NAME = GS_PROJECT_ID
 GS_BUCKET_NAME = GS_PROJECT_ID
 
-if os.getenv("RUNNER", "") == "main.py":
+if os.getenv("GAE_ENV", "").startswith("standard"):
     STATIC_URL = f"https://storage.googleapis.com/{GS_STATIC_BUCKET_NAME}/"
     MEDIA_URL = f"https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"

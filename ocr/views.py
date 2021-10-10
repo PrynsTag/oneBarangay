@@ -2,8 +2,10 @@
 import asyncio
 import json
 import logging
+import os
 from datetime import datetime
 
+import pytz
 from django.contrib import messages
 from django.core.cache import cache
 from django.core.files.storage import default_storage
@@ -13,22 +15,24 @@ from django.views.generic import FormView, TemplateView
 from dotenv import load_dotenv
 from google.api_core.exceptions import InvalidArgument
 
+from ocr.dummy_data import RBIDummy
 from ocr.firestore_model import FirestoreModel
 from ocr.form_recognizer import form_recognizer_runner
 from ocr.forms import UploadForm
 from ocr.scripts import Script
+from one_barangay.scripts.storage_backends import AzureStorageBlob
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
 
 
+# TODO: Use Django Forms for displaying html forms.
 class FileUploadView(FormView):
     """View for file upload."""
 
     form_class = UploadForm
     template_name = "ocr/file_upload.html"
-    success_url = "ocr/ocr_files.html"
 
     def __init__(self):
         """Initialize FileUploadView class variables."""
@@ -47,11 +51,10 @@ class FileUploadView(FormView):
           on fail: The file_upload.html along with context.
         """
         files = [request.FILES[file] for file in request.FILES]
-        # TODO: Get thumbnail data from dropzone
-        # TODO: Pass the thumbnail data to session
+        # TODO: Refactor OCR Files UI for redundant UI.
         dict_files = [json.loads(file) for file in request.POST.getlist("fileData")]
 
-        request.session["files"] = self.script.format_dictionary_file(dict_files)
+        request.session["files"] = self.script.format_file_upload_card(dict_files)
 
         for file in files:
             default_storage.save(file.name, file)
@@ -59,6 +62,7 @@ class FileUploadView(FormView):
         return HttpResponse(request.session["files"])
 
 
+# Todo: Fix settings-box.html.
 class ScanFileView(FormView):
     """View for file upload."""
 
@@ -78,6 +82,7 @@ class ScanFileView(FormView):
         return render(request, self.template_name)
 
 
+# Todo: Fix File Card UI.
 class OCRFilesView(TemplateView):
     """Display ocr_files template."""
 
@@ -95,6 +100,7 @@ class OCRFilesView(TemplateView):
         return {"files": self.request.session["files"]}
 
 
+# TODO: Change color of feedback depending on confidence level.
 class ScanResultView(TemplateView):
     """View for scan_result.html."""
 
@@ -136,6 +142,7 @@ class ScanResultView(TemplateView):
         return {"ocr_header": ocr[0], "ocr_text": ocr[1]}
 
 
+# TODO: Add regex checking in input fields.
 class SaveScanResultView(FormView):
     """View for file upload."""
 
@@ -158,7 +165,7 @@ class SaveScanResultView(FormView):
           : scan_result.html with context of detected text from table image.
         """
         house_num = request.POST.get("house_num")
-        created_at = datetime.now().isoformat()
+        created_at = datetime.now(tz=pytz.timezone("Asia/Manila")).isoformat()
         address = request.POST.get("address")
         date_accomplished = request.POST.get("date")
         last_name = request.POST.getlist("last_name")
@@ -211,11 +218,18 @@ class SaveScanResultView(FormView):
 
         try:
             formatted_data = self.script.format_firestore_data([my_data])
-            self.script.append_to_json(formatted_data)
-            self.firestore.store_rbi(house_num, my_data)
+            if os.getenv("GAE_ENV", "").startswith("standard"):
+                azure_storage = AzureStorageBlob()
+                json_data = azure_storage.append_to_json_data(formatted_data["rows"])
+                azure_storage.upload_json_data(json_data)
+            else:
+                self.script.append_to_local_json_file(formatted_data)
+
+            self.firestore.store_rbi(my_data)
 
             logger.info("RBI Document saved!")
             messages.add_message(request, messages.SUCCESS, "RBI Document is saved!")
+
         except InvalidArgument as e:
             logger.exception("RBI document not saved! %s", e)
             messages.add_message(request, messages.ERROR, "RBI document not saved!")
@@ -223,50 +237,67 @@ class SaveScanResultView(FormView):
         return redirect("ocr_files")
 
 
+# TODO: Add custom view for profiling.
 class RBITableView(TemplateView):
-    """View for scan_result.html."""
+    """View for rbi_table.html."""
 
     template_name = "ocr/rbi_table.html"
 
-
-class RBIView(TemplateView):
-    """View for RBI."""
-
-    template_name = "ocr/rbi_result.html"
-
     def get_context_data(self, **kwargs):
-        """Get context data and run form recognizer.
+        """Get json file url.
 
+        Get the json file to display RBI table.
         Args:
-          **kwargs: Additional keyword argument.
+          **kwargs: Keyword arguments.
 
         Returns:
-          : scan_result.html with context of detected text from table image.
+          The url for json file.
         """
+        if os.getenv("GAE_ENV", "").startswith("standard"):
+            url = AzureStorageBlob().file_url
+        else:
+            # run ./simple_cors_server.py
+            url = "http://127.0.0.1:9000/rbi_data.json"
+
+        return {"url": url}
+
+
+class DummyRBIView(FormView):
+    """View for rbi_dummy.html."""
+
+    form_class = UploadForm
+    template_name = "ocr/rbi_dummy.html"
+
+    def post(self, request, *args, **kwargs):
+        """POST method to render dummy rbi.
+
+        Args:
+          request: The URL request.
+          *args: Additional arguments.
+          **kwargs: Additional keyword arguments.
+
+        Returns:
+          The rbi_dummy.html along with the generated dummy list.
+        """
+        generated_dummy_list = []
+        dummy_count = int(request.POST["dummyCount"])
+
         firestore = FirestoreModel()
-        firestore.store_dummy_rbi()
+        script = Script()
+        azure_storage = AzureStorageBlob()
 
-        try:
-            if kwargs["page"] == "next_page":
-                family_members = firestore.rbi_next_page(kwargs["created_at"])
+        for _ in range(dummy_count):
+            dummy_data = RBIDummy().create_dummy_rbi()
+            formatted_data = script.format_firestore_data([dummy_data])
+
+            generated_dummy_list += formatted_data["rows"]
+
+            if os.getenv("GAE_ENV", "").startswith("standard"):
+                json_data = azure_storage.append_to_json_data(formatted_data["rows"])
+                azure_storage.upload_json_data(json_data)
             else:
-                family_members = firestore.rbi_previous_page(kwargs["created_at"])
-        except KeyError:
-            family_members = firestore.rbi_current_page()
+                script.append_to_local_json_file(formatted_data)
 
-        try:
-            last_created_at = family_members["rows"][-1]["created_at"]
-            first_created_at = family_members["rows"][0]["created_at"]
+            firestore.store_rbi(dummy_data)
 
-            data = {
-                "family_members": family_members["rows"],
-                "last_created_at": last_created_at,
-                "first_created_at": first_created_at,
-            }
-        except IndexError:
-            data = {
-                "family_members": family_members,
-                "last_created_at": None,
-                "first_created_at": None,
-            }
-        return data
+        return render(request, self.template_name, {"generated_dummy": generated_dummy_list})
