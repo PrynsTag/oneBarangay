@@ -3,6 +3,7 @@ import base64
 import datetime
 
 from django import template
+from slugify import slugify
 
 register = template.Library()
 
