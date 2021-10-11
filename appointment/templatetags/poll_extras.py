@@ -163,3 +163,17 @@ def nano_to_date(value):
     )
     nano_timedelta = nano_to_datetime + datetime.timedelta(hours=8)
     return nano_timedelta.date()
+
+
+@register.filter("date_to_str")
+def date_to_str(value):
+    """Convert date into string.
+
+    Args:
+      value: date
+
+    Returns:
+        String format of date
+    """
+    date_convert_str = nano_to_date(value).__str__()
+    return date_convert_str
