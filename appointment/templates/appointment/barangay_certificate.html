@@ -1,0 +1,52 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+    Barangay Admin - Issue Barangay Certificate
+{% endblock %}
+
+{% block content %}
+    {% if check_data %}
+        {% include "appointment/fragments/certificate_exist_true.html" %}
+    {% else %}
+        {% include "appointment/fragments/certificate_exist_false.html" %}
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
+            integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/"
+            crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        // Current Date
+        document.getElementById("date").value = "{{ current_date }}";
+
+        // Document Validity Date
+        document.getElementById("validity").value = "{{ validity_date }}";
+    </script>
+
+    {% if check_data %}
+        <script type="text/javascript">
+
+            const getBase64FromUrl = async (url) => {
+                const data = await fetch(url);
+                const blob = await data.blob();
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = () => {
+                        const base64data = reader.result;
+                        resolve(base64data);
+                    }
+                });
+            }
+
+            getBase64FromUrl("https://storage.googleapis.com/onebarangay-media/documents/barangay-certificate.jpg").then(function (result) {
+                var doc = new jsPDF();
+
+                doc.addImage(result, 0, 0, 215.9, 279.4);
+                doc.save();
+            })
+        </script>
+    {% endif %}
+{% endblock %}
