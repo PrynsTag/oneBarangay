@@ -177,3 +177,22 @@ def date_to_str(value):
     """
     date_convert_str = nano_to_date(value).__str__()
     return date_convert_str
+
+
+@register.filter("join_dict")
+def join_dict(value, key):
+    """Join text in dictionary collection.
+
+    Args:
+      value: data in dictionary collection
+      key: key value in data collection
+
+    Returns:
+        Joined string format documents
+    """
+    temp_list = []
+
+    for data in value:
+        temp_list.append(data[key])
+
+    return ", ".join(temp_list)
