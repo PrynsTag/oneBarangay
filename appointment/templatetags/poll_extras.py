@@ -128,3 +128,16 @@ def count_list(value):
         Number of data from the list
     """
     return len(value)
+
+
+@register.filter("text_slugify")
+def text_slugify(value):
+    """Convert text to slugify.
+
+    Args:
+      value: text
+
+    Returns:
+        Text in slugify format
+    """
+    return slugify(value)
