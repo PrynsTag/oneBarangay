@@ -141,3 +141,25 @@ def text_slugify(value):
         Text in slugify format
     """
     return slugify(value)
+
+
+@register.filter("nano_to_date")
+def nano_to_date(value):
+    """Convert nano to date.
+
+    Args:
+      value: Firebase Nanosecond
+
+    Returns:
+        Date format
+    """
+    nano_to_datetime = datetime.datetime(
+        year=value.year,
+        month=value.month,
+        day=value.day,
+        hour=value.hour,
+        minute=value.minute,
+        second=value.second,
+    )
+    nano_timedelta = nano_to_datetime + datetime.timedelta(hours=8)
+    return nano_timedelta.date()
