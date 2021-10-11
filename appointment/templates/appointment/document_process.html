@@ -1,0 +1,28 @@
+{% extends "layouts/base.html" %}
+
+{% load poll_extras %}
+
+{% block title %}
+    Barangay Admin - Process Document
+{% endblock %}
+
+{% block content %}
+    <a href="{% url "appointment:remove_document_session" user_data.start_appointment|date_to_str %}">Back to appointments</a>
+    <h1>Process Document</h1>
+
+    <h2>Resident Profile</h2>
+    <ul>
+        <li>Name: {{ user_data.first_name }} {{ user_data.middle_name }} {{ user_data.last_name }}</li>
+        <li>Account type: {{ user_data.account_type }}</li>
+        <li>No. of documents: {{ user_data.document|count_list }}</li>
+    </ul>
+
+    <h2>Document</h2>
+    <ul>
+        {% for document in user_data.document %}
+            <li>
+                <a href="{% url "appointment:document_data" user_data.document_id document.slugify %}">{{ document.document_name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
