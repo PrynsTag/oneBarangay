@@ -170,7 +170,7 @@ class FirestoreData:
             .where("start_appointment", "<=", end_date_delta)
             .order_by("start_appointment")
         )
-        result = date_ref.get()
+        result = date_ref.stream()
 
         appointment_list = []
 
