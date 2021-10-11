@@ -115,3 +115,16 @@ def datetime_to_time(value):
         time
     """
     return value.strftime("%I:%M %p")
+
+
+@register.filter("count_list")
+def count_list(value):
+    """Count number of list.
+
+    Args:
+      value: collection list
+
+    Returns:
+        Number of data from the list
+    """
+    return len(value)
