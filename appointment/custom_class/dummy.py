@@ -7,6 +7,7 @@ from django.http import Http404
 from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
+from slugify import slugify
 
 from appointment.custom_class.encrypter import Encrypter
 from ocr.scripts import Script
@@ -20,6 +21,7 @@ document = [
     "Barangay Clearance",
     "Certificate of Indigency",
     "Barangay Cedula",
+    "Barangay Certificate",
 ]
 
 status = ["request", "in_progress", "get", "completed"]
@@ -112,10 +114,10 @@ class Dummy:
         try:
             datetime.datetime(year=year, month=month, day=day)
 
-        except ValueError:
-            day = datetime.datetime.today().day
+        except ValueError as invalid_date:
+            raise Http404 from invalid_date
 
-        finally:
+        else:
             temp_hour = time_start
             temp_minute = 0
 
@@ -183,11 +185,12 @@ class Dummy:
                         "contact_no": contact_no,
                         "account_type": account_type,
                         "created_on": str(datetime.datetime.now()),
-                        # "created_on": datetime.datetime.now().isoformat(),
                         "user_uid": user_uid,
                     }
 
-                    Script().write_to_json(data=user_account_data, filename="dummy")
+                    Script().append_to_local_json_file(
+                        new_data=user_account_data, filename="dummy"
+                    )
 
                     doc_ref_account.set(user_account_data, merge=True)
 
@@ -199,14 +202,22 @@ class Dummy:
                         minute=temp_minute,
                     )
 
+                    select_document = document[cryptogen.randrange(0, len(document))]
+
                     # Adding user appointments in firestore
                     appointment_data = {
-                        "document_id": document_id,
+                        "document_id": Encrypter(text=document_id).code_encoder(),
                         "first_name": first_name,
                         "middle_name": middle_name,
                         "last_name": last_name,
-                        "document": [document[cryptogen.randrange(0, 3)]],
-                        "status": status[cryptogen.randrange(0, 4)],
+                        "document": [
+                            {
+                                "document_name": select_document,
+                                "slugify": slugify(select_document),
+                                "ready_issue": False,
+                            }
+                        ],
+                        "status": status[cryptogen.randrange(0, len(status))],
                         "user_uid": user_uid,
                         "account_type": account_type,
                         "start_appointment": result_utc,
