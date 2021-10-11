@@ -632,3 +632,35 @@ class FirestoreData:
             None adds new document id and data field
         """
         self.db.collection(collection_name).document(document_id).set(document_data)
+
+    def active_document(self, document_slug: str):
+        """Get active document in firebase firestore.
+
+        Args:
+          document_slug: document name in slug
+
+        Returns:
+            Data of active document
+        """
+        collections = (
+            self.db.collection("admin_settings")
+            .document("document")
+            .collection(document_slug)
+            .where("active", "==", True)
+            .stream()
+        )
+
+        document_result = []
+
+        for data in collections:
+            document_result.append(data.to_dict())
+
+        if not document_result:
+            raise Http404("Page not Found")
+        else:
+
+            # Must return only one document
+            if len(document_result) > 1:
+                raise Http404("Invalid multiple documents")
+            else:
+                return document_result[0]
