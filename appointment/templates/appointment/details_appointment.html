@@ -11,7 +11,7 @@
 {% block content %}
     <h1>Appointment Details</h1>
 
-    <a href="{% url "appointment:appointment_resched" user_detail.document_id|base64_encode reschedule %}">Reschedule
+    <a href="{% url "appointment:appointment_resched" user_detail.document_id reschedule %}">Reschedule
         Appointment</a>
 
     <ul>
@@ -34,7 +34,7 @@
         <li>
             Document Type:
             <ul>
-                <li>{{ user_detail.document|join:", " }}</li>
+                <li>{{ user_detail.document|join_dict:"document_name" }}</li>
             </ul>
         </li>
         <li>Total Amount: {{ amount }}</li>
@@ -45,7 +45,7 @@
         <li><img src="{{ user_detail.appointment_image }}" alt="ID Verification"></li>
     </ul>
 
-    <form action="{% url "appointment:id_verification" user_detail.document_id|base64_encode %}" method="POST">
+    <form action="{% url "appointment:id_verification" user_detail.document_id %}" method="POST">
         {% csrf_token %}
         {{ form }}
         <input type="submit" name="submit" value="Search">
@@ -70,7 +70,7 @@
                 {% endfor %}
             </table>
 
-            <a href="{% url "appointment:user_verified" document_id %}">Confirm</a>
+            <a href="{% url "appointment:user_verify" document_id %}">Confirm</a>
             <a href="{% url "appointment:view_appointments" back %}">Back</a>
         {% else %}
             <table>
