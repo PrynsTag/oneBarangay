@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import ast
 import base64
+import logging
 import os
 from pathlib import Path
 
@@ -27,6 +28,9 @@ GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# For Logging
+logger = logging.getLogger(__name__)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/

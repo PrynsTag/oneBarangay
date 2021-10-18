@@ -1,18 +1,13 @@
 """Helper functions for OCR."""
 import copy
 import json
-import logging
 import math
 from datetime import datetime
 
 import pytz
-from dotenv import load_dotenv
 
+from one_barangay.local_settings import logger
 from one_barangay.scripts.storage_backends import AzureStorageBlob
-
-load_dotenv()
-
-logger = logging.getLogger(__name__)
 
 
 class Script:

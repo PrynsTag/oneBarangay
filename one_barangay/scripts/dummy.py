@@ -1,17 +1,16 @@
 """Dummy class to generate dummy data."""
 import datetime
-import logging
 from random import SystemRandom
 
 from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
+from one_barangay.local_settings import logger
 from one_barangay.scripts.service_account import firestore_auth
 
 appointment_app = firestore_auth("dummy_appointment_app")
 
-logger = logging.getLogger(__name__)
 
 working_hours = [
     "1300",

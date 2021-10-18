@@ -1,13 +1,12 @@
 """Module for firestore operations."""
 import datetime
-import logging
 
 from firebase_admin import auth, firestore
 
+from one_barangay.local_settings import logger
 from one_barangay.scripts.service_account import firestore_auth
 
 appointment_app = firestore_auth("test_app")
-logger = logging.getLogger(__name__)
 
 
 class FirestoreData:

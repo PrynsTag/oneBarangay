@@ -1,6 +1,5 @@
 """Create your Appointment views here."""
 import datetime
-import logging
 from collections import OrderedDict
 from random import SystemRandom
 
@@ -9,9 +8,8 @@ from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
 
+from one_barangay.local_settings import logger
 from one_barangay.scripts.service_account import firestore_auth
-
-logger = logging.getLogger(__name__)
 
 fake = Faker()
 appointment_app = firestore_auth("appointment_app")

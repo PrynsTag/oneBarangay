@@ -1,15 +1,13 @@
 """Py file for data_viz views."""
 import json
-import logging
 import os
 
 import pandas as pd
 import requests
 from django.views.generic import TemplateView
 
+from one_barangay.local_settings import logger
 from one_barangay.scripts.storage_backends import AzureStorageBlob
-
-logger = logging.getLogger(__name__)
 
 
 # TODO: Implement toggling of charts
