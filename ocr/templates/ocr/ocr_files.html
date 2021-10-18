@@ -45,7 +45,6 @@
     </div>
 {% endblock content %}
 {% block scripts %}
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         {% if messages %}
             {% for message in messages %}
@@ -58,7 +57,7 @@
                     })
                 {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
                     Swal.fire({
-                        icon: "fail",
+                        icon: "error",
                         title: "{{ message }}",
                         showConfirmButton: false,
                         timer: 1500

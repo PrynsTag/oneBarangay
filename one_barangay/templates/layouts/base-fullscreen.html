@@ -84,6 +84,9 @@
         <link href="{% static "/assets/vendor/fontawesome/css/solid.css" %}" rel="stylesheet" type="text/css">
     </head>
     <body>
-        {% block content %}{% endblock content %} {% include 'includes/scripts.html' %}
+        {% block content %}{% endblock content %}
+        {% include 'includes/before_script.html' %}
+        {% block scripts %}{% endblock scripts %}
+        {% include 'includes/scripts.html' %}
     </body>
 </html>
