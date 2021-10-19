@@ -199,11 +199,14 @@
                         aria-expanded="false"
                     >
                         <div class="media d-flex align-items-center">
-                            <img class="avatar rounded-circle" alt="Image placeholder"
-                                src="{% static "/assets/img/team/profile-picture-3.jpg" %}">
+                            {% if request.session.user.photo_url %}
+                                <img class="avatar rounded-circle" alt="User Image" src="{{ request.session.user.photo_url }}">
+                            {% else %}
+                                <img class="avatar rounded-circle" alt="User Image" src="{% static "/assets/img/icons/default_user.svg" %}">
+                            {% endif %}
                             <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                                 <span class="mb-0 font-small fw-bold text-gray-900">
-                                    {# Current User: <strong>{{ request.user.username }}</strong>#}
+                                    Current User: <strong>{{ request.session.user.first_name }}</strong>
                                 </span>
                             </div>
                         </div>
@@ -270,6 +273,10 @@
                             Support
                         </a>
                         <div role="separator" class="dropdown-divider my-1"></div>
+                        <a class="dropdown-item d-flex align-items-center" id="logout" type="button" href="{% url "auth:logout" %}">
+                            <img class="me-2" width="15" height="15" src="{% static "/assets/img/icons/logout-icon.svg" %}" alt="logout-icon">
+                            Logout
+                        </a>
                     </div>
                 </li>
             </ul>

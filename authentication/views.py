@@ -1,37 +1,54 @@
 """Create your authentication views here."""
+import json
+import os
+from typing import Union
+
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.http import HttpResponseRedirect
+from django.core.mail import send_mail
+from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.views.generic import FormView
+from firebase_admin import auth
+from firebase_admin.auth import UserRecord
 
-from .forms import ForgotPasswordForm, LockAccountForm, LoginForm, SignUpForm
+from ocr.firestore_model import FirestoreModel
+from one_barangay.local_settings import logger
+from one_barangay.scripts.storage_backends import AzureStorageBlob
+from one_barangay.settings import firebase_app
+from user_management.json_functions import UserManagementJSON
+from user_profile.models import UserModel
+
+from .forms import AuthenticationForm, ForgotPasswordForm, LockAccountForm
+from .models import AuthModel
 
 
-class LoginFormView(FormView):
+class AuthenticationFormView(FormView):
     """Form view for login."""
 
-    template_name = "authentication/sign_in.html"
-    form_class = LoginForm
-    success_url = "/barangay_admin/dashboard/"
+    template_name = "authentication/authentication.html"
+    form_class = AuthenticationForm
+    success_url = reverse_lazy("data_viz:dashboard")
     error_css_class = "invalid-feedback"
     required_css_class = "required"
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponse:
         """Authenticate user when login form is valid.
 
         Args:
           form: The html login form submitted.
 
         Returns:
-          None: Redirects to dashboard.
+          HttpResponse: Redirects to dashboard.
         """
         username = form.cleaned_data.get("username")
         password = form.cleaned_data.get("password")
         authenticate(username=username, password=password)
 
-        return HttpResponseRedirect(self.get_success_url())
+        return super().form_valid(form)
 
-    def form_invalid(self, form):
+    def form_invalid(self, form) -> HttpResponse:
         """Return login form with errors when login form is invalid.
 
         Args:
@@ -40,59 +57,19 @@ class LoginFormView(FormView):
         Returns:
           Render form with errors.
         """
-        messages.add_message(self.request, messages.ERROR, f"Invalid credentials.\n{form.errors}")
-        return self.render_to_response(self.get_context_data(form=form))
+        messages.error(self.request, "Invalid credentials.")
 
-
-class RegisterFormView(FormView):
-    """Form view for register form."""
-
-    template_name = "authentication/sign_up.html"
-    form_class = SignUpForm
-    success_url = "/register"
-    error_css_class = "invalid-feedback"
-    required_css_class = "required"
-
-    def form_valid(self, form):
-        """Create a user account from submitted register form when register form is valid.
-
-        Args:
-          form: The html register form submitted.
-
-        Returns:
-          None: Redirects to register form.
-        """
-        username = form.cleaned_data.get("email")
-        raw_password = form.cleaned_data.get("password")
-        authenticate(username=username, password=raw_password)
-
-        msg = f"Account created - please <a href={self.success_url}>login</a>."
-        messages.add_message(self.request, messages.SUCCESS, msg)
-        return HttpResponseRedirect(self.get_success_url())
-
-    def form_invalid(self, form):
-        """Return register form with errors when register form is invalid.
-
-        Args:
-          form: The html register form submitted
-
-        Returns:
-          Redirects form with errors.
-        """
-        messages.add_message(self.request, messages.ERROR, f"Account not created.\n{form.errors}")
-        return self.render_to_response(self.get_context_data(form=form))
+        return super().form_invalid(form)
 
 
 class ForgotPasswordFormView(FormView):
     """Form view for forgot password form."""
 
-    template_name = "authentication/forgot_password.html"
+    template_name = "authentication/authentication.html"
     form_class = ForgotPasswordForm
-    success_url = "/login/"
-    error_css_class = "invalid-feedback"
-    required_css_class = "required"
+    success_url = reverse_lazy("auth:sign_in")
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponse:
         """Send a password reset email to a user when login form is valid.
 
         Args:
@@ -101,10 +78,22 @@ class ForgotPasswordFormView(FormView):
         Returns:
           None: Redirects to login.
         """
-        messages.add_message(self.request, messages.SUCCESS, "Password reset sent to email!")
-        return HttpResponseRedirect(self.get_success_url())
+        reset_link = auth.generate_password_reset_link(
+            form.cleaned_data["email"], app=firebase_app
+        )
+        send_mail(
+            subject="Password reset",
+            message=f"click <a href='{reset_link}'>here</a> to reset your password.",
+            from_email=os.getenv("ADMIN_EMAIL"),
+            recipient_list=[form.cleaned_data["email"]],
+        )
+        messages.success(
+            self.request, "Password reset link sent! Check your email for the reset link."
+        )
 
-    def form_invalid(self, form):
+        return super().form_valid(form)
+
+    def form_invalid(self, form) -> HttpResponse:
         """Return forgot password form with errors when login form is invalid.
 
         Args:
@@ -113,10 +102,11 @@ class ForgotPasswordFormView(FormView):
         Returns:
           Render form with errors.
         """
-        messages.add_message(
-            self.request, messages.ERROR, f"Password reset not sent!\n{form.errors}"
-        )
-        return self.render_to_response(self.get_context_data(form=form))
+        messages.error(self.request, "Password reset not sent!")
+        for field in form.errors:
+            form[field].field.widget.attrs["class"] += " is-invalid"
+
+        return super().form_invalid(form)
 
 
 class LockAccountFormView(FormView):
@@ -124,32 +114,120 @@ class LockAccountFormView(FormView):
 
     template_name = "authentication/lock_account.html"
     form_class = LockAccountForm
-    success_url = "/barangay-admin/dashboard/"
-    error_css_class = "invalid-feedback"
-    required_css_class = "required"
+    success_url = reverse_lazy("data_viz:dashboard")
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponse:
         """Authenticate locked user.
 
         Args:
-          form: The html login form submitted
+          form: The LockAccountForm form submitted
 
         Returns:
           None: Redirects to dashboard.
         """
         messages.add_message(self.request, messages.SUCCESS, "Login successful!")
-        return HttpResponseRedirect(self.get_success_url())
+
+        return super().form_valid(form)
 
     def form_invalid(self, form):
-        """Return lock account form with errors.
+        """Return LockAccountForm form with errors.
 
         Args:
-          form: The html login form submitted
+          form: The LockAccountForm form submitted
 
         Returns:
-          Render form with errors.
+          Render LockAccountForm form with errors.
         """
         messages.add_message(
             self.request, messages.ERROR, f"Login not successful!\n{form.errors}"
         )
-        return self.render_to_response(self.get_context_data(form=form))
+
+        return super().form_invalid(form)
+
+
+def login(request):
+    """Log user in.
+
+    Associate barangay data with authentication data and store in session.
+    Args:
+      request: The URL Request.
+
+    Returns:
+      Render form with errors.
+    """
+    data = json.load(request)
+    auth_data: dict = data.get("payload")
+
+    if auth_data["newUser"]:
+        # Set user role.
+        auth.set_custom_user_claims(auth_data["uid"], {"resident": True}, app=firebase_app)
+
+        # Add new user to auth_data.json
+        user: UserRecord = auth.get_user(auth_data["uid"], firebase_app)
+        firebase_auth_data = {
+            "uid": user.uid,
+            "display_name": user.display_name,
+            "email": user.email,
+            "role": "".join([*user.custom_claims]),
+            "provider": user.provider_id,
+            "creation_date": user.user_metadata.creation_timestamp,
+            "last_sign_in": user.user_metadata.last_sign_in_timestamp,
+            "email_verified": user.email_verified,
+            "disabled": user.disabled,
+            "phone_number": user.phone_number,
+            "photo_url": user.photo_url,
+        }
+        resident_data = FirestoreModel().get_resident_rbi(auth_data)
+
+        auth_and_resident_data = auth_data | resident_data | firebase_auth_data
+
+        # Add new user to firestore rbi collection.
+        auth_model = AuthModel()
+        connect_auth_to_rbi = auth_model.connect_data_to_rbi(auth_and_resident_data)
+
+        # Store user to firestore users collection.
+        auth_model.store_user_data(auth_data["uid"], auth_and_resident_data)
+
+        # Store firebase auth data to user_management json.
+        UserManagementJSON().add_row_to_auth_json(firebase_auth_data)
+        AzureStorageBlob(
+            sas_token=os.getenv("AZURE_STORAGE_CONTAINER_SAS_AUTH"),
+            blob_name=os.getenv("AZURE_STORAGE_BLOB_AUTH_NAME"),
+        ).upload_local_json_file("auth_data.json")
+
+        request.session["user"] = auth_and_resident_data
+        # TODO: Display Modal to input credentials 'Let us setup your account'".
+        if connect_auth_to_rbi:
+            logger.info("User connected to rbi data.")
+        else:
+            logger.info("User not connected to rbi data.")
+    else:
+        request.session["user"] = UserModel().get_user_data(auth_data["uid"])
+        # Replace firstname with email and lastname with blank
+        first_name = request.session["user"]["first_name"]
+        if not first_name:
+            request.session["user"]["first_name"] = request.session["user"]["email"].split("@")[0]
+            request.session["user"]["last_name"] = ""
+
+    return HttpResponse("OK")
+
+
+def logout(request) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
+    """Log user out.
+
+    Delete user session.
+    Args:
+      request: The URL Request.
+
+    Returns:
+      Redirect to home.
+    """
+    try:
+        del request.session["user"]
+
+        messages.success(request, "Logged out successfully.")
+        logger.info("[logout] successfully logout.")
+    except KeyError:
+        logger.exception("No logged in user.")
+
+    return redirect("auth:sign_in")

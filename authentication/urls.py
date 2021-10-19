@@ -7,11 +7,13 @@ app_name = "auth"
 
 urlpatterns = [
     path(
-        "login", views.LoginFormView.as_view(extra_context={"title": "Sign In"}), name="sign_in"
+        "login",
+        views.AuthenticationFormView.as_view(extra_context={"title": "Sign In"}),
+        name="sign_in",
     ),
     path(
         "register",
-        views.RegisterFormView.as_view(
+        views.AuthenticationFormView.as_view(
             extra_context={"title": "Sign Up"},
         ),
         name="sign_up",
@@ -30,4 +32,10 @@ urlpatterns = [
         ),
         name="lock_account",
     ),
+    path(
+        "firebase_login",
+        views.login,
+        name="firebase_login",
+    ),
+    path("logout", views.logout, name="logout"),
 ]
