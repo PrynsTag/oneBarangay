@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "data_viz",
     "user_management",
+    "announcement",
 ]
 
 MIDDLEWARE = [
@@ -148,6 +149,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "data_viz", "static"),
     os.path.join(BASE_DIR, "user_profile", "static"),
     os.path.join(BASE_DIR, "user_management", "static"),
+    os.path.join(BASE_DIR, "announcement", "static"),
 ]
 
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
