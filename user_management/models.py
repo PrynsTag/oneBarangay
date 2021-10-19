@@ -159,7 +159,7 @@ class FirebaseAuth:
             user_info["email_verified"] = False
 
         updated_user = db.collection("users").document(uid).get().to_dict()
-        updated_user.pop("timestamp")
+        updated_user.pop("updated_on")
         self.json.modify_row_in_auth_json(updated_user)
 
         AzureStorageBlob(

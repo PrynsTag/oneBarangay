@@ -88,7 +88,7 @@ class AuthModel:
           None.
         """
         try:
-            user_data["timestamp"] = firestore.SERVER_TIMESTAMP
+            user_data["updated_on"] = firestore.SERVER_TIMESTAMP
             self.user_ref.document(uid).set(user_data, merge=True)
             logger.info(
                 "[AuthModel.store_user_data] User %s created in firestore users collection.", uid
@@ -115,7 +115,7 @@ class AuthModel:
           None.
         """
         try:
-            user_data["timestamp"] = firestore.SERVER_TIMESTAMP
+            user_data["updated_on"] = firestore.SERVER_TIMESTAMP
             self.user_ref.document(uid).update(user_data)
             return True
         except NotFound as e:
