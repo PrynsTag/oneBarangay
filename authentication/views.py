@@ -24,6 +24,7 @@ from .forms import AuthenticationForm, ForgotPasswordForm, LockAccountForm
 from .models import AuthModel
 
 
+# TODO: Fix client-side validation
 class AuthenticationFormView(FormView):
     """Form view for login."""
 
