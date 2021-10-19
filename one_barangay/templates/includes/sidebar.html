@@ -83,6 +83,14 @@
                     <span class="sidebar-text">OCR</span>
                 </a>
             </li>
+            <li class="nav-item {% if 'user_management' in segment %} active {% endif %}">
+                <a href="{% url "user_management:user_management" %}" class="nav-link">
+                    <span class="sidebar-icon pe-2">
+                        <i class="fas fa-user-cog"></i>
+                    </span>
+                    <span class="sidebar-text">User Management</span>
+                </a>
+            </li>
             <li class="nav-item {% if 'transactions' in segment %} active {% endif %}">
                 <a href="/transactions.html" class="nav-link">
                     <span class="sidebar-icon">
