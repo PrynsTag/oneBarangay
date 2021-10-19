@@ -73,6 +73,12 @@ MIDDLEWARE = [
 ROOT_URLCONF = "one_barangay.urls"
 TEMPLATE_DIR = os.path.join(BASE_DIR, "one_barangay", "templates")  # ROOT dir for templates
 
+# EMAIL API https://docs.sendgrid.com/for-developers/sending-email/django
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_HOST_USER = "apikey"  # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
 LOGGING = {
     "version": 1,
