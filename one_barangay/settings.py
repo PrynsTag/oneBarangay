@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 from google.cloud import secretmanager
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from one_barangay.scripts.service_account import gcloud_auth
+from one_barangay.scripts.service_account import firestore_auth, gcloud_auth
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +40,8 @@ elif os.environ.get("GOOGLE_PROJECT_ID", None):  # noqa: SIM106
     load_dotenv(stream=io.StringIO(payload))
 else:
     raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
+
+firebase_app = firestore_auth("settings")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/

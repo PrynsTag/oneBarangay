@@ -17,6 +17,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from google.oauth2 import service_account
 
+from one_barangay.scripts.service_account import firestore_auth
+
 load_dotenv()
 
 # Decode credential to JSON
@@ -31,6 +33,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # For Logging
 logger = logging.getLogger(__name__)
+
+firebase_app = firestore_auth("local_settings")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
