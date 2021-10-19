@@ -8,7 +8,6 @@ import pytz
 from django.core.mail import send_mail
 from firebase_admin import auth, firestore
 from firebase_admin._auth_utils import UserNotFoundError
-from firebase_admin.auth import UserRecord
 
 from authentication.models import AuthModel
 from ocr.firestore_model import FirestoreModel
@@ -24,6 +23,8 @@ class FirebaseAuth:
     def __init__(self):
         """Initialize FirebaseAuth attributes."""
         self.json = UserManagementJSON("auth_data.json")
+        self.db = firestore.client(app=firebase_app)
+        self.user_ref = self.db.collection("users")
 
     def get_all_user(self) -> list[dict[str, Any]]:
         """Retrieve all user from Firebase Auth."""
@@ -56,7 +57,8 @@ class FirebaseAuth:
           None.
         """
         auth_data = {}
-        user = UserRecord(None)
+        user = None
+        # ValueError
         if os.getenv("GAE_ENV", "").startswith("standard"):
             role = user_info.pop("role")
             # firebase_admin._auth_utils.EmailAlreadyExistsError
@@ -132,13 +134,12 @@ class FirebaseAuth:
         Returns:
           None.
         """
-        db = firestore.client(app=firebase_app)
         if os.getenv("GAE_ENV", "").startswith("standard"):
             # TODO: Add action for reset password
             # TODO: Listen for last_sign_in
 
             # Update User Collection
-            db.collection("users").document(uid).update(user_info)
+            self.user_ref.document(uid).update(user_info)
 
             user = auth.update_user(
                 uid,
@@ -158,7 +159,7 @@ class FirebaseAuth:
             user_info["last_sign_in"] = None
             user_info["email_verified"] = False
 
-        updated_user = db.collection("users").document(uid).get().to_dict()
+        updated_user = self.user_ref.document(uid).get().to_dict()
         updated_user.pop("updated_on")
         self.json.modify_row_in_auth_json(updated_user)
 
@@ -179,15 +180,18 @@ class FirebaseAuth:
         try:
             if os.getenv("GAE_ENV", "").startswith("standard"):
                 auth.delete_user(uid, app=firebase_app)
-                return True
+                # TODO: Implement email after delete.
+
+            self.user_ref.document(uid).delete()
+            self.json.delete_row_in_auth_json(uid)
+            AzureStorageBlob(
+                sas_token=os.getenv("AZURE_STORAGE_CONTAINER_SAS_AUTH"),
+                blob_name=os.getenv("AZURE_STORAGE_BLOB_AUTH_NAME"),
+            ).upload_local_json_file("auth_data.json")
+
+            return True
         except UserNotFoundError:
             logger.exception(
                 "[FirebaseAuth.delete_user] User %s not found in Firebase Auth.", uid
             )
             return False
-
-        self.json.delete_row_in_auth_json(uid)
-        AzureStorageBlob(
-            sas_token=os.getenv("AZURE_STORAGE_CONTAINER_SAS_AUTH"),
-            blob_name=os.getenv("AZURE_STORAGE_BLOB_AUTH_NAME"),
-        ).upload_local_json_file("auth_data.json")
