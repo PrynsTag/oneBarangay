@@ -54,7 +54,10 @@ class AddUserFormView(FormView):
         logger.info("Successfully created new user with role: %s", form.cleaned_data["role"])
         messages.success(
             self.request,
-            f"Successfully created new user with role: {form.cleaned_data['role']}",
+            (
+                f"Created new user with role: {form.cleaned_data['role']}. "
+                "A password reset link has also been sent."
+            ),
         )
 
         return super().form_valid(form)
