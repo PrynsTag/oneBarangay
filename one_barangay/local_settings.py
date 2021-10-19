@@ -148,7 +148,7 @@ WSGI_APPLICATION = "one_barangay.wsgi.application"
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Manila"
 
 USE_I18N = True
 
@@ -186,7 +186,6 @@ else:
     MEDIA_URL = "/media/"
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-
 
 GS_DEFAULT_ACL = "publicRead"
 
