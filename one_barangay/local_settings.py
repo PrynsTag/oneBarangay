@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "ocr",
     "user_profile",
     "data_viz",
+    "user_management",
 ]
 
 MIDDLEWARE = [
@@ -168,6 +169,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "ocr", "static"),
     os.path.join(BASE_DIR, "data_viz", "static"),
     os.path.join(BASE_DIR, "user_profile", "static"),
+    os.path.join(BASE_DIR, "user_management", "static"),
 ]
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
