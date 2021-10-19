@@ -67,6 +67,12 @@
                     <span class="sidebar-text">Dashboard</span>
                 </a>
             </li>
+            <li class="nav-item {% if 'announcement' in segment %} active {% endif %}">
+                <a href="{% url "announcement:announcement" %}" class="nav-link">
+                    <span class="fas fa-scroll me-3 sidebar-icon"></span>
+                    <span class="sidebar-text">Announcement</span>
+                </a>
+            </li>
             <li class="nav-item {% if 'ocr_files' in segment %} active {% endif %}">
                 <a href="{% url "rbi_table" %}" class="nav-link">
                     <span class="sidebar-icon">
