@@ -30,10 +30,31 @@ class LockAccountForm(forms.Form):
     password = forms.CharField(
         label="Your Password",
         label_suffix="",
+        min_length=8,
         widget=forms.PasswordInput(
-            attrs={"placeholder": "Password", "class": "form-control"},
+            attrs={
+                "placeholder": "Password",
+                "class": "form-control",
+                "pattern": r"^\S{8,}$",
+                "onchange": "this.setCustomValidity(this.validity.patternMismatch ? "
+                "'Must have at least 8 characters' : ''); "
+                "if(this.checkValidity()) form.confirm_password.pattern = this.value;",
+                "oninput": "password.setCustomValidity("
+                "password.value !== confirm_password.value ? "
+                "'Password is not the same with the confirm password.' : '')",
+            }
         ),
     )
+
+    def clean_password(self):
+        """Clean password for minimum length."""
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+
+        if len(password) < 8:
+            raise forms.ValidationError("The minimum password length is 8 characters.")
+
+        return cleaned_data
 
 
 class AuthenticationForm(LockAccountForm, ForgotPasswordForm):
@@ -42,10 +63,14 @@ class AuthenticationForm(LockAccountForm, ForgotPasswordForm):
     confirm_password = forms.CharField(
         label="Confirm Password",
         label_suffix="",
+        min_length=8,
         widget=forms.PasswordInput(
             attrs={
                 "placeholder": "Re-type Password",
                 "class": "form-control",
+                "pattern": r"^\S{8,}$",
+                "onchange": "this.setCustomValidity(this.validity.patternMismatch ? "
+                "'Please enter the same Password as above' : '');",
             }
         ),
     )
