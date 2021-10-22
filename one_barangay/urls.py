@@ -25,6 +25,7 @@ urlpatterns = [
     path("barangay-admin/user_management/", include("user_management.urls")),
     path("barangay-admin/user_profile/", include("user_profile.urls")),
     path("barangay-admin/announcement/", include("announcement.urls")),
+    path("barangay-admin/bulk-sched/", include("bulk_sched.urls")),
     path("ckeditor/", include("ckeditor_uploader.urls")),
     # path("barangay-admin/user-management", include("user-management.urls")),
 ]
