@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "data_viz",
     "user_management",
     "announcement",
+    "bulk_sched",
     "ckeditor",
     "ckeditor_uploader",
 ]
@@ -297,6 +298,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "user_profile", "static"),
     os.path.join(BASE_DIR, "user_management", "static"),
     os.path.join(BASE_DIR, "announcement", "static"),
+    os.path.join(BASE_DIR, "bulk_sched", "static"),
 ]
 
 STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
