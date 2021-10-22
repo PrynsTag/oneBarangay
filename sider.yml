@@ -22,6 +22,7 @@ linter:
       - eslint-plugin-vue
     ext: [.js, .jsx, .es6]
     ignore-path: .gitignore
+    config: .eslintrc.json
     ignore-pattern: "**/assets/vendor/*"
     no-ignore: true
 
