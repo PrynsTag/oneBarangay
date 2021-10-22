@@ -334,7 +334,7 @@ if os.getenv("GAE_ENV", "").startswith("standard"):
 
 else:
     STATIC_URL = "/static/"
-    MEDIA_URL = "/media/"
+    MEDIA_URL = "http://127.0.0.1:9000/media/"  # Run ./simple_cors_server.py
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
