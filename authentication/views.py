@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import redirect
+from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 from firebase_admin import auth
@@ -206,9 +207,14 @@ def login(request):
         request.session["user"] = UserModel().get_user_data(auth_data["uid"])
         # Replace firstname with email and lastname with blank
         first_name = request.session["user"]["first_name"]
+        photo_url = request.session["user"].get("photo_url")
+
         if not first_name:
             request.session["user"]["first_name"] = request.session["user"]["email"].split("@")[0]
             request.session["user"]["last_name"] = ""
+
+        if not photo_url:
+            request.session["user"]["photo_url"] = static("/assets/img/icons/default_user.svg")
 
     return HttpResponse("OK")
 
