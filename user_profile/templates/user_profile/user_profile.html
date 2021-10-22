@@ -349,20 +349,10 @@
                         <div class="profile-cover rounded-top"
                             data-background="{% static "/assets/img/profile-cover.jpg" %}"></div>
                         <div class="card-body pb-5">
-                            {% if request.session.user.photo_url %}
-                                <img src="{{ request.session.user.photo_url }}" class="avatar-xl rounded-circle mx-auto mt-n7 mb-4" alt="User Image">
-                            {% else %}
-                                <img src="{% static "/assets/img/icons/default_user.svg" %}" class="avatar-xl rounded-circle mx-auto mt-n7 mb-4" alt="User Image">
-                            {% endif %}
-                            <h4 class="h3">
-                                {{ request.session.user.first_name }} {{ request.session.user.last_name }}
-                            </h4>
-                            <h5 class="fw-normal">
-                                {{ request.session.user.role|capfirst }}
-                            </h5>
-                            <p class="text-gray mb-4">
-                                {{ request.session.user.email }}
-                            </p>
+                            <img src="{{ request.session.user.photo_url }}" class="avatar-xl rounded-circle mx-auto mt-n7 mb-4" alt="User Image">
+                            <h4 class="h3">{{ request.session.user.first_name }} {{ request.session.user.last_name }}</h4>
+                            <h5 class="fw-normal">{{ request.session.user.role|capfirst }}</h5>
+                            <p class="text-gray mb-4">{{ request.session.user.email }}</p>
                             <a class="btn btn-sm btn-gray-800 d-inline-flex align-items-center me-2" href="#">
                                 <svg class="icon icon-xs me-1" fill="currentColor" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -380,11 +370,7 @@
                         <div class="d-flex align-items-center">
                             <div class="me-3">
                                 <!-- Avatar -->
-                                {% if request.session.user.photo_url %}
-                                    <img class="rounded avatar-xl" src="{{ request.session.user.photo_url }}" alt="change avatar">
-                                {% else %}
-                                    <img class="rounded avatar-xl" src="{% static "/assets/img/icons/default_user.svg" %}" alt="change avatar">
-                                {% endif %}
+                                <img class="rounded avatar-xl" src="{{ request.session.user.photo_url }}" alt="change avatar">
                             </div>
                             <div class="file-field">
                                 <div class="d-flex justify-content-xl-center ms-xl-3">

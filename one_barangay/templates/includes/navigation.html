@@ -199,11 +199,7 @@
                         aria-expanded="false"
                     >
                         <div class="media d-flex align-items-center">
-                            {% if request.session.user.photo_url %}
-                                <img class="avatar rounded-circle" alt="User Image" src="{{ request.session.user.photo_url }}">
-                            {% else %}
-                                <img class="avatar rounded-circle" alt="User Image" src="{% static "/assets/img/icons/default_user.svg" %}">
-                            {% endif %}
+                            <img class="avatar rounded-circle" alt="User Image" src="{{ request.session.user.photo_url }}">
                             <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                                 <span class="mb-0 font-small fw-bold text-gray-900">
                                     Current User: <strong>{{ request.session.user.first_name }}</strong>
