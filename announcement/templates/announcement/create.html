@@ -1,0 +1,94 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+    <style>
+        label.required:after {
+            content:" *";
+            color:red;
+        }
+    </style>
+    <div class="container w-50 py-5">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in form.non_field_errors %}
+                        <p class="text-center">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% for field in form %}
+                {% if field.html_name not in hidden_fields %}
+                    <div class="row mb-3">
+                        <label class="p-1 col-sm-2 col-form-label {% if field.field.required %}required{% endif %}" for="{{ field.auto_id }}">
+                            {{ field.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ field }}
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    <div class="badge bg-danger text-wrap w-auto text-end text-uppercase">
+                                        {{ error|striptags }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    {{ field.as_hidden }}
+                {% endif %}
+            {% endfor %}
+            <div class="text-end">
+                <button type="submit" class="btn btn-secondary col-sm-2" data-loading-text="Sending">Post</button>
+            </div>
+        </form>
+    </div>
+
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger me-2'
+            },
+            buttonsStyling: false
+        })
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    swalWithBootstrapButtons.fire({
+                        title: "Success",
+                        icon: "success",
+                        text: '{{ message }}',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'Go Back',
+                        showCancelButton: true,
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isDismissed) {
+                            window.location.href = "/barangay-admin/announcement"
+                        }
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    swalWithBootstrapButtons.fire({
+                        title: "Error!",
+                        icon: "error",
+                        text: "{{ message }}",
+                        confirmButtonText: 'OK'
+                    })
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock scripts %}

@@ -1,0 +1,122 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <style>
+        .thumbnail {
+            position: relative;
+            width: auto;
+            height: 350px;
+            overflow: hidden;
+        }
+        .thumbnail img {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            min-height:100%;
+            min-width:100%;
+            width: auto;
+            -webkit-transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+            transform: translate(-50%,-50%);
+        }
+        h2.card-header {
+            font-size: 1.5rem;
+        }
+    </style>
+    <div class="py-4">
+        <a href="{% url "announcement:create" %}" class="btn btn-secondary">
+            <svg class="icon icon-xs" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="2"
+                >
+                </path>
+            </svg>
+            Add
+        </a>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-4 g-4 position-relative">
+        {% for post in announcements %}
+            <div class="col">
+                <div class="card text-center">
+                    <h2 class="card-header badge bg-primary text-wrap p-2">Featured</h2>
+                    <!-- Post thumbnail -->
+                    <figure>
+                        <div class="thumbnail">
+                            {% if post.thumbnail %}
+                                <img src="{{ post.thumbnail }}" alt="post-thumbnail">
+                            {% else %}
+                                <img src="{% static "/assets/img/default-blog-image.jpg" %}" alt="default-thumbnail">
+                            {% endif %}
+                        </div>
+                    </figure>
+                    <div class="card-body">
+                        <!-- Post title -->
+                        <h5 class="card-title">{{ post.title|title }}</h5>
+                        <!-- Post categories -->
+                        <div class="mb-3">
+                            {% for category in post.categories %}
+                                <a class="badge bg-secondary text-decoration-none link-light" href="#">{{ category|title }}</a>
+                            {% endfor %}
+                        </div>
+                        <!-- Post content -->
+                        <section>{{ post.body|safe|striptags|lower|truncatewords:25 }}</section>
+                        <!-- Post actions -->
+                        <div class="buttons text-end pt-4">
+                            <a href="{% url "announcement:delete" post.announcement_id %}" class="btn btn-danger">Delete</a>
+                            <a href="{% url "announcement:edit" post.announcement_id %}" class="btn btn-primary">Edit</a>
+                            <a href="{% url "announcement:view" post.announcement_id %}" class="btn btn-info">View</a>
+                        </div>
+                    </div>
+                    <!-- Post meta content-->
+                    <div class="card-footer text-muted">
+                        {% if post.updated %}
+                            Updated {{ post.updated|timesince }} ago
+                        {% else %}
+                            Created {{ post.created|timesince }} ago
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger me-2'
+            },
+            buttonsStyling: false
+        })
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    swalWithBootstrapButtons.fire({
+                        title: "Success",
+                        icon: "success",
+                        text: '{{ message }}',
+                        confirmButtonText: 'OK',
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    swalWithBootstrapButtons.fire({
+                        title: "Error!",
+                        icon: "error",
+                        text: "{{ message }}",
+                        confirmButtonText: 'OK'
+                    })
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock scripts %}
