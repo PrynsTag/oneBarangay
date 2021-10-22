@@ -206,7 +206,7 @@ def login(request):
     else:
         request.session["user"] = UserModel().get_user_data(auth_data["uid"])
         # Replace firstname with email and lastname with blank
-        first_name = request.session["user"]["first_name"]
+        first_name = request.session["user"].get("first_name")
         photo_url = request.session["user"].get("photo_url")
 
         if not first_name:
