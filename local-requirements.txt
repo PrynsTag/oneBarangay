@@ -8,6 +8,7 @@ blackfire==1.7.0
 browserstack-local==1.2.3
 coveralls==3.2.0
 Django==3.2.8
+django-ckeditor==6.1.0
 django-coverage-plugin==2.0.1
 django-redis==5.0.0
 django-storages==1.12.2
