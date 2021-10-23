@@ -1,92 +1,92 @@
-    <a href="{% url "appointment:process" document_id %}">Back</a>
-    <h1>Issue Barangay Certificate</h1>
+<a href="{% url "appointment:process" document_id %}">Back</a>
+<h1>Issue Barangay Certificate</h1>
 
-    <form action="{% url "appointment:create_document" document_id document_name %}" method="POST">
-        {% csrf_token %}
+<form action="{% url "appointment:create_document" document_id document_name %}" method="POST">
+    {% csrf_token %}
 
-        <!-- Current Date -->
-        <div>
-            <label for="date">Date: </label>
-            <input type="date" id="date" name="date" value="{{ current_date }}" required>
-        </div>
+    <!-- Current Date -->
+    <div>
+        <label for="date">Date: </label>
+        <input type="date" id="date" name="date" value="{{ current_date }}" required>
+    </div>
 
-        <!-- Firstname -->
-        <div>
-            <label for="firstname">First Name: </label>
-            <input type="text" id="firstname" name="firstname" value="{{ user_data.first_name }}" required>
-        </div>
+    <!-- Firstname -->
+    <div>
+        <label for="firstname">First Name: </label>
+        <input type="text" id="firstname" name="firstname" value="{{ user_data.first_name }}" required>
+    </div>
 
-        <!-- Middle name -->
-        <div>
-            <label for="middlename">Middle Name: </label>
-            <input type="text" id="middlename" name="middlename" value="{{ user_data.middle_name }}" required>
-        </div>
+    <!-- Middle name -->
+    <div>
+        <label for="middlename">Middle Name: </label>
+        <input type="text" id="middlename" name="middlename" value="{{ user_data.middle_name }}" required>
+    </div>
 
-        <!-- Lastname -->
-        <div>
-            <label for="lastname">Last Name: </label>
-            <input type="text" id="lastname" name="lastname" value="{{ user_data.last_name }}" required>
-        </div>
+    <!-- Lastname -->
+    <div>
+        <label for="lastname">Last Name: </label>
+        <input type="text" id="lastname" name="lastname" value="{{ user_data.last_name }}" required>
+    </div>
 
-        <!-- Address -->
-        <div>
-            <label for="address">Address:</label>
-            <input type="text" id="address" name="address" value="" required>
-        </div>
+    <!-- Address -->
+    <div>
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" value="" required>
+    </div>
 
-        <!-- Year -->
-        <div>
-            <label for="year">Year: </label>
-            <input type="text" id="year" name="year" value="" required>
-        </div>
+    <!-- Year -->
+    <div>
+        <label for="year">Year: </label>
+        <input type="text" id="year" name="year" value="" required>
+    </div>
 
-        <!-- Issued for -->
-        <div>
-            <label for="issued">Issued for: </label>
-            <input type="text" id="issued" name="issued" value="" required>
-        </div>
+    <!-- Issued for -->
+    <div>
+        <label for="issued">Issued for: </label>
+        <input type="text" id="issued" name="issued" value="" required>
+    </div>
 
-        <!-- Conforme -->
-        <div>
-            <label for="conforme">Conforme: </label>
-            <input type="text" id="conforme" name="conforme" value="" required>
-        </div>
+    <!-- Conforme -->
+    <div>
+        <label for="conforme">Conforme: </label>
+        <input type="text" id="conforme" name="conforme" value="" required>
+    </div>
 
-        <!-- CTC No -->
-        <div>
-            <label for="ctc_no">CTC No.: </label>
-            <input type="text" id="ctc_no" name="ctc_no" value="" required>
-        </div>
+    <!-- CTC No -->
+    <div>
+        <label for="ctc_no">CTC No.: </label>
+        <input type="text" id="ctc_no" name="ctc_no" value="" required>
+    </div>
 
-        <!-- Region -->
-        <div>
-            <label for="region">Region: </label>
-            <input type="text" id="region" name="region" value="" required>
-        </div>
+    <!-- Region -->
+    <div>
+        <label for="region">Region: </label>
+        <input type="text" id="region" name="region" value="" required>
+    </div>
 
-        <!-- OR No -->
-        <div>
-            <label for="or_no">OR No.: </label>
-            <input type="text" id="or_no" name="or_no" value="" required>
-        </div>
+    <!-- OR No -->
+    <div>
+        <label for="or_no">OR No.: </label>
+        <input type="text" id="or_no" name="or_no" value="" required>
+    </div>
 
-        <!-- Amount -->
-        <div>
-            <label for="amount">Amount: </label>
-            <input type="text" id="amount" name="amount" value="" required>
-        </div>
+    <!-- Amount -->
+    <div>
+        <label for="amount">Amount: </label>
+        <input type="text" id="amount" name="amount" value="" required>
+    </div>
 
-        <!-- Valid until -->
-        <div>
-            <label for="validity">Valid Until: </label>
-            <input type="date" id="validity" name="validity" value="{{ validity_date }}" required>
-        </div>
+    <!-- Valid until -->
+    <div>
+        <label for="validity">Valid Until: </label>
+        <input type="date" id="validity" name="validity" value="{{ validity_date }}" required>
+    </div>
 
-        <!-- Prepared by -->
-        <div>
-            <label for="prepared_by">Prepared by: </label>
-            <input type="text" id="prepared_by" name="prepared_by" value="" required>
-        </div>
+    <!-- Prepared by -->
+    <div>
+        <label for="prepared_by">Prepared by: </label>
+        <input type="text" id="prepared_by" name="prepared_by" value="" required>
+    </div>
 
-        <input type="submit" name="submit" value="Generate">
-    </form>
+    <input type="submit" name="submit" value="Generate">
+</form>
