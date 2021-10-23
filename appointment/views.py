@@ -799,7 +799,32 @@ def get(request, document_id):
     Returns:
         sending notification to resident
     """
-    return HttpResponse(f"Status: Get, Document ID: {document_id}")
+    full_date = datetime.datetime.now()
+    date = full_date.date()
+
+    user_data = firestoreQuery.search_appointment(document_id=document_id)
+
+    date = (
+        DateFormatter(full_date=full_date, date=date)
+        .documentid_to_datetime(document_id=Encrypter(text=document_id).code_decoder())
+        .date()
+    )
+
+    issue_status = True
+
+    for document in user_data["document"]:
+        if document["ready_issue"]:
+            continue
+        else:
+            issue_status = False
+            break
+
+    return render(
+        request,
+        "appointment/appointment_get.html",
+        {"user_data": user_data, "issue_status": issue_status, "document_date": date},
+    )
+
 
 def completed(request, document_id):
     """Appointment complete.
