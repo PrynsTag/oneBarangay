@@ -19,7 +19,7 @@ urlpatterns = [
     ),
     path("user_verify/<str:document_id>", views.user_verify, name="user_verify"),
     path(
-        "id_verification_manual/<str:user_uid>",
+        "id_verification_manual/<str:user_uid>/<str:document_id>",
         views.id_verification_manual,
         name="id_verification_manual",
     ),
@@ -36,9 +36,19 @@ urlpatterns = [
         name="document_data",
     ),
     path(
+        "document_data_edit/<str:document_id>/<str:document_name>",
+        views.document_data_edit,
+        name="document_data_edit",
+    ),
+    path(
         "create_document/<str:document_id>/<str:document_name>",
         views.create_document,
         name="create_document",
+    ),
+    path(
+        "confirm_document_data/<str:document_id>",
+        views.confirm_document_data,
+        name="confirm_document_data",
     ),
     path(
         "remove_document_session/<str:date>",
@@ -46,7 +56,7 @@ urlpatterns = [
         name="remove_document_session",
     ),
     path("get/<str:document_id>", views.get, name="get"),
-    path("add_appointment", views.add_appointment, name="test_appointment"),
+    path("add_appointment", views.add_appointment, name="add_appointment"),
     path(
         "add_appointment_manual/<int:year>/<int:month>/<int:day>",
         views.add_appointment_manual,
@@ -55,5 +65,15 @@ urlpatterns = [
     path("delete_account", views.delete_account, name="delete_account"),
     path(
         "available/<str:old_document_id>/<str:new_document_id>", views.available, name="available"
+    ),
+    path(
+        "schedule_get_document/<str:document_id>/<str:url_date>",
+        views.get_document_resched,
+        name="get_document_resched",
+    ),
+    path(
+        "issue_document_resched/<str:document_id>",
+        views.issue_document_resched,
+        name="issue_document_resched",
     ),
 ]
