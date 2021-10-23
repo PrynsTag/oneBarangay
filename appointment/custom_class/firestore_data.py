@@ -664,3 +664,36 @@ class FirestoreData:
                 raise Http404("Invalid multiple documents")
             else:
                 return document_result[0]
+
+    def update_document(
+        self,
+        collection_name: str,
+        document_id: str,
+        document_data: list,
+        new_document_data: dict,
+        array_name: str,
+    ):
+        """Update the document array.
+
+        Args:
+          collection_name: str: Collection name in firebase
+          document_id: str: Document ID of appointment
+          document_data: list: Old document data
+          new_document_data: dict: New document data
+          array_name: str: Name of the array in firebase
+
+        Returns:
+            None updates the document array
+
+        """
+        document_collection = self.db.collection(collection_name)
+
+        for data in document_data:
+            if data["slugify"] == new_document_data["slugify"]:
+                document_collection.document(document_id).update(
+                    {array_name: firestore.ArrayRemove([data])}
+                )
+
+                document_collection.document(document_id).update(
+                    {array_name: firestore.ArrayUnion([new_document_data])}
+                )
