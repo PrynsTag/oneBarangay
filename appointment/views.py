@@ -603,6 +603,74 @@ def create_document(request, document_id, document_name):
             )
         )
 
+@csrf_exempt
+def confirm_document_data(request, document_id):
+    """Update document data.
+
+    Args:
+      request: The URL request.
+      document_id: Document ID of appointment
+
+    Returns:
+        Go to appointment process
+    """
+    ajax_document_name = request.POST.get("document_name")
+    ajax_slugify = request.POST.get("slugify")
+
+    if ajax_slugify == "barangay-certificate":
+        date = request.POST.get("date")
+        firstname = request.POST.get("firstname")
+        middlename = request.POST.get("middlename")
+        lastname = request.POST.get("lastname")
+        address = request.POST.get("address")
+        year = request.POST.get("year")
+        issued = request.POST.get("issued")
+        conforme = request.POST.get("conforme")
+        ctc = request.POST.get("ctc")
+        region = request.POST.get("region")
+        orno = request.POST.get("orno")
+        amount = request.POST.get("amount")
+        valid = request.POST.get("valid")
+        prepared = request.POST.get("prepared")
+
+        fb_document_data = {
+            "document_name": ajax_document_name,
+            "slugify": ajax_slugify,
+            "date": date,
+            "fullname": f"{firstname} {middlename} {lastname}",
+            "firstname": firstname,
+            "middlename": middlename,
+            "lastname": lastname,
+            "address": address,
+            "year": year,
+            "issued": issued,
+            "conforme": conforme,
+            "ctc": ctc,
+            "region": region,
+            "orno": orno,
+            "amount": amount,
+            "valid": valid,
+            "prepared": prepared,
+            "ready_issue": True,
+        }
+
+    final_document_data = []
+
+    final_document_data.append(fb_document_data)
+
+    firestore_document = firestoreQuery.search_appointment(document_id=document_id)
+    firestoreQuery.update_document(
+        collection_name="appointments",
+        document_id=document_id,
+        document_data=firestore_document["document"],
+        new_document_data=fb_document_data,
+        array_name="document",
+    )
+
+    return HttpResponse(reverse("appointment:process", kwargs={"document_id": document_id}))
+
+
+
 
 def remove_document_session(request, date):
     """Remove document session.
