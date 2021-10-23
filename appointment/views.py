@@ -1,13 +1,16 @@
 """Create your Appointment views here."""
+# import base64
 import datetime
 import logging
 
+import papersize
 from dateutil.relativedelta import relativedelta
 
 # Firebase
 from django.http import Http404
 from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from appointment.custom_class.dateformatter import DateFormatter
 
@@ -17,6 +20,9 @@ from appointment.custom_class.encrypter import Encrypter
 from appointment.custom_class.firestore_data import FirestoreData
 
 from .forms import IdVerification
+
+# from json import dumps
+
 
 logger = logging.getLogger(__name__)
 
@@ -160,6 +166,7 @@ def request(request, document_id):
                         request,
                         "appointment/details_appointment.html",
                         {
+                            "document_id": document_id,
                             "reschedule": reschedule,
                             "user_check": True,
                             "user_verified": False,
@@ -263,11 +270,13 @@ def user_resched(request, document_id):
         date = full_date.date()
         old_document_id = document_id
         new_document_id = request.POST.get("time")
+
         decrpyt_document_id = Encrypter(text=new_document_id).code_decoder()
         new_document_datetime = DateFormatter(
             full_date=full_date, date=date
         ).documentid_to_datetime(document_id=decrpyt_document_id)
         new_document_date = new_document_datetime.date()
+        # new_document_data_encode = Encrypter(text=new_document_date.__str__()).code_encoder()
 
         old_document_data = firestoreQuery.search_document(
             document_id=old_document_id, collection_name="appointments"
@@ -276,7 +285,7 @@ def user_resched(request, document_id):
         new_data = firestoreQuery.resched_timedelta(
             data=old_document_data,
             start_appointment=new_document_datetime,
-            decrypt_document_id=decrpyt_document_id,
+            new_document_id=new_document_id,
             key_timedelta=["start_appointment", "end_appointment", "created_on"],
             operator="-",
             utc_offset=8,
@@ -335,15 +344,18 @@ def id_verification(request, document_id):
             user_results = []
 
             for result in results:
+                # FIXME: Error created on to resolve add created on in firebase user collection
                 result["created_on"] = DateFormatter(
-                    full_date=result["created_on"], date=date
+                    full_date=result["creation_date"], date=date
                 ).date_fb_convert()
-                user_results.append(result)
 
-            if len(user_results) != 1 or len(user_results) > 1:
+                if result not in user_results:
+                    user_results.append(result)
+
+            if len(user_results) == 0:
                 raise Http404("Data not found.")
-
             else:
+                # If user is only one
                 if len(user_results) == 1:
                     request.session["user_check"] = True
                     request.session["user_verified"] = True
@@ -356,6 +368,8 @@ def id_verification(request, document_id):
                             kwargs={"document_id": document_id},
                         )
                     )
+
+                # For multiple users
                 elif len(user_results) > 1:
                     request.session["user_check"] = True
                     request.session["user_verified"] = False
@@ -377,44 +391,48 @@ def id_verification(request, document_id):
         )
 
 
-def id_verification_manual(request, user_uid):
+def id_verification_manual(request, user_uid, document_id):
     """Verify ID of resident if the account exist.
 
     Args:
       request: The URL request.
       user_uid: user id in firebase firestore
+      document_id:
 
     Returns:
         session indicating that the user was verified
     """
-    search_appointment = [firestoreQuery.search_appointment_userid(user_uid=user_uid)]
+    search_appointment = firestoreQuery.search_appointment(document_id=document_id)
+    search_account = firestoreQuery.search_account_userid(user_uid=user_uid, key="uid")
+
+    for key, value in search_account.items():
+        search_appointment[key] = value
+
     date = datetime.date.today()
 
-    user_list = []
+    # FIXME: Passing user id rather than appointment document ID
 
-    for user in list(search_appointment):
-        user["start_appointment"] = DateFormatter(
-            full_date=user["start_appointment"], date=date
-        ).date_fb_convert()
-        user["end_appointment"] = DateFormatter(
-            full_date=user["end_appointment"], date=date
-        ).date_fb_convert()
-        user["created_on"] = DateFormatter(
-            full_date=user["created_on"], date=date
-        ).date_fb_convert()
-        user_list.append(user)
+    search_appointment["start_appointment"] = DateFormatter(
+        full_date=search_appointment["start_appointment"], date=date
+    ).date_fb_convert()
+    search_appointment["end_appointment"] = DateFormatter(
+        full_date=search_appointment["end_appointment"], date=date
+    ).date_fb_convert()
+    search_appointment["created_on"] = DateFormatter(
+        full_date=search_appointment["created_on"], date=date
+    ).date_fb_convert()
+
+    # FIXME: Redirect this to def request then output only the clicked user in table
 
     request.session["user_check"] = True
     request.session["user_verified"] = True
-    request.session["user_list"] = user_list
-    request.session["document_id"] = search_appointment[0]["document_id"]
+    request.session["user_list"] = [search_appointment]
+    request.session["document_id"] = search_appointment["document_id"]
 
     return HttpResponseRedirect(
         reverse(
-            "appointment:user_verified",
-            kwargs={
-                "document_id": Encrypter(text=search_appointment[0]["document_id"]).code_encoder()
-            },
+            "appointment:request",
+            kwargs={"document_id": document_id},
         )
     )
 
@@ -430,11 +448,19 @@ def process(request, document_id):
         document
     """
     user_data = firestoreQuery.search_appointment(document_id=document_id)
+    issue_status = True
+
+    for document in user_data["document"]:
+        if document["ready_issue"]:
+            continue
+        else:
+            issue_status = False
+            break
 
     return render(
         request,
         "appointment/document_process.html",
-        {"user_data": user_data},
+        {"user_data": user_data, "issue_status": issue_status, "url_date": datetime.date.today()},
     )
 
 
@@ -447,11 +473,13 @@ def document_data(request, document_id, document_name):
       document_name: name of document
 
     Returns:
-        Renders barangay certificate
+      : Renders barangay certificate
     """
     # document_query_data = firestoreQuery.active_document(document_slug=document_name)
 
-    if document_name == "barangay-certificate":
+    if document_name not in ["barangay-certificate", "certificate-of-indigency"]:
+        raise Http404("Page not found.")
+    elif document_name == "barangay-certificate":
         user_data = firestoreQuery.search_appointment(document_id=document_id)
 
         check_data = "barangay-certificate" in request.session
@@ -463,6 +491,17 @@ def document_data(request, document_id, document_name):
         if check_data:
             active_document_data = firestoreQuery.active_document(document_slug=document_name)
 
+            cert_document_data = request.session["barangay-certificate"]
+
+            document_data_list = []
+
+            for data in active_document_data["document_format"]:
+                data["value"] = cert_document_data[data["name"]]
+                document_data_list.append(data)
+
+            #     Get document width and length size
+            paper_size = papersize.parse_papersize(active_document_data["paper_size"], "mm")
+
             return render(
                 request,
                 "appointment/barangay_certificate.html",
@@ -473,8 +512,11 @@ def document_data(request, document_id, document_name):
                     "current_date": current_date,
                     "validity_date": validity_date,
                     "check_data": check_data,
-                    "session_data": request.session["barangay-certificate"] if check_data else "",
+                    "session_data": cert_document_data if check_data else "",
                     "document_settings": active_document_data,
+                    "document_data": document_data_list,
+                    "paper_width": float(paper_size[0]),
+                    "paper_length": float(paper_size[1]),
                 },
             )
 
@@ -492,6 +534,63 @@ def document_data(request, document_id, document_name):
                     "session_data": request.session["barangay-certificate"] if check_data else "",
                 },
             )
+    # elif document_name == "certificate-of-indigency":
+    #     user_data = firestoreQuery.search_appointment(document_id=document_id)
+    #
+    #     check_data = "certificate-of-indigency" in request.session
+    #
+    #     date_today = datetime.date.today()
+    #     current_date = date_today.strftime("%Y-%m-%d")
+    #     validity_date = (date_today + relativedelta(months=+6)).strftime("%Y-%m-%d")
+    #
+    #     if check_data:
+    #         active_document_data = firestoreQuery.active_document(document_slug=document_name)
+    #
+    #         document_data = request.session["certificate-of-indigency"]
+    #
+    #         document_data_list = []
+    #
+    #         for count, data in enumerate(active_document_data["document_format"]):
+    #             data["value"] = document_data[data["name"]]
+    #             document_data_list.append(data)
+    #
+    #         #     Get document width and length size
+    #         paper_size = papersize.parse_papersize(active_document_data["paper_size"], "mm")
+    #
+    #         return render(
+    #             request,
+    #             "appointment/certificate_of_indigency.html",
+    #             {
+    #                 "document_id": document_id,
+    #                 "document_name": document_name,
+    #                 "user_data": user_data,
+    #                 "current_date": current_date,
+    #                 "validity_date": validity_date,
+    #                 "check_data": check_data,
+    #                 "session_data": document_data if check_data else "",
+    #                 "document_settings": active_document_data,
+    #                 "document_data": document_data_list,
+    #                 "paper_width": float(paper_size[0]),
+    #                 "paper_length": float(paper_size[1]),
+    #             },
+    #         )
+    #
+    #     else:
+    #         return render(
+    #             request,
+    #             "appointment/certificate_of_indigency.html",
+    #             {
+    #                 "document_id": document_id,
+    #                 "document_name": document_name,
+    #                 "user_data": user_data,
+    #                 "current_date": current_date,
+    #                 "validity_date": validity_date,
+    #                 "check_data": check_data,
+    #                 "session_data": request.session["certificate-of-indigency"]
+    #                 if check_data
+    #                 else "",
+    #             },
+    #         )
 
 
 def document_data_edit(request, document_id, document_name):
@@ -556,9 +655,9 @@ def create_document(request, document_id, document_name):
     """Create a document.
 
     Args:
-        request: The URL request.
-        document_id: document id of appointment
-        document_name: name of document
+      request: The URL request.
+      document_id: document id of appointment
+      document_name: name of document
 
     Returns:
         document
@@ -580,20 +679,21 @@ def create_document(request, document_id, document_name):
         prepared_by = request.POST.get("prepared_by")
 
         request.session["barangay-certificate"] = {
+            "address": address,
+            "amount": amount,
+            "conforme": conforme,
+            "ctc": ctc_no,
             "date": date,
             "firstname": firstname,
             "middlename": middlename,
             "lastname": lastname,
-            "address": address,
-            "year": year,
-            "issued_for": issued_for,
-            "conforme": conforme,
-            "ctc_no": ctc_no,
+            "fullname": f"{firstname} {middlename} {lastname}",
+            "issued": issued_for,
+            "orno": or_no,
+            "prepared": prepared_by,
             "region": region,
-            "or_no": or_no,
-            "amount": amount,
-            "valid_until": valid_until,
-            "prepared_by": prepared_by,
+            "valid": valid_until,
+            "year": year,
         }
 
         return HttpResponseRedirect(
@@ -602,6 +702,9 @@ def create_document(request, document_id, document_name):
                 kwargs={"document_id": document_id, "document_name": document_name},
             )
         )
+    elif document_name == "certificate-of-indigency":
+        pass
+
 
 @csrf_exempt
 def confirm_document_data(request, document_id):
@@ -670,8 +773,6 @@ def confirm_document_data(request, document_id):
     return HttpResponse(reverse("appointment:process", kwargs={"document_id": document_id}))
 
 
-
-
 def remove_document_session(request, date):
     """Remove document session.
 
@@ -721,6 +822,9 @@ def add_appointment_manual(request, year, month, day):
 
     Args:
       request: Returns: add date in firestore
+      year:
+      month:
+      day:
 
     Returns:
         add account in firebase authentication and firestore
@@ -800,9 +904,9 @@ def get_document_resched(request, document_id, url_date):
     """Render issue document reschedule.
 
     Args:
-      request:
-      document_id:
-      url_date:
+      request: The URL request
+      document_id: Document ID of appointment
+      url_date: Date
 
     Returns:
         Issue document view
