@@ -801,6 +801,31 @@ def get(request, document_id):
     """
     return HttpResponse(f"Status: Get, Document ID: {document_id}")
 
+def completed(request, document_id):
+    """Appointment complete.
+
+    Args:
+      request: The URL request.
+      document_id: document id of appointment collection in firebase firestore
+
+    Returns:
+        None redirect to list of appointments
+    """
+    full_date = datetime.datetime.now()
+    date = full_date.date()
+
+    firestoreQuery.update_appointment_status(
+        document_id=document_id, collection_name="appointments"
+    )
+
+    date = (
+        DateFormatter(full_date=full_date, date=date)
+        .documentid_to_datetime(document_id=Encrypter(text=document_id).code_decoder())
+        .date()
+    )
+
+    return HttpResponseRedirect(reverse("appointment:view_appointments", kwargs={"date": date}))
+
 
 def add_appointment(request):
     """For date testing only.
