@@ -67,7 +67,7 @@ urlpatterns = [
         "available/<str:old_document_id>/<str:new_document_id>", views.available, name="available"
     ),
     path(
-        "schedule_get_document/<str:document_id>/<str:url_date>",
+        "get_document_resched/<str:document_id>/<str:url_date>",
         views.get_document_resched,
         name="get_document_resched",
     ),
@@ -76,4 +76,5 @@ urlpatterns = [
         views.issue_document_resched,
         name="issue_document_resched",
     ),
+    path("completed/<str:document_id>", views.completed, name="completed"),
 ]
