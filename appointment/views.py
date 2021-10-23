@@ -796,6 +796,69 @@ def available(
     return HttpResponse(f"OLD: {old_document_id} | NEW: {new_document_id}")
 
 
+def get_document_resched(request, document_id, url_date):
+    """Render issue document reschedule.
+
+    Args:
+      request:
+      document_id:
+      url_date:
+
+    Returns:
+        Issue document view
+    """
+    encrypter = Encrypter(text=document_id).code_decoder()
+    current_date = datetime.datetime.strptime(url_date, "%Y-%m-%d")
+    full_date = datetime.datetime.now()
+    date = datetime.date.today()
+
+    if current_date.date() < datetime.date.today():
+        return HttpResponseRedirect(
+            reverse(
+                "appointment:appointment_resched",
+                kwargs={"document_id": document_id, "url_date": datetime.date.today()},
+            )
+        )
+
+    resched_list = firestoreQuery.resched_appointment(
+        year=current_date.year,
+        month=current_date.month,
+        day=current_date.day,
+        hour=23,
+        minute=59,
+        second=59,
+        document_id=encrypter,
+        utc_offset=8,
+        query_list=["start_appointment", "end_appointment", "created_on"],
+    )
+
+    resched_list_rows = firestoreQuery.data_col_row(user_list=resched_list, row=6)
+
+    next_date = current_date + datetime.timedelta(days=1)
+    previous_date = current_date - datetime.timedelta(days=1)
+    current_date_document = DateFormatter(full_date=full_date, date=date).documentid_to_datetime(
+        document_id=encrypter
+    )
+
+    return render(
+        request,
+        "appointment/issue_reschedule.html",
+        {
+            "current_date": current_date_document.date(),
+            "appointment_list": resched_list_rows,
+            "next": next_date.date(),
+            "previous": previous_date.date(),
+            "current": current_date.date(),
+            "today": datetime.date.today(),
+            "document_id": document_id,
+            "curr_year": current_date.year,
+            "curr_month": current_date.month - 1,
+            "curr_day": current_date.day,
+            "is_today": datetime.date.today() == current_date.date(),
+        },
+    )
+
+
 def issue_document_resched(request, document_id):
     """Update document data.
 
