@@ -122,13 +122,13 @@
                     },
                     success: function (data) {
                         console.log("Confirmation success");
+                        window.location.href = data
                     },
                     error: function (data) {
                         console.log("Confirmation error");
                     }
                 });
 
-                window.location.href="{% url "appointment:process" user_data.document_id %}";
             });
         });
     </script>
