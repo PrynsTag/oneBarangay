@@ -9,33 +9,79 @@
 {% endblock %}
 
 {% block stylesheets %}
-    <link href="{% static "services/services_card.css" %}" rel="stylesheet">
+    {#    <link rel="stylesheet" type="text/css"#}
+    {#          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">#}
+    {#    <link rel="stylesheet" type="text/css"#}
+    {#          href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap-extended.min.css">#}
+    {#    <link rel="stylesheet" type="text/css"#}
+    {#          href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/fonts/simple-line-icons/style.min.css">#}
+    {#    <link rel="stylesheet" type="text/css"#}
+    {#          href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/colors.min.css">#}
+    {#    <link rel="stylesheet" type="text/css"#}
+    {#          href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap.min.css">#}
+    {#    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">#}
+    {##}
+    {#    <link href="{% static "services/services_card.css" %}" rel="stylesheet">#}
 {% endblock %}
 
 {% block content %}
     <h1>Services</h1>
 
-    <div class="col-md-10 ">
-        <div class="row ">
-            <div class="col-xl-3 col-lg-6">
-                <a href="{% url "appointment:view_appointments" current_date %}">
-                    <div class="card l-bg-blue-dark">
-                        <div class="card-statistic-3 p-4">
-                            <div class="card-icon card-icon-large"><i class="fas fa-users"></i></div>
-                            <div class="mb-4">
-                                <h5 class="card-title mb-0">Appointments</h5>
-                            </div>
-                            <div class="row align-items-center mb-2 d-flex">
-                                <div class="col-12">
-                                    <h2 class="d-flex align-items-center mb-0">
-                                        {{ active_appointments }}<span class="fs-6 ms-2">Active</span>
-                                    </h2>
+    <div class="grey-bg container-fluid">
+        <section id="minimal-statistics">
+            <div class="row">
+                <a class="col-xl-3 col-sm-6 col-12" href="{% url "appointment:view_appointments" current_date %}">
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="media d-flex">
+                                    <div class="align-self-center">
+                                        <i class="icon-pencil primary fs-2 float-left"></i>
+                                    </div>
+                                    <div class="media-body text-end">
+                                        <h3>{{ active_appointments }}</h3>
+                                        <span>Appointments</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </a>
+                <div class="col-xl-3 col-sm-6 col-12">
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="media d-flex">
+                                    <div class="align-self-center">
+                                        <i class="icon-speech warning fs-2 float-left"></i>
+                                    </div>
+                                    <div class="media-body text-end">
+                                        <h3>2</h3>
+                                        <span>Complaints</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 col-12">
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="media d-flex">
+                                    <div class="align-self-center">
+                                        <i class="icon-graph success fs-2 float-left"></i>
+                                    </div>
+                                    <div class="media-body text-end">
+                                        <h3>2</h3>
+                                        <span>Bulk Schedule</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
     </div>
 {% endblock %}
