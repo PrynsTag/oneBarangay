@@ -697,3 +697,33 @@ class FirestoreData:
                 document_collection.document(document_id).update(
                     {array_name: firestore.ArrayUnion([new_document_data])}
                 )
+
+    def issue_get_document(
+        self, document_id: str, document_slug: str, collection_name: str, array_name: str
+    ):
+        """Get document that the array contains a value.
+
+        Args:
+          document_id: str: Document ID of appointment
+          document_slug: str: Document name in slugify
+          collection_name: str: Firebase collection name
+          array_name: str: Name of the array in firebase
+
+        Returns:
+            Data of appointment
+        """
+        # slug_dict = {"slugify": document_slug}
+
+        document_ref = (
+            self.db.collection(collection_name)
+            .where("document_id", "==", document_id)
+            .where(array_name, "array_contains_any", [document_slug])
+            .get()
+        )
+
+        document_list = []
+
+        for data in document_ref:
+            document_list.append(data.to_dict())
+
+        return document_list
