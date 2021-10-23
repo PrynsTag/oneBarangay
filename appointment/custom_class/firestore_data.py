@@ -10,6 +10,8 @@ from appointment.custom_class.dummy import Dummy
 from appointment.custom_class.encrypter import Encrypter
 from one_barangay.scripts.service_account import firestore_auth
 
+from .emailer import Emailer
+
 firestore_auth = firestore_auth(name="appointment_firestore_app")
 
 
@@ -276,14 +278,38 @@ class FirestoreData:
 
         if get_appointment["status"] == "request":
             appointment_ref.update({"status": "process"})
+
+            Emailer(
+                from_email="alphadevhustlehub@gmail.com",
+                to_emails="johnchristianmgaron@gmail.com",
+                subject="oneBarangay Appointment Emailer",
+                html_content="Your appointment is in process",
+            )
+
             return True
 
         elif get_appointment["status"] == "process":
             appointment_ref.update({"status": "get"})
+
+            Emailer(
+                from_email="alphadevhustlehub@gmail.com",
+                to_emails="johnchristianmgaron@gmail.com",
+                subject="oneBarangay Appointment Emailer",
+                html_content="You can now get your document.",
+            )
+
             return True
 
         elif get_appointment["status"] == "get":
             appointment_ref.update({"status": "completed"})
+
+            Emailer(
+                from_email="alphadevhustlehub@gmail.com",
+                to_emails="johnchristianmgaron@gmail.com",
+                subject="oneBarangay Appointment Emailer",
+                html_content="You have received your document. Thank you.",
+            )
+
             return True
 
     def resched_appointment(
