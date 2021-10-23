@@ -24,6 +24,22 @@ def base64_encode(value):
     return str(base64_message)
 
 
+@register.filter("base64_decode")
+def base64_decode(value):
+    """Convert text to base64.
+
+    Args:
+      value: Any string or texts
+
+    Returns:
+      base64 string
+    """
+    value_bytes = value.encode("ascii")
+    base64_bytes = base64.urlsafe_b64decode(value_bytes)
+    base64_message = base64_bytes.decode("ascii")
+    return str(base64_message)
+
+
 @register.filter("date_formatter")
 def date_formatter(value):
     """Format underscored date to MM DD, YYYY.
