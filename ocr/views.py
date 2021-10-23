@@ -1,7 +1,6 @@
 """Routing Request to Views of OCR Pages."""
 import asyncio
 import json
-import logging
 import os
 from datetime import datetime
 
@@ -12,7 +11,6 @@ from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import FormView, TemplateView
-from dotenv import load_dotenv
 from google.api_core.exceptions import InvalidArgument
 
 from ocr.dummy_data import RBIDummy
@@ -20,11 +18,8 @@ from ocr.firestore_model import FirestoreModel
 from ocr.form_recognizer import form_recognizer_runner
 from ocr.forms import UploadForm
 from ocr.scripts import Script
+from one_barangay.local_settings import logger
 from one_barangay.scripts.storage_backends import AzureStorageBlob
-
-load_dotenv()
-
-logger = logging.getLogger(__name__)
 
 
 # TODO: Use Django Forms for displaying html forms.

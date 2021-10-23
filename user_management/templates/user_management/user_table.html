@@ -1,0 +1,262 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <link href="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "/assets/vendor/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css" %}" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.js" %}"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/copy-rows/bootstrap-table-copy-rows.min.js" %}"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/mobile/bootstrap-table-mobile.min.js" %}"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js" %}"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/locale/bootstrap-table-en-US.min.js" %}"></script>
+{% endblock stylesheets %}
+
+{% block content %}
+    <style>
+        .form-group label.required:after {
+            content:" *";
+            color:red;
+        }
+    </style>
+    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4" id="text-title">User Management</h1>
+            <p class="mb-0">Manage user accounts in oneBarangay.</p>
+        </div>
+        <div>
+            <a href="#" class="btn btn-outline-gray">
+                <i class="fas fa-question-circle me-1"></i>Filter
+            </a>
+        </div>
+    </div>
+    <div class="card border-0 shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive overflow-hidden">
+                <table
+                    id="table"
+                    data-toolbar="#toolbar"
+                    data-search="true"
+                    data-buttons-order="['paginationSwitch', 'refresh', 'toggle', 'fullscreen', 'add', 'edit', 'export', 'copy', 'sort', 'columns']"
+                    data-buttons="customButtons"
+                    data-show-refresh="true"
+                    data-mobile-responsive="true"
+                    data-show-toggle="true"
+                    data-show-fullscreen="true"
+                    data-show-columns="true"
+                    data-show-copy-rows="true"
+                    data-show-columns-toggle-all="true"
+                    data-detail-view="true"
+                    data-show-export="true"
+                    data-click-to-select="true"
+                    data-show-multi-sort="true"
+                    data-sort-priority='[{"sortName": "creation_date","sortOrder":"desc"}]'
+                    data-detail-formatter="detailFormatter"
+                    data-minimum-count-columns="2"
+                    data-show-pagination-switch="true"
+                    data-pagination="true"
+                    data-toolbar-align="end"
+                    data-pagination-loop="true"
+                    data-id-field="uid"
+                    data-id-table="advancedTable"
+                    data-advanced-search="true"
+                    data-search-accent-neutralise="true"
+                    data-search-highlight="true"
+                    data-page-list="[10, 25, 50, 100, all]"
+                    data-show-footer="true"
+                    data-auto-refresh="true"
+                    data-url="{{ url }}"
+                    data-cache="false"
+                    data-reorderable-columns="true"
+                    data-response-handler="responseHandler">
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <!-- Modal Content -->
+        <div class="modal fade" id="user-modal" tabindex="-1" role="dialog" aria-labelledby="user-modal"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add User</h5>
+                        <button type="button" id="close-modal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        {{ form.non_field_errors }}
+                    </div>
+                    <div class="modal-body" id="modal-body">
+                        <form action="{% url "user_management:user_management" %}" enctype="multipart/form-data" method="post" id="modal-form">
+                            {% csrf_token %}
+
+                            <div class="row">
+                                <div class="form-group col text-black">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.display_name.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.display_name }}
+                                        </div>
+                                        <span class="text-error">{{ form.display_name.errors }}</span>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+
+                                <div id="uid" class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.uid.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.uid }}
+                                        </div>
+                                        <span class="text-error">{{ form.uid.errors }}</span>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Form -->
+                                <div class="form-group mb-4 col">
+                                    {{ form.email.label_tag }}
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            <span class="fas fa-envelope"></span>
+                                        </span>
+                                        {{ form.email }}
+                                    </div>
+                                    <span class="text-error">{{ form.email.errors }}</span>
+                                </div>
+                                <!-- End of Form -->
+
+                                <div class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.password.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.password }}
+                                        </div>
+                                        <span class="text-error">{{ form.password.errors }}</span>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.role.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.role }}
+                                        </div>
+                                        <span class="text-error">{{ form.role.errors }}</span>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+
+                                <div class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.disabled.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.disabled }}
+                                        </div>
+                                        <span class="text-error">{{ form.disabled.errors }}</span>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.phone_number.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.phone_number }}
+                                        </div>
+                                        <span class="text-error">{{ form.phone_number.errors }}</span>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+
+                                <div class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.photo_url.label_tag }}
+                                        {{ form.photo_url }}
+                                        <span class="text-error">{{ form.photo_url.errors }}</span>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="reset" id="cancel-modal" class="btn btn-link text-gray-600 ms-auto"
+                            data-bs-dismiss="modal">Cancel
+                        </button>
+                        <button form="modal-form" type="submit" name="button" id="modal-submit-button"
+                            class="btn btn-secondary">Create User
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End of Modal Content -->
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static "/assets/js/user_table.js" %}"></script>
+    <script>
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger me-2'
+            },
+            buttonsStyling: false
+        })
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    swalWithBootstrapButtons.fire('Success!', `{{ message }}.`, 'success')
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    swalWithBootstrapButtons.fire('Error!', `{{ message }}.`, 'error')
+                {% else %}
+                    swalWithBootstrapButtons.fire({{ message }})
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/toolbar/bootstrap-table-toolbar.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
+{% endblock scripts %}

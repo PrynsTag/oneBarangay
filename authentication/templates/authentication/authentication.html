@@ -1,0 +1,432 @@
+{% extends "layouts/base-fullscreen.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <style>
+        .form-group label.required:after {
+            content:" *";
+            color:red;
+        }
+    </style>
+    <main>
+        <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
+            <div class="container">
+                <p class="text-center">
+                    <a href="{% url "home" %}" class="d-flex align-items-center justify-content-center">
+                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        Back to homepage
+                    </a>
+                </p>
+                <div class="row justify-content-center form-bg-image" data-background-lg="{% static "/assets/img/illustrations/signin.svg" %}">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+
+                                {% if title != "Forgot Password" %}
+                                    <h1 class="mb-0 h3">
+                                        oneBarangay - {{ title }}
+                                    </h1>
+                                    <br/>
+                                    <p>Add your credentials</p>
+                                {% else %}
+                                    <h1 class="h3">Forgot your password?</h1>
+                                    <p>Don't fret! Just type in your email and we will send you a code to reset your password!</p>
+                                {% endif %}
+                                {% if form.non_field_errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {% for error in form.non_field_errors %}
+                                            <p class="text-center">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <form method="post" action="" class="mt-4">
+                                {% csrf_token %}
+
+                                <div class="form-group">
+                                    <!-- Email Field -->
+                                    <div class="form-group mb-4">
+                                        {{ form.email.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" >
+                                                <span class="fas fa-user-circle"></span>
+                                            </span>
+                                            {{ form.email }}
+                                            <div class="invalid-feedback">{{ form.email.errors|striptags }}</div>
+                                        </div>
+                                    </div>
+                                    <!-- End of Email Field -->
+
+                                    {% if title != "Forgot Password" %}
+                                        <!-- Password Field -->
+                                        <div class="form-group mb-4">
+                                            {{ form.password.label_tag }}
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <span class="fas fa-unlock-alt"></span>
+                                                </span>
+                                                {{ form.password }}
+                                            </div>
+                                            <div class="invalid-feedback">{{ form.password.errors|striptags }}</div>
+                                        </div>
+                                        <!-- End of Password Field -->
+                                    {% endif %}
+
+                                    {% if title == "Sign In" %}
+                                        <!-- Remember Me Field -->
+                                        <div class="d-flex justify-content-between align-items-top mb-4">
+                                            <div class="form-check">
+                                                {{ form.remember_me }}
+                                                <label class="form-check-label mb-0" for="{{ form.remember_me.id_for_label }}">{{ form.remember_me.label }}</label>
+                                                <div class="invalid-feedback">{{ form.remember_me.errors|striptags }}</div>
+                                            </div>
+                                            <div>
+                                                <a href="{% url "auth:forgot_password" %}" class="small text-right">Lost
+                                                    password?</a>
+                                            </div>
+                                        </div>
+                                        <!-- End of Password Field -->
+
+                                    {% elif title == "Sign Up" %}
+                                        <!-- Confirm Password Field -->
+                                        <div class="form-group mb-4">
+                                            {{ form.confirm_password.label_tag }}
+                                            <div class="input-group">
+                                                <span class="input-group-text" id="basic-addon2">
+                                                    <span class="fas fa-unlock-alt"></span>
+                                                </span>
+                                                {{ form.confirm_password }}
+                                            </div>
+                                            <div class="invalid-feedback">{{ form.confirm_password.errors|striptags }}</div>
+                                        </div>
+                                        <!-- End of Confirm Password Field -->
+
+                                        <!-- Terms and Condition -->
+                                        <div class="mb-4">
+                                            <div class="form-check">
+                                                {{ form.terms_condition }}
+                                                <label class="form-check-label fw-normal mb-0 required"
+                                                    for="{{ form.terms_condition.id_for_label }}">
+                                                    I agree to the <a href="#" class="fw-bold">terms and conditions</a>
+                                                </label>
+                                            </div>
+                                            <div class="invalid-feedback">{{ form.terms_condition.errors|striptags }}</div>
+                                        </div>
+                                        <!-- End of Terms and Condition Field -->
+                                    {% endif %}
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="d-grid">
+                                    {% if title != "Forgot Password" %}
+                                        <button type="button" id="authBtn" name="auth_btn" class="btn btn-gray-800">{{ title }}</button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-gray-800">Recover password</button>
+                                    {% endif %}
+                                </div>
+                                <!-- End of Buttons -->
+                            </form>
+                            <br/>
+                            {% if title != "Forgot Password" %}
+                                <div class="mt-3 mb-4 text-center">
+                                    <span class="fw-normal">or {{ title|lower }} with</span>
+                                </div>
+                                <div class="d-flex justify-content-center my-4">
+                                    <div class="col">
+                                        <div class="row justify-content-md-center mb-2">
+                                            <a href="#" type="button" id="googleLogin"
+                                                class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2"
+                                                aria-label="google button" title="google button">
+                                                <img width="25" height="25"
+                                                    src="{% static "assets/img/icons/google-icon.svg" %}" alt="">
+                                            </a>
+                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2"
+                                                aria-label="microsoft button" title="microsoft button">
+                                                <img width="20" height="20"
+                                                    src="{% static "assets/img/icons/microsoft-icon.svg" %}" alt="">
+                                            </a>
+                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500"
+                                                aria-label="yahoo button" title="yahoo button">
+                                                <img width="20" height="20"
+                                                    src="{% static "assets/img/icons/yahoo-icon.svg" %}" alt="">
+                                            </a>
+                                        </div>
+                                        <div class="row justify-content-md-center">
+                                            <a href="#" type="button" id="fbLogin"
+                                                class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2"
+                                                aria-label="facebook button" title="facebook button">
+                                                <img width="25" height="25"
+                                                    src="{% static "assets/img/icons/facebook-icon.svg" %}" alt="">
+                                            </a>
+                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2"
+                                                aria-label="twitter button" title="twitter button">
+                                                <img width="25" height="25"
+                                                    src="{% static "assets/img/icons/twitter-icon.svg" %}" alt="">
+                                            </a>
+                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500"
+                                                aria-label="github button" title="github button">
+                                                <img width="25" height="25"
+                                                    src="{% static "assets/img/icons/apple-icon.svg" %}" alt="">
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="d-flex justify-content-center align-items-center mt-4">
+                                {% if title == "Sign In" %}
+                                    <span class="fw-normal">
+                                        Not registered?
+                                        <a href="{% url "auth:sign_up" %}" class="fw-bold">Create account</a>
+                                    </span>
+                                {% elif title == "Sign Up" %}
+                                    <span class="fw-normal">
+                                        Already have an account?
+                                        <a href="{% url "auth:sign_in" %}" class="fw-bold">Sign In</a>
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger me-2'
+            },
+            buttonsStyling: false
+        })
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    swalWithBootstrapButtons.fire({
+                        title: "Success",
+                        icon: "success",
+                        text: '{{ message }}',
+                        confirmButtonText: 'OK'
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    swalWithBootstrapButtons.fire({
+                        icon: "error",
+                        title: "{{ message }}",
+                        confirmButtonText: 'OK'
+                    })
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-analytics.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.19.0/firebase-auth.js"></script>
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFHIY07QF7_HQOaxgPdng648sZgIyL3Wg",
+            authDomain: "onebarangay-malanday.firebaseapp.com",
+            projectId: "onebarangay-malanday",
+            storageBucket: "onebarangay-malanday.appspot.com",
+            messagingSenderId: "151952863728",
+            appId: "1:151952863728:web:7660ee42c28cd0b391ad35"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        const email = document.getElementById("id_email")
+        const password = document.getElementById("id_password")
+
+        const swalBtnMsg = '{{ title }}' === 'Sign In' ? 'Go to dashboard' : 'OK'
+        const swalMsg = '{{ title }}' === 'Sign In' ?  '' : 'Before Logging in, please verify your email by checking the email sent to the provided email address.'
+
+        if ('{{ title }}' !== 'Forgot Password') {
+            const authBtn = document.getElementById("authBtn")
+            authBtn.onclick = function () {
+                authBtn.disabled = true
+                const auth = authBtn.innerText === "Sign In" ?
+                firebase.auth().signInWithEmailAndPassword(email.value, password.value) :
+                firebase.auth().createUserWithEmailAndPassword(email.value, password.value)
+
+                auth.then(function (response) {
+                    authBtn.disabled = false
+                    const user = response.user;
+                    const token = user.xa;
+                    const providerData = user.providerData;
+                    const additionalInfo = response.additionalUserInfo;
+
+                    swalWithBootstrapButtons.fire({
+                        title: `${authBtn.innerText} Successfully!`,
+                        text: swalMsg,
+                        icon: 'success',
+                        confirmButtonText: swalBtnMsg,
+                    }).then((result) => {
+                        // TODO: sendToServer in login not signup
+                        if (result.isConfirmed && authBtn.innerText === "Sign Up") {
+                            verifyEmail()
+                            if (token) { sendToServer(user.uid, token, providerData, additionalInfo, "/login"); }
+                        } else if (result.isConfirmed) {
+                            if (token) { sendToServer(user.uid, token, providerData, additionalInfo, "/barangay-admin/user_profile"); }
+                        }
+                    })
+                    console.log(response)
+                }).catch(function (error) {
+                    authBtn.disabled = false
+                    swalWithBootstrapButtons.fire(
+                        'Error!',
+                        `Something went wrong.<br>${error}`,
+                        'error',
+                    );
+                })
+            }
+        }
+
+        function verifyEmail() {
+            firebase.auth().currentUser.sendEmailVerification().then(function (result) {
+                if (result.isConfirmed) {
+                    swalWithBootstrapButtons.fire({
+                        title: 'Email Verification Sent!',
+                        text: 'Check your email inbox.',
+                        icon: 'success',
+                    })
+                }
+            }).catch(function (error) {
+                swalWithBootstrapButtons.fire(
+                    'Error!',
+                    `Something went wrong.<br>${error}`,
+                    'error',
+                );
+            })
+        }
+
+        //===================Saving Login Details in My Server Using AJAX================
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i += 1) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (`${name}=`)) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function sendToServer(uid, token, providerData, additionalInfo, redirectTo) {
+            let firstName;
+            let lastName;
+            if (additionalInfo.providerId !== "password") {
+                firstName = additionalInfo.profile.given_name
+                lastName = additionalInfo.profile.family_name
+            } else {
+                firstName = null
+                lastName = null
+            }
+            $.ajax({
+                url: '{% url "auth:firebase_login" %}',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({
+                    payload: {
+                        uid: uid,
+                        token: token,
+                        first_name: firstName,
+                        last_name: lastName,
+                        newUser: additionalInfo.isNewUser,
+                    }
+                }),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'text/html',
+                },
+            }).always((jqXHR, textStatus, errorThrown) => {
+                if (jqXHR.status === 200 || jqXHR.status === 304) {
+                    window.location.href = redirectTo
+                }
+                else {
+                    swalWithBootstrapButtons.fire(
+                        'Error!',
+                        `Something went wrong.<br>[${jqXHR.status}]${textStatus} - ${errorThrown}`,
+                        'error',
+                    );
+                }
+            });
+        }
+        //===========================End Saving Details in My Server=======================
+        ///=================Login With google===========================
+        if ('{{ title }}' !== 'Forgot Password') {
+            const googleAuth = document.getElementById("googleLogin");
+            googleAuth.onclick = function () {
+                const provider = new firebase.auth.GoogleAuthProvider();
+
+                firebase.auth().signInWithPopup(provider).then(function (response) {
+                    const user = response.user;
+                    const additionalInfo = response.additionalUserInfo;
+                    console.log(response)
+
+                    swalWithBootstrapButtons.fire({
+                        title: 'Google {{ title }} Successfully!',
+                        text: swalMsg,
+                        icon: 'success',
+                    }).then((result) => {
+                        if ('{{ title }}' === 'Sign In' && result.isConfirmed) {
+                            if (user.xa != null && user.xa !== "") {
+                                sendToServer(user.uid, user.xa, user.providerData, additionalInfo, "/barangay-admin/user_profile");
+                            }
+                        }
+                    })
+                }).catch(function (error) {
+                    swalWithBootstrapButtons.fire(
+                        'Error!',
+                        `Something went wrong.<br>${error}`,
+                        'error',
+                    );
+                })
+            }
+            //=======================End Login With Google==================
+            //======================Login With Facebook==========================
+            const fbLogin = document.getElementById("fbLogin");
+            fbLogin.onclick = function () {
+                const provider = new firebase.auth.FacebookAuthProvider();
+
+                firebase.auth().signInWithPopup(provider).then(function (response) {
+                    const user = response.user;
+                    const additionalInfo = response.additionalUserInfo;
+                    const token = user.xa;
+                    const providerData = user.providerData;
+
+                    if (token != null && token !== "") {
+                        sendToServer(user, token, providerData, additionalInfo, "/barangay-admin/user_profile");
+                    }
+                    console.log(response);
+                }).catch(function (error) {
+                    swalWithBootstrapButtons.fire(
+                        'Error!',
+                        `Something went wrong.<br>${error}`,
+                        'error',
+                    );
+                })
+            }
+        }
+        //======================End Login With Facebook==========================
+    </script>
+{% endblock scripts %}

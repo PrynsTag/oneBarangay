@@ -3,9 +3,6 @@
 {% load static %}
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
-    <link href="{% static "/assets/vendor/fontawesome/css/fontawesome.css" %}" rel="stylesheet" type="text/css">
-    <link href="{% static "/assets/vendor/fontawesome/css/brands.css" %}" rel="stylesheet" type="text/css">
-    <link href="{% static "/assets/vendor/fontawesome/css/solid.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "ocr/css/file-card.css" %}" rel="stylesheet">
 {% endblock stylesheets %}
 
@@ -48,7 +45,6 @@
     </div>
 {% endblock content %}
 {% block scripts %}
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         {% if messages %}
             {% for message in messages %}
@@ -61,7 +57,7 @@
                     })
                 {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
                     Swal.fire({
-                        icon: "fail",
+                        icon: "error",
                         title: "{{ message }}",
                         showConfirmButton: false,
                         timer: 1500

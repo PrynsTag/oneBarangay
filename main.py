@@ -12,7 +12,7 @@ if __name__ == "__main__":
         # production
         uvicorn.run(
             "main:app",
-            port=os.getenv("PORT"),
+            port=int(os.getenv("PORT")),
             host="127.0.0.1",
             workers=1,
             lifespan="off",

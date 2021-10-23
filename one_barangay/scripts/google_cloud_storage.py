@@ -6,13 +6,10 @@ from pathlib import Path
 
 import aiohttp
 from aiofile import AIOFile
-from dotenv import load_dotenv
 from gcloud.aio.storage import Storage
 from google.cloud import storage
 
-load_dotenv()
-
-logger = logging.getLogger(__name__)
+from one_barangay.local_settings import logger
 
 
 async def async_upload_to_bucket(

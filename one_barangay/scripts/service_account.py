@@ -5,11 +5,8 @@ import logging
 import os
 
 import firebase_admin
-from dotenv import load_dotenv
 from firebase_admin import credentials
 from google.oauth2 import service_account
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -25,13 +22,10 @@ def decode_b64_to_dict(b64_env_name="GOOGLE_STORAGE_CREDENTIALS"):
       The dictionary credential or None if exception occured.
     """
     try:
-        logging.info("Decoding started.")
-
         decoded_bytes = base64.b64decode(os.getenv(b64_env_name))
         decoded_str = str(decoded_bytes, "utf-8")
         dictionary_credential = ast.literal_eval(decoded_str)
 
-        logging.info("Decoding successful.")
         return dictionary_credential
     except ValueError as e:
         logger.exception("Decoding failed. %s", e)
@@ -48,8 +42,6 @@ def firestore_auth(name="firestore_app"):
     """
     try:
         cred = credentials.Certificate(decode_b64_to_dict())
-        logger.info("creating credential...")
-
         app = firebase_admin.initialize_app(cred, name=name)
         logger.info("Credentials successfully created..")
 

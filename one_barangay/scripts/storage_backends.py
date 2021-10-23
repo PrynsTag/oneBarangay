@@ -1,6 +1,5 @@
 """File for cloud storage backends."""
 import json
-import logging
 import os
 from abc import ABC
 from json import JSONDecodeError
@@ -9,13 +8,10 @@ from urllib.parse import urljoin
 from azure.core.exceptions import ResourceExistsError
 from azure.storage.blob import BlobClient, ContentSettings
 from django.conf import settings
-from dotenv import load_dotenv
 from storages.backends.gcloud import GoogleCloudStorage
 from storages.utils import setting
 
-logger = logging.getLogger(__name__)
-
-load_dotenv()
+from one_barangay.local_settings import logger
 
 
 class GoogleCloudMediaStorage(GoogleCloudStorage, ABC):
