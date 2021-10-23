@@ -7,8 +7,11 @@
 {% endblock %}
 
 {% block content %}
-    <a href="{% url "appointment:remove_document_session" user_data.start_appointment|date_to_str %}">Back to appointments</a>
+    <a href="{% url "appointment:remove_document_session" user_data.start_appointment|date_to_str %}">Back to
+        appointments</a>
     <h1>Process Document</h1>
+
+    {{ user_data }}
 
     <h2>Resident Profile</h2>
     <ul>
@@ -20,9 +23,32 @@
     <h2>Document</h2>
     <ul>
         {% for document in user_data.document %}
-            <li>
-                <a href="{% url "appointment:document_data" user_data.document_id document.slugify %}">{{ document.document_name }}</a>
-            </li>
+            {% if document.ready_issue %}
+                <li>
+                    <a href="{% url "appointment:document_data" user_data.document_id document.slugify %}">{{ document.document_name }}</a>
+                    <ul>
+                        <li>
+                            <button id="">View</button>
+                        </li>
+                        <li>
+                            <a href="{% url "appointment:document_data_edit" user_data.document_id document.slugify %}">Edit</a>
+                        </li>
+                        <li>Status: Done</li>
+                    </ul>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url "appointment:document_data" user_data.document_id document.slugify %}">{{ document.document_name }}</a>
+                    <ul>
+                        <li><a href="{% url "appointment:document_data" user_data.document_id document.slugify %}">Status:
+                            Not yet</a></li>
+                    </ul>
+                </li>
+            {% endif %}
         {% endfor %}
     </ul>
+    {% if issue_status %}
+        <a href="{% url "appointment:get_document_resched" user_data.document_id url_date %}">Schedule
+            Appointment</a>
+    {% endif %}
 {% endblock %}
