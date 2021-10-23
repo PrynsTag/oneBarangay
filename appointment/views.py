@@ -794,3 +794,67 @@ def available(
     """
     # check_result = firestoreQuery.reschedule(old_id=old_document_id, new_id=new_document_id)
     return HttpResponse(f"OLD: {old_document_id} | NEW: {new_document_id}")
+
+
+def issue_document_resched(request, document_id):
+    """Update document data.
+
+    Args:
+      request: The URL request
+      document_id: Document ID of appointment
+
+    Returns:
+        Redirect to page
+    """
+    if request.method == "POST":
+        full_date = datetime.datetime.now()
+        date = full_date.date()
+        old_document_id = document_id
+        new_document_id = request.POST.get("time")
+
+        decrpyt_document_id = Encrypter(text=new_document_id).code_decoder()
+
+        new_document_datetime = DateFormatter(
+            full_date=full_date, date=date
+        ).documentid_to_datetime(document_id=decrpyt_document_id)
+
+        new_document_date = new_document_datetime.date()
+
+        old_document_data = firestoreQuery.search_document(
+            document_id=old_document_id, collection_name="appointments"
+        )
+
+        new_data = firestoreQuery.resched_timedelta(
+            data=old_document_data,
+            start_appointment=new_document_datetime,
+            new_document_id=new_document_id,
+            key_timedelta=["start_appointment", "end_appointment", "created_on"],
+            operator="-",
+            utc_offset=8,
+        )
+
+        # Delete Document Data
+        firestoreQuery.delete_document(
+            document_id=old_document_id, collection_name="appointments"
+        )
+
+        # Add document for reschedule
+        firestoreQuery.new_document_data(
+            collection_name="appointments", document_id=new_document_id, document_data=new_data
+        )
+
+        firestoreQuery.update_appointment_status(
+            document_id=new_document_id, collection_name="appointments"
+        )
+
+        return HttpResponseRedirect(
+            reverse(
+                "appointment:get_document_resched",
+                kwargs={"document_id": new_document_id, "url_date": new_document_date},
+            )
+        )
+
+    else:
+        return HttpResponseRedirect(
+            reverse("appointment:process", kwargs={"document_id": document_id})
+        )
