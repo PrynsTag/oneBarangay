@@ -24,15 +24,12 @@ class FirestoreData:
         """For verification of identification.
 
         Args:
-          firstname: str: user firstname
-          middlename: str: user middlename
-          lastname: str: user lastname
-          firstname: str:
-          middlename: str:
-          lastname: str:
+          firstname: str:user firstname
+          middlename: str:user middlename
+          lastname: str:user lastname
 
         Returns:
-            resident information.
+          : resident information.
         """
         user_list = []
 
@@ -73,10 +70,8 @@ class FirestoreData:
         """Search user with specific key and value to compare.
 
         Args:
-          search_key: str: key dictionary in firebase firestore data
-          value: str: value to be search
-          search_key: str:
-          value: str:
+          search_key: str:key dictionary in firebase firestore data
+          value: str:value to be search
 
         Returns:
             results searched in firebase firestore user collection
@@ -139,10 +134,8 @@ class FirestoreData:
         You can also manually search the appointment just input the date (year, month, day)
 
         Args:
-          date: datetime.date:  (Default value = datetime.date.today())
-          utc_offset: int:  (Default value = 0)
-          date: datetime.date:  (Default value = datetime.date.today())
-          utc_offset: int:  (Default value = 0)
+          date: datetime.date:Date
+          utc_offset: int:uct offset for hour
 
         Returns:
             get appointment list in firebase firestore
@@ -184,26 +177,23 @@ class FirestoreData:
         """Search user appointment.
 
         Args:
-          document_id: str: input user document id
-          document_id: str:
-
+          document_id: str:input user document id
         Returns:
             user appointment info
         """
         return self.db.collection("appointments").document(document_id).get().to_dict()
 
-    def search_appointment_userid(self, user_uid: str):
-        """Search appointemnt using user uid.
+    def search_account_userid(self, user_uid: str, key: str):
+        """Search appointment using user uid.
 
         Args:
-          user_uid: str:
+          user_uid: str:user uid in user collection
+          key: str:name of the key
 
         Returns:
             appointment details of user
         """
-        appointment_ref = (
-            self.db.collection("appointments").where("user_uid", "==", user_uid).stream()
-        )
+        appointment_ref = self.db.collection("users").where(key, "==", user_uid).stream()
 
         user_list = []
 
@@ -217,12 +207,9 @@ class FirestoreData:
         """Search appointment using date.
 
         Args:
-          year: int: year of appointment
-          month: int: month of appointment
-          day: int: day of appointment
-          year: int:
-          month: int:
-          day: int:
+          year: int:year of appointment
+          month: int:month of appointment
+          day: int:day of appointment
           utc_offset: int:  (Default value = 0)
 
         Returns:
@@ -263,9 +250,8 @@ class FirestoreData:
         """Search appointment using document id.
 
         Args:
-          document_id: document id of appointment
-          document_id: str:
-          collection_name: str:
+          document_id: str: document id of appointment
+          collection_name: str: collection name in firebase
 
         Returns:
             appointment details using document id
@@ -279,9 +265,8 @@ class FirestoreData:
         """Change appointment/document status.
 
         Args:
-          document_id: document id of appointment
-          document_id: str:
-          collection_name: str:
+          document_id: str: document id of appointment
+          collection_name: str: collection name in firebase
 
         Returns:
             Change firebase firestore document status
@@ -326,18 +311,9 @@ class FirestoreData:
           utc_offset: int: specify timezone
           datetime: datetime: package datetime
           query_list: list: list down keys for firebase firestore in appointment collection
-          year: int:
-          month: int:
-          day: int:
-          hour: int:
-          minute: int:
-          second: int:
-          document_id: str:
-          utc_offset: int:
-          query_list: list:
 
         Returns:
-            'list of appointments with specific time and date'
+          : 'list of appointments with specific time and date'
         """
         full_date = datetime.datetime.now()
         date = datetime.date.today()
@@ -490,9 +466,6 @@ class FirestoreData:
         """Set start, end and time interval of residents' appointments.
 
         Args:
-          start_appointment: datetime:
-          end_appointment: datetime:
-          time_interval: int:  (Default value = 15)
           start_appointment: datetime.datetime:
           end_appointment: datetime.datetime:
           time_interval: int:  (Default value = 15)
@@ -546,11 +519,11 @@ class FirestoreData:
         """Convert data list into two dimensional list.
 
         Args:
-          user_list: list of user info
-          row: number of rows per column
+          user_list: list: list of user info
+          row: int: number of rows per column
 
         Returns:
-            two dimensional list
+          : two dimensional list
         """
         f_list = []
         temp_list: list = []
@@ -572,7 +545,7 @@ class FirestoreData:
         self,
         data: dict,
         start_appointment: datetime.datetime,
-        decrypt_document_id: str,
+        new_document_id: str,
         key_timedelta: list,
         operator: str,
         utc_offset: int,
@@ -582,7 +555,7 @@ class FirestoreData:
         Args:
           data: data of user
           start_appointment: date of start appointment
-          decrypt_document_id: decrypted document id
+          new_document_id: new document id
           key_timedelta: key from firebase data fields
           operator: specify add or subtract ("+" or "-")
           utc_offset: preferred UTC
@@ -600,7 +573,7 @@ class FirestoreData:
             minutes=admin_time_interval
         )
         data["created_on"] = datetime.datetime.now()
-        data["document_id"] = decrypt_document_id
+        data["document_id"] = new_document_id
 
         timedelta_data = DateFormatter(full_date=full_date, date=date).dict_format_utcoffset(
             data=data, key_timedelta=key_timedelta, operator=operator, utc_offset=utc_offset
@@ -612,8 +585,8 @@ class FirestoreData:
         """Delete document.
 
         Args:
-          document_id: document id in firebase firestore collection
-          collection_name: firebase firestore collection name
+          document_id: str: document id in firebase firestore collection
+          collection_name: str: firebase firestore collection name
 
         Returns:
             None deletes only document id and data fields
@@ -624,9 +597,9 @@ class FirestoreData:
         """Add new document and data fields.
 
         Args:
-          collection_name: collection name in firebase firestore
-          document_id: document id in firebase firestore
-          document_data: data in dictionary
+          collection_name: str: collection name in firebase firestore
+          document_id: str: document id in firebase firestore
+          document_data: dict: data in dictionary
 
         Returns:
             None adds new document id and data field
@@ -637,7 +610,7 @@ class FirestoreData:
         """Get active document in firebase firestore.
 
         Args:
-          document_slug: document name in slug
+          document_slug: str: document name in slug
 
         Returns:
             Data of active document
@@ -684,7 +657,6 @@ class FirestoreData:
 
         Returns:
             None updates the document array
-
         """
         document_collection = self.db.collection(collection_name)
 
