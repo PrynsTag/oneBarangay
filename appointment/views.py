@@ -494,6 +494,64 @@ def document_data(request, document_id, document_name):
             )
 
 
+def document_data_edit(request, document_id, document_name):
+    """Render edit document.
+
+    Args:
+      request: The URL request
+      document_id: Document ID of appointment
+      document_name: Name of the document in slugify
+
+    Returns:
+        View of document
+    """
+    if document_name not in ["barangay-certificate", "certificate-of-indigency"]:
+        raise Http404("Page not found.")
+
+    elif document_name == "barangay-certificate":
+        user_data = firestoreQuery.search_appointment(document_id=document_id)
+
+        date_today = datetime.date.today()
+        current_date = date_today.strftime("%Y-%m-%d")
+        validity_date = (date_today + relativedelta(months=+6)).strftime("%Y-%m-%d")
+
+        active_document_data = firestoreQuery.active_document(document_slug=document_name)
+
+        input_field_data = {}
+
+        for data in user_data["document"]:
+            if data["slugify"] == document_name:
+                input_field_data = data
+
+        document_data_list = []
+
+        for count, data in enumerate(active_document_data["document_format"]):
+            data["value"] = user_data["document"][0][
+                active_document_data["document_format"][count]["name"]
+            ]
+            document_data_list.append(data)
+
+        # Get document width and length size
+        paper_size = papersize.parse_papersize(active_document_data["paper_size"], "mm")
+
+        return render(
+            request,
+            "appointment/barangay_certificate_edit.html",
+            {
+                "document_id": document_id,
+                "document_name": document_name,
+                "input_data": input_field_data,
+                "user_data": user_data,
+                "current_date": current_date,
+                "validity_date": validity_date,
+                "document_settings": active_document_data,
+                "document_data": document_data_list,
+                "paper_width": float(paper_size[0]),
+                "paper_length": float(paper_size[1]),
+            },
+        )
+
+
 def create_document(request, document_id, document_name):
     """Create a document.
 
