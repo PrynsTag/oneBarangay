@@ -79,6 +79,12 @@
                     <span class="sidebar-text">Bulk Schedule</span>
                 </a>
             </li>
+            <li class="nav-item {% if 'complaint' in segment %} active {% endif %}">
+                <a href="{% url "complaint:home" %}" class="nav-link">
+                    <i class="fas fa-fingerprint me-3 sidebar-icon"></i>
+                    <span class="sidebar-text">Complaint</span>
+                </a>
+            </li>
             <li class="nav-item {% if 'ocr_files' in segment %} active {% endif %}">
                 <a href="{% url "rbi_table" %}" class="nav-link">
                     <span class="sidebar-icon">

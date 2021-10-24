@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "user_management",
     "announcement",
     "bulk_sched",
+    "complaint",
     "ckeditor",
     "ckeditor_uploader",
 ]
@@ -321,6 +322,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "user_management", "static"),
     os.path.join(BASE_DIR, "announcement", "static"),
     os.path.join(BASE_DIR, "bulk_sched", "static"),
+    os.path.join(BASE_DIR, "complaint", "static"),
 ]
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
