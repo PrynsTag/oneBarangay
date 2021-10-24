@@ -1,0 +1,126 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"
+        integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous"/>
+{% endblock stylesheets %}
+
+{% block content %}
+    <style>
+        .form-group label.required:after {
+            content: " *";
+            color: red;
+        }
+    </style>
+    <div class="d-flex justify-content-between w-100 flex-wrap px-5 py-4">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">{{ title }}</h1>
+            <p class="mb-0">{{ sub_title }}</p>
+        </div>
+        <div>
+            <a href="#" class="btn btn-outline-gray">
+                <i class="fas fa-question-circle me-1"></i>Help
+            </a>
+        </div>
+    </div>
+
+    <div class="container py-4 w-50">
+        <div class="card border-0 shadow components-section">
+            <div class="card-body">
+                <form action="" method="post" id="complaint-form" enctype='multipart/form-data'>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for error in form.non_field_errors %}
+                                <p class="text-center">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                        {% if field.html_name not in hidden_fields %}
+                            <div class="form-group mb-4">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            {{ field.as_hidden }}
+                        {% endif %}
+                    {% endfor %}
+                </form>
+
+                <div class="text-center mt-4">
+                    <a href="{% url "complaint:home" %}" class="btn btn-danger">Cancel</a>
+                    <button type="submit" form="complaint-form" href="#" class="btn btn-primary">Submit Complaint</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"
+        integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk="
+        crossorigin="anonymous">
+    </script>
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    Swal.fire({
+                        title: "Success",
+                        icon: "success",
+                        text: '{{ message }}',
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    Swal.fire({
+                        title: "Error!",
+                        icon: "error",
+                        text: "{{ message }}",
+                    })
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+    <script>
+        // Get the modal
+        const modal = document.getElementById("modal");
+
+        // Get the image and insert it inside the modal - use its "alt" text as a caption
+        const img = document.getElementById("proofImage");
+        const modalImg = document.getElementById("modal-image");
+        const captionText = document.getElementById("caption");
+        img.onclick = function () {
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            captionText.innerHTML = this.alt;
+        }
+
+        // Get the <span> element that closes the modal
+        const span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+    </script>
+    <script>
+        $(function () {
+            $('#id_date').datetimepicker({
+                format: 'l, F d Y, H:i A',
+                step: 30,
+                weeks: true,
+            });
+        });
+    </script>
+{% endblock scripts %}
