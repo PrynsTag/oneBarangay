@@ -72,6 +72,7 @@ class FirestoreModel:
             ).to_dict()
             resident_data = doc["family_members"][user_data["first_name"]]
             resident_data["address"] = doc["address"]
+            resident_data["house_num"] = doc["house_num"]
 
             return resident_data
         except IndexError as e:
