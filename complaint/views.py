@@ -263,15 +263,15 @@ class ComplaintDetailView(FormView):
                     changed_fields[field] = form.cleaned_data[field]
 
         if changed_fields:
+            db = firestore.client(app=firebase_app)
+            # Update complaints collection.
+            (
+                db.collection("complaints")
+                .document(form.cleaned_data["complaint_id"])
+                .update(changed_fields)
+            )
             try:
-                db = firestore.client(app=firebase_app)
-                # Updated complaints collection.
-                (
-                    db.collection("complaints")
-                    .document(form.cleaned_data["complaint_id"])
-                    .update(changed_fields)
-                )
-                # Updated users collection.
+                # Update users collection.
                 (
                     db.collection("users")
                     .document(form.cleaned_data["uid"])
@@ -279,18 +279,19 @@ class ComplaintDetailView(FormView):
                     .document(form.cleaned_data["complaint_id"])
                     .update(changed_fields)
                 )
-                changed_fields_name = [form.fields[key].label for key in changed_fields]
-                messages.success(
-                    self.request, f"Edited {''.join(changed_fields_name)} successfully!"
-                )
-                logger.info(
-                    "[UserProfileFormView.form_valid] Form successfully updated for fields %s.",
-                    "".join(changed_fields_name),
-                )
-
             except NotFound:
-                messages.error(self.request, "Complaint has not been saved!")
-                logger.info("[ComplaintDetailView.form_valid] Form NOT updated!")
+                messages.info(
+                    self.request,
+                    "User data not updated! No user tied to this complaint.",
+                )
+                logger.info("[ComplaintDetailView.form_valid] User data not updated!")
+
+            changed_fields_name = [form.fields[key].label for key in changed_fields]
+            messages.success(self.request, f"Edited {''.join(changed_fields_name)} successfully!")
+            logger.info(
+                "[UserProfileFormView.form_valid] Form successfully updated for fields %s.",
+                "".join(changed_fields_name),
+            )
         else:
             messages.info(self.request, "No change detected! Database is not updated.")
             logger.info("[ComplaintDetailView.form_valid] No fields to updated!")
