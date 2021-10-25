@@ -85,6 +85,9 @@
                     data-events="operateEvents"
                     data-reorderable-columns="true"
                     data-response-handler="responseHandler"
+                    data-show-custom-view="true"
+                    data-custom-view="customViewFormatter"
+                    data-show-custom-view-button="true"
                 >
                     <thead class="table-dark">
                         <tr>
@@ -96,6 +99,8 @@
                             <th data-field="complaint_type" class="border-0">COMPLAINT TYPE</th>
                             <th data-field="status" class="border-0">COMPLAINT STATUS</th>
                             <th data-field="comment" class="border-0">COMPLAINT comment</th>
+                            <th data-field="image" data-visible="false" class="border-0">IMAGE</th>
+                            <th data-field="address" class="border-0">ADDRESS</th>
                             <th data-field="action" data-formatter="operateFormatter" class="border-0">ACTION</th>
                         </tr>
                     </thead>
@@ -103,7 +108,7 @@
                         {% for complaint in complaints %}
                             <tr>
                                 <td class="fw-bold d-flex align-items-center">
-                                    <a href="{% url "complaint:detail" complaint.complaint_id %}" class="text-info text-decoration-underline">
+                                    <a href="{% url "complaint:detail" complaint.complaint_id %}" class="text-info">
                                         {{ complaint.complaint_id }}
                                     </a>
                                 </td>
@@ -114,6 +119,8 @@
                                 <td>{{ complaint.complaint_type }}</td>
                                 <td>{{ complaint.complaint_status }}</td>
                                 <td>{{ complaint.comment|truncatewords:10 }}</td>
+                                <td>{{ complaint.image_url }}</td>
+                                <td>{{ complaint.address }}</td>
                                 <td></td>
                             </tr>
                         {% endfor %}
@@ -122,6 +129,54 @@
             </div>
         </div>
     </div>
+    <template id="profileTemplate">
+        <div class="col-4 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-8 col-md-6">
+                            <h3 class="mb-0 text-truncated">%NAME%</h3>
+                            <div class="row">
+                                <div class="fw-extrabold mt-3">Complainant Address</div>
+                                <p class="fs-6 text-info ">%ADDRESS%</p>
+                                <div class="fw-extrabold">Contact Number</div>
+                                <p class="fs-6 text-info ">%PHONE_NUMBER%</p>
+                            </div>
+                            <p>
+                                <span class="fw-extrabold d-block">Reason of Complaint:</span>
+                                %COMMENT%
+                            </p>
+                            <div class="row">
+                                <div class="col col-md-auto">
+                                    <div class="fw-extrabold w-auto">Status</div>
+                                    <div class="text-uppercase">
+                                        <div class="badge %BG%">%STATUS%</div>
+                                    </div>
+                                </div>
+                                <div class="col px-0">
+                                    <div class="fw-extrabold text-nowrap">Complaint Type</div>
+                                    <div class="text-uppercase">
+                                        <div class="badge %BG%">%TYPE%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4 col-md-6 text-center">
+                            <img src="%IMAGE%" alt="Proof" class="mx-auto img-thumbnail img-fluid"
+                                style="height: 120px;">
+                            <span class="fw-extrabold form-text">Complaint Evidence / Proof</span>
+                        </div>
+                        <div class="col-12 col-lg-12 d-flex flex-row-reverse">
+                            <button id="detailComplaint" class="btn btn-outline-info btn-block" data-toggle="tooltip" data-placement="top" title="View Detailed Complaint">
+                                <span class="fas fa-id-badge"></span>
+                                %COMPLAINT_ID%
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
 {% endblock content %}
 
 {% block scripts %}
@@ -131,6 +186,26 @@
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/toolbar/bootstrap-table-toolbar.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/custom-view/bootstrap-table-custom-view.js"></script>
+    <script>
+        function customViewFormatter(data) {
+            const template = $('#profileTemplate').html();
+            let view = '';
+            $.each(data, function (i, row) {
+                view += template.replace('%NAME%', row.complainant_name)
+                    .replace('%IMAGE%', row.image)
+                    .replace('%COMPLAINT_ID%', row.complaint_id)
+                    .replace('%COMMENT%', row.comment)
+                    .replace('%STATUS%', row.status)
+                    .replaceAll('%BG%', row.status === 'Resolved' ? 'bg-success' : row.status === 'Handed to Police' ? 'bg-gray-500' : 'bg-secondary')
+                    .replace('%TYPE%', row.complaint_type)
+                    .replace('%PHONE_NUMBER%', row.contact_number)
+                    .replace('%ADDRESS%', row.address);
+            })
+            return `<div class="row mx-0">${view}</div>`
+        }
+
+    </script>
     <script>
         const $table = $('#table');
         const $remove = $('#remove');
