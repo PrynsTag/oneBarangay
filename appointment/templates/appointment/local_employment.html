@@ -1,0 +1,86 @@
+{% extends "layouts/base.html" %}
+
+{% load poll_extras %}
+
+{% block title %}
+    Barangay Admin - Issue Barangay Certificate of Local Employment
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .pdfobject-container {
+            height: 100vh;
+            width: 100%;
+            border: 1rem solid rgba(0, 0, 0, .1);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if check_data %}
+        {% include "appointment/fragments/local_employment_exist_true.html" %}
+    {% else %}
+        {% include "appointment/fragments/local_employment_exist_false.html" %}
+    {% endif %}
+
+    <div id="example1"></div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
+        integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.7/pdfobject.min.js"
+        integrity="sha512-g16L6hyoieygYYZrtuzScNFXrrbJo/lj9+1AYsw+0CYYYZ6lx5J3x9Yyzsm+D37/7jMIGh0fDqdvyYkNWbuYuA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <script type="text/javascript">
+        // Current Date
+        document.getElementById("date").value = "{{ current_date }}";
+
+        // Document Validity Date
+        document.getElementById("validity").value = "{{ validity_date }}";
+    </script>
+
+    {% if check_data %}
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                function toDataURL(url, callback) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.onload = function () {
+                        var reader = new FileReader();
+                        reader.onloadend = function () {
+                            callback(reader.result);
+                        }
+                        reader.readAsDataURL(xhr.response);
+                    };
+                    xhr.open('GET', url);
+                    xhr.responseType = 'blob';
+                    xhr.send();
+                }
+
+                toDataURL("{{ document_settings.file_url }}", function (dataURL) {
+                    var doc = new jsPDF();
+
+                    doc.addImage(dataURL, 0, 0, {{ paper_width }}, {{ paper_length }});
+
+                    {% for data in document_data %}
+                        doc.setFont("{{ data.font }}");
+                        doc.setFontType("{{ data.font_type }}");
+                        doc.setFontSize({{ data.font_size }});
+                        doc.text("{{ data.value }}", {{ data.offset_x }}, {{ data.offset_y }}, "{{ data.align }}");
+                    {% endfor %}
+
+                    PDFObject.embed(doc.output("datauristring"), "#example1");
+                });
+            });
+        </script>
+    {% endif %}
+{% endblock %}
