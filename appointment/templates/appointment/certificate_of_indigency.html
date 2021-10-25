@@ -3,7 +3,7 @@
 {% load poll_extras %}
 
 {% block title %}
-    Barangay Admin - Issue Certificate of Indigency
+    Barangay Admin - Issue Barangay Certificate of Indigency
 {% endblock %}
 
 {% block stylesheets %}
@@ -18,15 +18,14 @@
 
 {% block content %}
     {% if check_data %}
-        {% include "appointment/fragments/certificate_exist_true.html" %}
+        {% include "appointment/fragments/indigency_exist_true.html" %}
     {% else %}
-        {% include "appointment/fragments/certificate_exist_false.html" %}
+        {% include "appointment/fragments/indigency_exist_false.html" %}
     {% endif %}
 
     <div id="example1"></div>
 
-    <!--Adobe Embed API-->
-    {#    <div id="adobe-dc-view"></div>#}
+    <button id="confirm">Confirm</button>
 {% endblock %}
 
 {% block scripts %}
@@ -38,8 +37,6 @@
         integrity="sha512-g16L6hyoieygYYZrtuzScNFXrrbJo/lj9+1AYsw+0CYYYZ6lx5J3x9Yyzsm+D37/7jMIGh0fDqdvyYkNWbuYuA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    {#    <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>#}
-    {##}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
         integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -87,147 +84,42 @@
                 });
             });
         </script>
-    {% endif %}
 
+        <!--Generate-->
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#confirm").click(function () {
 
-    <!--PDF URL to base64-->
-    <script type="text/javascript">
-        /*
-        // Check if browser's support the PDFObject
-        if (PDFObject.supportsPDFs) {
-            console.log("Yay, this browser supports inline PDFs.");
-        } else {
-            console.log("Boo, inline PDFs are not supported by this browser");
-        }
-
-        function toDataURL(url, callback) {
-            var xhr = new XMLHttpRequest();
-            xhr.onload = function () {
-                var reader = new FileReader();
-                reader.onloadend = function () {
-                    callback(reader.result);
-                }
-                reader.readAsDataURL(xhr.response);
-            };
-            xhr.open('GET', url);
-            xhr.responseType = 'blob';
-            xhr.send();
-        }
-
-        toDataURL('https://storage.googleapis.com/onebarangay-media/documents/barangay-certificate.jpg',
-            function (dataUrl) {
-
-                const pdf_data_base64 = PDFObject.embed(createPDF(dataUrl), "#example1");
-
-                let convert_data_url = base64ToArrayBuffer(dataUrl);
-                console.log(convert_data_url);
-
-                <!--Adobe Embed API-->
-                const urlToBase64PDF =
-                    "https://assets.codepen.io/4479906/bodea-summary.pdf.base64";
-                const clientID = "298309865172490fa835f50e12068bef";
-
-                const viewOptions = {
-                    embedMode: "FULL_WINDOW",
-                    defaultViewMode: "FIT_PAGE",
-                    showAnnotationTools: false,
-                    showPrintPDF: false
-                };
-
-                function base64ToArrayBuffer(base64) {
-                    const bin = window.atob(base64);
-                    const len = bin.length;
-                    const uInt8Array = new Uint8Array(len);
-                    for (let i = 0; i < len; i++) {
-                        uInt8Array[i] = bin.charCodeAt(i);
-                    }
-                    return uInt8Array.buffer;
-                }
-
-                document.addEventListener("adobe_dc_view_sdk.ready", function () {
-                    $.get(
-                        urlToBase64PDF,
-                        function (pdfData) {
-                            let adobeDCView = new AdobeDC.View({
-                                clientId: clientID,
-                                divId: "adobe-dc-view"
-                            });
-                            adobeDCView.previewFile(
-                                {
-                                    // convert the Base64 encoded PDF and convert it to an ArrayBuffer
-                                    // and pass it as a Promise
-                                    content: {promise: Promise.resolve(base64ToArrayBuffer(pdfData))},
-                                    // The filename name to display in the View SDK UI
-                                    // and also used as the filename of the PDF when downloaded
-                                    metaData: {fileName: "Bodea Summary.pdf"}
-                                },
-                                viewOptions
-                            );
+                    $.ajax({
+                        url: "{% url "appointment:confirm_document_data" user_data.document_id %}",
+                        type: "POST",
+                        data: {
+                            "date": $("#date").val(),
+                            "firstname": $("#firstname").val(),
+                            "middlename": $("#middlename").val(),
+                            "lastname": $("#lastname").val(),
+                            "address": $("#address").val(),
+                            "year": $("#year").val(),
+                            "purpose": $("#purpose").val(),
+                            "recipient": $("#recipient").val(),
+                            "conforme": $("#conforme").val(),
+                            "ctc": $("#ctc_no").val(),
+                            "region": $("#region").val(),
+                            "valid": $("#validity").val(),
+                            "prepared": $("#prepared_by").val(),
+                            "document_name": "{{ document_settings.name }}",
+                            "slugify": "{{ document_settings.slugify }}",
                         },
-                        "text"
-                    )
+                        success: function (data) {
+                            console.log("Confirmation success");
+                            window.location.href = data
+                        },
+                        error: function (data) {
+                            console.log("Confirmation error");
+                        }
+                    });
                 });
-            })
-
-        function createPDF(image_base64) {
-            var doc = new jsPDF();
-
-            doc.addImage(image_base64, 'jpeg', '0', '0', '215.9', '279.4');
-            doc.text("TEST PDF", 105, 20, 'center');
-
-            return doc.output('datauristring');
-        }
-        */
-    </script>
-
-
-    <!--Adobe Embed API-->
-    <script type="text/javascript">
-        /*
-            const urlToBase64PDF =
-                "https://assets.codepen.io/4479906/bodea-summary.pdf.base64";
-            const clientID = "e800d12fc12c4d60960778b2bc4370af";
-
-            const viewOptions = {
-                embedMode: "FULL_WINDOW",
-                defaultViewMode: "FIT_PAGE",
-                showAnnotationTools: false,
-                showPrintPDF: false
-            };
-
-            function base64ToArrayBuffer(base64) {
-                var bin = window.atob(base64);
-                var len = bin.length;
-                var uInt8Array = new Uint8Array(len);
-                for (var i = 0; i < len; i++) {
-                    uInt8Array[i] = bin.charCodeAt(i);
-                }
-                return uInt8Array.buffer;
-            }
-
-            document.addEventListener("adobe_dc_view_sdk.ready", function () {
-                $.get(
-                    urlToBase64PDF,
-                    function (pdfData) {
-                        var adobeDCView = new AdobeDC.View({
-                            clientId: clientID,
-                            divId: "adobe-dc-view"
-                        });
-                        adobeDCView.previewFile(
-                            {
-                                // convert the Base64 encoded PDF and convert it to an ArrayBuffer
-                                // and pass it as a Promise
-                                content: {promise: Promise.resolve(base64ToArrayBuffer(pdfData))},
-                                // The filename name to display in the View SDK UI
-                                // and also used as the filename of the PDF when downloaded
-                                metaData: {fileName: "Bodea Summary.pdf"}
-                            },
-                            viewOptions
-                        );
-                    },
-                    "text"
-                )
             });
-            */
-    </script>
+        </script>
+    {% endif %}
 {% endblock %}
