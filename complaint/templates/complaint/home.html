@@ -297,7 +297,7 @@
             {% for message in messages %}
                 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
                     Swal.fire({
-                        title: "Success",
+                        title: "Success!",
                         icon: "success",
                         text: '{{ message }}',
                     })
@@ -305,6 +305,12 @@
                     Swal.fire({
                         title: "Error!",
                         icon: "error",
+                        text: "{{ message }}",
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                    Swal.fire({
+                        title: "Attention!",
+                        icon: "info",
                         text: "{{ message }}",
                     })
                 {% endif %}
