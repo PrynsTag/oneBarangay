@@ -188,8 +188,6 @@
                     url: "{% url "appointment:confirm_document_data" user_data.document_id %}",
                     type: "POST",
                     data: {
-                        "document_name": "{{ document_settings.name }}",
-                        "slugify": "{{ document_settings.slugify }}",
                         "date": $("#date").val(),
                         "firstname": $("#firstname").val(),
                         "middlename": $("#middlename").val(),
@@ -203,7 +201,9 @@
                         "orno": $("#or_no").val(),
                         "amount": $("#amount").val(),
                         "valid": $("#validity").val(),
-                        "prepared": $("#prepared_by").val()
+                        "prepared": $("#prepared_by").val(),
+                        "document_name": "{{ document_settings.name }}",
+                        "slugify": "{{ document_settings.slugify }}"
                     },
                     success: function (data) {
                         console.log("Confirmation success");
@@ -213,10 +213,6 @@
                         console.log("Confirmation error");
                     }
                 });
-
-                {#window.location.href = "{% url "appointment:process" user_data.document_id %}";#}
-                {#window.location = "{% url "appointment:process" user_data.document_id %}"#}
-                {#window.location.assign = "{% url "appointment:process" user_data.document_id %}"#}
             });
         });
     </script>
