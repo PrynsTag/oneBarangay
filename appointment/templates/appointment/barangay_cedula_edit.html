@@ -1,0 +1,217 @@
+{% extends "layouts/base.html" %}
+
+{% load poll_extras %}
+
+{% block title %}
+    Barangay Admin - Issue Barangay Certificate Edit
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .pdfobject-container {
+            height: 100vh;
+            width: 100%;
+            border: 1rem solid rgba(0, 0, 0, .1);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <a href="{% url "appointment:process" document_id %}">Back</a>
+    <h1>Edit Barangay Certificate of Indigency</h1>
+
+    {{ user_data }}
+    <br/>
+    <br/>
+    {{ document_settings }}
+    <br/>
+    <br/>
+    {{ session_data }}
+    <br/>
+    <br/>
+
+    <form action="{% url "appointment:create_document" document_id document_name %}" method="POST">
+        {% csrf_token %}
+
+        <!-- Current Date -->
+        <div>
+            <label for="date">Date: </label>
+            <input type="date" id="date" name="date" value="{{ session_data.date }}" required>
+        </div>
+
+        <!-- Firstname -->
+        <div>
+            <label for="firstname">First Name: </label>
+            <input type="text" id="firstname" name="firstname" value="{{ session_data.firstname }}" required>
+        </div>
+
+        <!-- Middle name -->
+        <div>
+            <label for="middlename">Middle Name: </label>
+            <input type="text" id="middlename" name="middlename" value="{{ session_data.middlename }}" required>
+        </div>
+
+        <!-- Lastname -->
+        <div>
+            <label for="lastname">Last Name: </label>
+            <input type="text" id="lastname" name="lastname" value="{{ session_data.lastname }}" required>
+        </div>
+
+        <!-- Address -->
+        <div>
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" value="{{ session_data.address }}" required>
+        </div>
+
+        <!-- Year -->
+        <div>
+            <label for="year">Year: </label>
+            <input type="text" id="year" name="year" value="{{ session_data.year }}" required>
+        </div>
+
+        <!-- Purpose -->
+        <div>
+            <label for="purpose">Issued for: </label>
+            <input type="text" id="purpose" name="purpose" value="{{ session_data.purpose }}" required>
+        </div>
+
+        <!-- Recipient -->
+        <div>
+            <label for="recipient">Recipient: </label>
+            <input type="text" id="recipient" name="recipient" value="{{ session_data.recipient }}" required>
+        </div>
+
+        <!-- Conforme -->
+        <div>
+            <label for="conforme">Conforme: </label>
+            <input type="text" id="conforme" name="conforme" value="{{ session_data.conforme }}" required>
+        </div>
+
+        <!-- CTC No -->
+        <div>
+            <label for="ctc_no">CTC No.: </label>
+            <input type="text" id="ctc_no" name="ctc_no" value="{{ session_data.ctc }}" required>
+        </div>
+
+        <!-- Region -->
+        <div>
+            <label for="region">Region: </label>
+            <input type="text" id="region" name="region" value="{{ session_data.region }}" required>
+        </div>
+
+        <!-- Valid until -->
+        <div>
+            <label for="validity">Valid Until: </label>
+            <input type="date" id="validity" name="validity" value="{{ session_data.valid }}" required>
+        </div>
+
+        <!-- Prepared by -->
+        <div>
+            <label for="prepared_by">Prepared by: </label>
+            <input type="text" id="prepared_by" name="prepared_by" value="{{ session_data.prepared }}" required>
+        </div>
+
+        <input type="submit" name="submit" value="Generate">
+    </form>
+
+
+    <div id="example1"></div>
+
+    <button id="confirm">Confirm</button>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
+            integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/"
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.7/pdfobject.min.js"
+            integrity="sha512-g16L6hyoieygYYZrtuzScNFXrrbJo/lj9+1AYsw+0CYYYZ6lx5J3x9Yyzsm+D37/7jMIGh0fDqdvyYkNWbuYuA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+            integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script type="text/javascript">
+        // Current Date
+        document.getElementById("date").value = "{{ current_date }}";
+
+        // Document Validity Date
+        document.getElementById("validity").value = "{{ input_data.valid }}";
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function toDataURL(url, callback) {
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function () {
+                    var reader = new FileReader();
+                    reader.onloadend = function () {
+                        callback(reader.result);
+                    }
+                    reader.readAsDataURL(xhr.response);
+                };
+                xhr.open('GET', url);
+                xhr.responseType = 'blob';
+                xhr.send();
+            }
+
+            toDataURL("{{ document_settings.file_url }}", function (dataURL) {
+                var doc = new jsPDF();
+
+                doc.addImage(dataURL, 0, 0, {{ paper_width }}, {{ paper_length }});
+
+                {% for data in document_data %}
+                    doc.setFont("{{ data.font }}");
+                    doc.setFontType("{{ data.font_type }}");
+                    doc.setFontSize({{ data.font_size }});
+                    doc.text("{{ data.value }}", {{ data.offset_x }}, {{ data.offset_y }}, "{{ data.align }}");
+                {% endfor %}
+
+                PDFObject.embed(doc.output("datauristring"), "#example1");
+            });
+        });
+    </script>
+
+    <!--Generate-->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#confirm").click(function () {
+
+                // FIXME: Cannot pass the value from the django view
+
+                $.ajax({
+                    url: "{% url "appointment:confirm_document_data" user_data.document_id %}",
+                    type: "POST",
+                    data: {
+                        "date": $("#date").val(),
+                        "firstname": $("#firstname").val(),
+                        "middlename": $("#middlename").val(),
+                        "lastname": $("#lastname").val(),
+                        "address": $("#address").val(),
+                        "year": $("#year").val(),
+                        "purpose": $("#purpose").val(),
+                        "recipient": $("#recipient").val(),
+                        "conforme": $("#conforme").val(),
+                        "ctc": $("#ctc_no").val(),
+                        "region": $("#region").val(),
+                        "valid": $("#validity").val(),
+                        "prepared": $("#prepared_by").val(),
+                        "document_name": "{{ document_settings.name }}",
+                        "slugify": "{{ document_settings.slugify }}",
+                    },
+                    success: function (data) {
+                        console.log("Confirmation success");
+                        window.location.href = data
+                    },
+                    error: function (data) {
+                        console.log("Confirmation error");
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
