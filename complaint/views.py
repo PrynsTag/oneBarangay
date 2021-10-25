@@ -1,4 +1,6 @@
 """Create your complaint views here."""
+import os
+import uuid
 from datetime import datetime
 from random import SystemRandom
 
@@ -77,12 +79,12 @@ class ComplaintHomeView(TemplateView):
         crypto_gen = SystemRandom()
         fake = Faker(["fil_PH"])
         for _ in range(count):
-            complaint_id = crypto_gen.randint(0, 999999)
+            complaint_id = crypto_gen.randint(0, 1000)
             house_num = crypto_gen.randrange(100000, 999999)
             address = fake.address()
             contact_number = fake.mobile_number()
             complainant_name = fake.name()
-            date = datetime.now(tz=pytz.timezone("Asia/Manila")).isoformat()
+            date = datetime.now(tz=pytz.timezone("Asia/Manila"))
             complaint_type = crypto_gen.choice(
                 [
                     "Gossip Problem",
@@ -91,22 +93,25 @@ class ComplaintHomeView(TemplateView):
                     "Public Disturbance",
                 ]
             )
-            status = crypto_gen.choice(["Ongoing", "Handed to Police", "Resolved"])
+            complaint_status = crypto_gen.choice(["Ongoing", "Handed to Police", "Resolved"])
             comment = fake.paragraphs(nb=5)[0]
             image_url = fake.image_url()
+            uid = str(uuid.uuid4())
 
             dummy_data.append(
                 {
+                    "uid": uid,
                     "complaint_id": complaint_id,
                     "house_num": house_num,
                     "address": address,
                     "contact_number": contact_number,
-                    "complainant": complainant_name,
+                    "complainant_name": complainant_name,
                     "date": date,
                     "complaint_type": complaint_type,
-                    "status": status,
+                    "complaint_status": complaint_status,
                     "comment": comment,
                     "image_url": image_url,
+                    "image": os.path.basename(image_url),
                 }
             )
 
