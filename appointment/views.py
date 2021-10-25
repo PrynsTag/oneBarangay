@@ -477,8 +477,15 @@ def document_data(request, document_id, document_name):
     """
     # document_query_data = firestoreQuery.active_document(document_slug=document_name)
 
-    if document_name not in ["barangay-certificate", "certificate-of-indigency"]:
+    if document_name not in [
+        "barangay-cedula",
+        "barangay-certificate",
+        "barangay-local-employment",
+        "barangay-verification",
+        "certificate-of-indigency",
+    ]:
         raise Http404("Page not found.")
+
     elif document_name == "barangay-certificate":
         user_data = firestoreQuery.search_appointment(document_id=document_id)
 
@@ -534,63 +541,120 @@ def document_data(request, document_id, document_name):
                     "session_data": request.session["barangay-certificate"] if check_data else "",
                 },
             )
-    # elif document_name == "certificate-of-indigency":
-    #     user_data = firestoreQuery.search_appointment(document_id=document_id)
-    #
-    #     check_data = "certificate-of-indigency" in request.session
-    #
-    #     date_today = datetime.date.today()
-    #     current_date = date_today.strftime("%Y-%m-%d")
-    #     validity_date = (date_today + relativedelta(months=+6)).strftime("%Y-%m-%d")
-    #
-    #     if check_data:
-    #         active_document_data = firestoreQuery.active_document(document_slug=document_name)
-    #
-    #         document_data = request.session["certificate-of-indigency"]
-    #
-    #         document_data_list = []
-    #
-    #         for count, data in enumerate(active_document_data["document_format"]):
-    #             data["value"] = document_data[data["name"]]
-    #             document_data_list.append(data)
-    #
-    #         #     Get document width and length size
-    #         paper_size = papersize.parse_papersize(active_document_data["paper_size"], "mm")
-    #
-    #         return render(
-    #             request,
-    #             "appointment/certificate_of_indigency.html",
-    #             {
-    #                 "document_id": document_id,
-    #                 "document_name": document_name,
-    #                 "user_data": user_data,
-    #                 "current_date": current_date,
-    #                 "validity_date": validity_date,
-    #                 "check_data": check_data,
-    #                 "session_data": document_data if check_data else "",
-    #                 "document_settings": active_document_data,
-    #                 "document_data": document_data_list,
-    #                 "paper_width": float(paper_size[0]),
-    #                 "paper_length": float(paper_size[1]),
-    #             },
-    #         )
-    #
-    #     else:
-    #         return render(
-    #             request,
-    #             "appointment/certificate_of_indigency.html",
-    #             {
-    #                 "document_id": document_id,
-    #                 "document_name": document_name,
-    #                 "user_data": user_data,
-    #                 "current_date": current_date,
-    #                 "validity_date": validity_date,
-    #                 "check_data": check_data,
-    #                 "session_data": request.session["certificate-of-indigency"]
-    #                 if check_data
-    #                 else "",
-    #             },
-    #         )
+    elif document_name == "certificate-of-indigency":
+        user_data = firestoreQuery.search_appointment(document_id=document_id)
+
+        check_data = "certificate-of-indigency" in request.session
+
+        date_today = datetime.date.today()
+        current_date = date_today.strftime("%Y-%m-%d")
+        validity_date = (date_today + relativedelta(months=+6)).strftime("%Y-%m-%d")
+
+        if check_data:
+            active_document_data = firestoreQuery.active_document(document_slug=document_name)
+
+            cert_document_data = request.session["certificate-of-indigency"]
+
+            document_data_list = []
+
+            for data in active_document_data["document_format"]:
+                data["value"] = cert_document_data[data["name"]]
+                document_data_list.append(data)
+
+            #     Get document width and length size
+            paper_size = papersize.parse_papersize(active_document_data["paper_size"], "mm")
+
+            return render(
+                request,
+                "appointment/certificate_of_indigency.html",
+                {
+                    "document_id": document_id,
+                    "document_name": document_name,
+                    "user_data": user_data,
+                    "current_date": current_date,
+                    "validity_date": validity_date,
+                    "check_data": check_data,
+                    "session_data": cert_document_data if check_data else "",
+                    "document_settings": active_document_data,
+                    "document_data": document_data_list,
+                    "paper_width": float(paper_size[0]),
+                    "paper_length": float(paper_size[1]),
+                },
+            )
+
+        else:
+            return render(
+                request,
+                "appointment/certificate_of_indigency.html",
+                {
+                    "document_id": document_id,
+                    "document_name": document_name,
+                    "user_data": user_data,
+                    "current_date": current_date,
+                    "validity_date": validity_date,
+                    "check_data": check_data,
+                    "session_data": request.session["certificate-of-indigency"]
+                    if check_data
+                    else "",
+                },
+            )
+    elif document_name == "barangay-local-employment":
+        user_data = firestoreQuery.search_appointment(document_id=document_id)
+
+        check_data = "barangay-local-employment" in request.session
+
+        date_today = datetime.date.today()
+        current_date = date_today.strftime("%Y-%m-%d")
+        validity_date = (date_today + relativedelta(months=+6)).strftime("%Y-%m-%d")
+
+        if check_data:
+            active_document_data = firestoreQuery.active_document(document_slug=document_name)
+
+            cert_document_data = request.session["barangay-local-employment"]
+
+            document_data_list = []
+
+            for data in active_document_data["document_format"]:
+                data["value"] = cert_document_data[data["name"]]
+                document_data_list.append(data)
+
+            #     Get document width and length size
+            paper_size = papersize.parse_papersize(active_document_data["paper_size"], "mm")
+
+            return render(
+                request,
+                "appointment/certificate_of_indigency.html",
+                {
+                    "document_id": document_id,
+                    "document_name": document_name,
+                    "user_data": user_data,
+                    "current_date": current_date,
+                    "validity_date": validity_date,
+                    "check_data": check_data,
+                    "session_data": cert_document_data if check_data else "",
+                    "document_settings": active_document_data,
+                    "document_data": document_data_list,
+                    "paper_width": float(paper_size[0]),
+                    "paper_length": float(paper_size[1]),
+                },
+            )
+
+        else:
+            return render(
+                request,
+                "appointment/certificate_of_indigency.html",
+                {
+                    "document_id": document_id,
+                    "document_name": document_name,
+                    "user_data": user_data,
+                    "current_date": current_date,
+                    "validity_date": validity_date,
+                    "check_data": check_data,
+                    "session_data": request.session["certificate-of-indigency"]
+                    if check_data
+                    else "",
+                },
+            )
 
 
 def document_data_edit(request, document_id, document_name):
@@ -604,10 +668,16 @@ def document_data_edit(request, document_id, document_name):
     Returns:
         View of document
     """
-    if document_name not in ["barangay-certificate", "certificate-of-indigency"]:
+    if document_name not in [
+        "barangay-certificate",
+        "certificate-of-indigency",
+        "barangay-cedula",
+        "barangay-local-employment",
+        "barangay-verification",
+    ]:
         raise Http404("Page not found.")
 
-    elif document_name == "barangay-certificate":
+    else:
         user_data = firestoreQuery.search_appointment(document_id=document_id)
 
         date_today = datetime.date.today()
@@ -633,9 +703,14 @@ def document_data_edit(request, document_id, document_name):
         # Get document width and length size
         paper_size = papersize.parse_papersize(active_document_data["paper_size"], "mm")
 
+        html_file = {
+            "barangay-certificate": "appointment/barangay_certificate_edit.html",
+            "certificate-of-indigency": "appointment/indigency_edit.html",
+        }
+
         return render(
             request,
-            "appointment/barangay_certificate_edit.html",
+            html_file[document_name],
             {
                 "document_id": document_id,
                 "document_name": document_name,
@@ -662,48 +737,213 @@ def create_document(request, document_id, document_name):
     Returns:
         document
     """
-    if document_name == "barangay-certificate":
-        date = request.POST.get("date")
-        firstname = request.POST.get("firstname")
-        middlename = request.POST.get("middlename")
-        lastname = request.POST.get("lastname")
-        address = request.POST.get("address")
-        year = request.POST.get("year")
-        issued_for = request.POST.get("issued")
-        conforme = request.POST.get("conforme")
-        ctc_no = request.POST.get("ctc_no")
-        region = request.POST.get("region")
-        or_no = request.POST.get("or_no")
-        amount = request.POST.get("amount")
-        valid_until = request.POST.get("validity")
-        prepared_by = request.POST.get("prepared_by")
+    if document_name not in [
+        "barangay-certificate",
+        "certificate-of-indigency",
+        "barangay-local-employment",
+        "barangay-verification",
+        "barangay-cedula",
+    ]:
+        return Http404("Document not found")
 
-        request.session["barangay-certificate"] = {
-            "address": address,
-            "amount": amount,
-            "conforme": conforme,
-            "ctc": ctc_no,
-            "date": date,
-            "firstname": firstname,
-            "middlename": middlename,
-            "lastname": lastname,
-            "fullname": f"{firstname} {middlename} {lastname}",
-            "issued": issued_for,
-            "orno": or_no,
-            "prepared": prepared_by,
-            "region": region,
-            "valid": valid_until,
-            "year": year,
-        }
+    else:
 
-        return HttpResponseRedirect(
-            reverse(
-                "appointment:document_data",
-                kwargs={"document_id": document_id, "document_name": document_name},
+        if document_name == "barangay-certificate":
+            date = request.POST.get("date")
+            firstname = request.POST.get("firstname")
+            middlename = request.POST.get("middlename")
+            lastname = request.POST.get("lastname")
+            address = request.POST.get("address")
+            year = request.POST.get("year")
+            issued_for = request.POST.get("issued")
+            conforme = request.POST.get("conforme")
+            ctc_no = request.POST.get("ctc_no")
+            region = request.POST.get("region")
+            or_no = request.POST.get("or_no")
+            amount = request.POST.get("amount")
+            valid_until = request.POST.get("validity")
+            prepared_by = request.POST.get("prepared_by")
+
+            request.session["barangay-certificate"] = {
+                "date": date,
+                "firstname": firstname,
+                "middlename": middlename,
+                "lastname": lastname,
+                "fullname": f"{firstname} {middlename} {lastname}",
+                "address": address,
+                "year": year,
+                "issued": issued_for,
+                "conforme": conforme,
+                "ctc": ctc_no,
+                "region": region,
+                "orno": or_no,
+                "amount": amount,
+                "valid": valid_until,
+                "prepared": prepared_by,
+            }
+
+            return HttpResponseRedirect(
+                reverse(
+                    "appointment:document_data",
+                    kwargs={"document_id": document_id, "document_name": document_name},
+                )
             )
-        )
-    elif document_name == "certificate-of-indigency":
-        pass
+
+        if document_name == "certificate-of-indigency":
+            date = request.POST.get("date")
+            firstname = request.POST.get("firstname")
+            middlename = request.POST.get("middlename")
+            lastname = request.POST.get("lastname")
+            address = request.POST.get("address")
+            year = request.POST.get("year")
+            purpose = request.POST.get("purpose")
+            recipient = request.POST.get("recipient")
+            conforme = request.POST.get("conforme")
+            ctc_no = request.POST.get("ctc_no")
+            region = request.POST.get("region")
+            valid_until = request.POST.get("validity")
+            prepared_by = request.POST.get("prepared_by")
+
+            request.session["certificate-of-indigency"] = {
+                "date": date,
+                "firstname": firstname,
+                "middlename": middlename,
+                "lastname": lastname,
+                "fullname": f"{firstname} {middlename} {lastname}",
+                "address": address,
+                "year": year,
+                "purpose": purpose,
+                "recipient": recipient,
+                "conforme": conforme,
+                "ctc": ctc_no,
+                "region": region,
+                "valid": valid_until,
+                "prepared": prepared_by,
+            }
+
+            return HttpResponseRedirect(
+                reverse(
+                    "appointment:document_data",
+                    kwargs={"document_id": document_id, "document_name": document_name},
+                )
+            )
+
+        if document_name == "barangay-local-employment":
+            date = request.POST.get("date")
+            firstname = request.POST.get("firstname")
+            middlename = request.POST.get("middlename")
+            lastname = request.POST.get("lastname")
+            address = request.POST.get("address")
+            year = request.POST.get("year")
+            conforme = request.POST.get("conforme")
+            ctc_no = request.POST.get("ctc_no")
+            region = request.POST.get("region")
+            or_no = request.POST.get("or_no")
+            amount = request.POST.get("amount")
+            valid_until = request.POST.get("validity")
+            prepared_by = request.POST.get("prepared_by")
+
+            request.session["barangay-local-employment"] = {
+                "date": date,
+                "firstname": firstname,
+                "middlename": middlename,
+                "lastname": lastname,
+                "fullname": f"{firstname} {middlename} {lastname}",
+                "address": address,
+                "year": year,
+                "conforme": conforme,
+                "ctc": ctc_no,
+                "region": region,
+                "orno": or_no,
+                "amount": amount,
+                "valid": valid_until,
+                "prepared": prepared_by,
+            }
+
+            return HttpResponseRedirect(
+                reverse(
+                    "appointment:document_data",
+                    kwargs={"document_id": document_id, "document_name": document_name},
+                )
+            )
+
+        if document_name == "barangay-verification":
+            date = request.POST.get("date")
+            firstname = request.POST.get("firstname")
+            middlename = request.POST.get("middlename")
+            lastname = request.POST.get("lastname")
+            address = request.POST.get("address")
+            year = request.POST.get("year")
+            conforme = request.POST.get("conforme")
+            ctc_no = request.POST.get("ctc_no")
+            region = request.POST.get("region")
+            or_no = request.POST.get("or_no")
+            amount = request.POST.get("amount")
+            valid_until = request.POST.get("validity")
+            prepared_by = request.POST.get("prepared_by")
+
+            request.session["barangay-verification"] = {
+                "date": date,
+                "firstname": firstname,
+                "middlename": middlename,
+                "lastname": lastname,
+                "fullname": f"{firstname} {middlename} {lastname}",
+                "address": address,
+                "year": year,
+                "conforme": conforme,
+                "ctc": ctc_no,
+                "region": region,
+                "orno": or_no,
+                "amount": amount,
+                "valid": valid_until,
+                "prepared": prepared_by,
+            }
+
+            return HttpResponseRedirect(
+                reverse(
+                    "appointment:document_data",
+                    kwargs={"document_id": document_id, "document_name": document_name},
+                )
+            )
+
+        if document_name == "barangay-cedula":
+            date = request.POST.get("date")
+            firstname = request.POST.get("firstname")
+            middlename = request.POST.get("middlename")
+            lastname = request.POST.get("lastname")
+            address = request.POST.get("address")
+            year = request.POST.get("year")
+            conforme = request.POST.get("conforme")
+            ctc_no = request.POST.get("ctc_no")
+            region = request.POST.get("region")
+            or_no = request.POST.get("or_no")
+            amount = request.POST.get("amount")
+            valid_until = request.POST.get("validity")
+            prepared_by = request.POST.get("prepared_by")
+
+            request.session["barangay-verification"] = {
+                "date": date,
+                "firstname": firstname,
+                "middlename": middlename,
+                "lastname": lastname,
+                "fullname": f"{firstname} {middlename} {lastname}",
+                "address": address,
+                "year": year,
+                "conforme": conforme,
+                "ctc": ctc_no,
+                "region": region,
+                "orno": or_no,
+                "amount": amount,
+                "valid": valid_until,
+                "prepared": prepared_by,
+            }
+
+            return HttpResponseRedirect(
+                reverse(
+                    "appointment:document_data",
+                    kwargs={"document_id": document_id, "document_name": document_name},
+                )
+            )
 
 
 @csrf_exempt
@@ -757,10 +997,134 @@ def confirm_document_data(request, document_id):
             "ready_issue": True,
         }
 
-    final_document_data = []
+        final_document(document_id=document_id, fb_document_data=fb_document_data)
 
-    final_document_data.append(fb_document_data)
+        return HttpResponse(reverse("appointment:process", kwargs={"document_id": document_id}))
 
+    elif ajax_slugify == "certificate-of-indigency":
+        date = request.POST.get("date")
+        firstname = request.POST.get("firstname")
+        middlename = request.POST.get("middlename")
+        lastname = request.POST.get("lastname")
+        address = request.POST.get("address")
+        year = request.POST.get("year")
+        purpose = request.POST.get("purpose")
+        recipient = request.POST.get("recpient")
+        conforme = request.POST.get("conforme")
+        ctc = request.POST.get("ctc")
+        region = request.POST.get("region")
+        valid = request.POST.get("valid")
+        prepared = request.POST.get("prepared")
+
+        fb_document_data = {
+            "document_name": ajax_document_name,
+            "slugify": ajax_slugify,
+            "date": date,
+            "fullname": f"{firstname} {middlename} {lastname}",
+            "firstname": firstname,
+            "middlename": middlename,
+            "lastname": lastname,
+            "address": address,
+            "year": year,
+            "purpose": purpose,
+            "recipient": recipient,
+            "conforme": conforme,
+            "ctc": ctc,
+            "region": region,
+            "valid": valid,
+            "prepared": prepared,
+            "ready_issue": True,
+        }
+
+        final_document(document_id=document_id, fb_document_data=fb_document_data)
+
+        return HttpResponse(reverse("appointment:process", kwargs={"document_id": document_id}))
+
+    elif ajax_slugify == "barangay-local-employment":
+        date = request.POST.get("date")
+        firstname = request.POST.get("firstname")
+        middlename = request.POST.get("middlename")
+        lastname = request.POST.get("lastname")
+        address = request.POST.get("address")
+        year = request.POST.get("year")
+        conforme = request.POST.get("conforme")
+        ctc_no = request.POST.get("ctc_no")
+        region = request.POST.get("region")
+        or_no = request.POST.get("or_no")
+        amount = request.POST.get("amount")
+        valid_until = request.POST.get("validity")
+        prepared_by = request.POST.get("prepared_by")
+
+        fb_document_data = {
+            "date": date,
+            "firstname": firstname,
+            "middlename": middlename,
+            "lastname": lastname,
+            "fullname": f"{firstname} {middlename} {lastname}",
+            "address": address,
+            "year": year,
+            "conforme": conforme,
+            "ctc": ctc_no,
+            "region": region,
+            "orno": or_no,
+            "amount": amount,
+            "valid": valid_until,
+            "prepared": prepared_by,
+            "ready_issue": True,
+        }
+
+        final_document(document_id=document_id, fb_document_data=fb_document_data)
+
+        return HttpResponse(reverse("appointment:process", kwargs={"document_id": document_id}))
+
+    elif ajax_slugify == "barangay-verification":
+        date = request.POST.get("date")
+        firstname = request.POST.get("firstname")
+        middlename = request.POST.get("middlename")
+        lastname = request.POST.get("lastname")
+        address = request.POST.get("address")
+        year = request.POST.get("year")
+        conforme = request.POST.get("conforme")
+        ctc_no = request.POST.get("ctc_no")
+        region = request.POST.get("region")
+        or_no = request.POST.get("or_no")
+        amount = request.POST.get("amount")
+        valid_until = request.POST.get("validity")
+        prepared_by = request.POST.get("prepared")
+
+        fb_document_data = {
+            "date": date,
+            "firstname": firstname,
+            "middlename": middlename,
+            "lastname": lastname,
+            "fullname": f"{firstname} {middlename} {lastname}",
+            "address": address,
+            "year": year,
+            "conforme": conforme,
+            "ctc": ctc_no,
+            "region": region,
+            "orno": or_no,
+            "amount": amount,
+            "valid": valid_until,
+            "prepared": prepared_by,
+            "ready_issue": True,
+        }
+
+        final_document(document_id=document_id, fb_document_data=fb_document_data)
+
+        return HttpResponse(reverse("appointment:process", kwargs={"document_id": document_id}))
+
+
+def final_document(document_id: str, fb_document_data: dict):
+    """Change old document data into final document.
+
+    Args:
+      document_id: Document ID of appointment
+      fb_document_data: Document data in firebase firestore
+
+    Returns:
+        Go to process page
+    """
     firestore_document = firestoreQuery.search_appointment(document_id=document_id)
     firestoreQuery.update_document(
         collection_name="appointments",
@@ -769,8 +1133,6 @@ def confirm_document_data(request, document_id):
         new_document_data=fb_document_data,
         array_name="document",
     )
-
-    return HttpResponse(reverse("appointment:process", kwargs={"document_id": document_id}))
 
 
 def remove_document_session(request, date):
