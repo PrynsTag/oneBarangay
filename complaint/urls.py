@@ -27,4 +27,9 @@ urlpatterns = [
         ),
         name="detail",
     ),
+    path(
+        "delete",
+        views.delete,
+        name="delete",
+    ),
 ]

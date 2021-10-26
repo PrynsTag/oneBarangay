@@ -1,13 +1,16 @@
 """Create your complaint views here."""
+import json
 import os
 import uuid
 from datetime import datetime
 from random import SystemRandom
+from typing import Union
 
 import pytz
 from django.contrib import messages
 from django.core.files.storage import default_storage
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 from faker import Faker
@@ -328,3 +331,32 @@ class ComplaintDetailView(FormView):
         context["hidden_fields"] = ["uid", "complaint_id"]
 
         return context
+
+
+def delete(request) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
+    """Delete complaint.
+
+    Args:
+      request: The URL Request.
+
+    Returns:
+      Redirect to complaint home.
+    """
+    data = json.load(request)
+    complaint_data: dict = data.get("payload")
+    complaint_id = complaint_data.get("complaint_id")
+
+    db = firestore.client(app=firebase_app)
+
+    if complaint_id:
+        try:
+            db.collection("complaints").document(complaint_id).delete()
+            messages.success(request, "Complaint Deleted Successfully!")
+        except NotFound:
+            messages.error(request, "Complaint Not Found!")
+        except ValueError:
+            messages.error(request, "Complaint Not Found!")
+    else:
+        messages.error(request, "NO Complaint I.D. Provided!")
+
+    return redirect("complaint:home")
