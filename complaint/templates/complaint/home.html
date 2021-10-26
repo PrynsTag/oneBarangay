@@ -222,14 +222,24 @@
                             </div>
                         </div>
                         <div class="col-12 col-lg-4 col-md-6 text-center">
-                            <img src="%IMAGE%" alt="Proof" class="mx-auto img-thumbnail img-fluid"
+                            <img id="proof-image" src="%IMAGE%" alt="No Proof Provided"
+                                class="mx-auto img-thumbnail img-fluid"
                                 style="height: 120px;">
-                            <span class="fw-extrabold form-text">Complaint Evidence / Proof</span>
+                            <br>
+                            <span id="proof-image-desc" class="fw-extrabold form-text">Complaint Evidence / Proof</span>
                         </div>
-                        <div class="col-12 col-lg-12 d-flex flex-row-reverse">
-                            <button id="detailComplaint" class="btn btn-outline-info btn-block" data-toggle="tooltip" data-placement="top" title="View Detailed Complaint">
+                        <div class="col-12 col-lg-12 pt-5 d-flex flex-row-reverse">
+                            <!-- Button Modal -->
+                            <button type="button" id="emailBtn" onclick="contactComplaint('%EMAIL%')"
+                                class="btn btn-outline-info" data-toggle="tooltip" data-placement="top"
+                                title="Contact Resident" data-bs-toggle="modal" data-bs-target="#complaint-modal">
+                                <span class="fas fa-inbox"></span>
+                                Email
+                            </button>
+                            <button onclick="window.location.href='%COMPLAINT_LINK%'" class="btn btn-outline-info"
+                                data-toggle="tooltip" data-placement="top" title="View Detailed Complaint">
                                 <span class="fas fa-id-badge"></span>
-                                %COMPLAINT_ID%
+                                View
                             </button>
                             <button class="btn btn-outline-info remove" onclick="removeRow('%COMPLAINT_ID%')"
                                 data-toggle="tooltip" data-placement="top" title="Delete Complaint">
@@ -302,6 +312,12 @@
                 }
             });
             return html.join('');
+        }
+
+        function contactComplaint(email) {
+            $('#complaint-modal').on('shown.bs.modal', () => {
+                $('#id_email').val(email)
+            })
         }
 
         const swalWithBootstrapButtons = Swal.mixin({
