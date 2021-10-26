@@ -81,10 +81,11 @@ class ComplaintHomeView(TemplateView):
         dummy_data = []
         crypto_gen = SystemRandom()
         fake = Faker(["fil_PH"])
-        for _ in range(count):
-            complaint_id = crypto_gen.randint(0, 1000)
+        for _ in range(int(count)):
+            complaint_id = str(crypto_gen.randint(0, 1000))
             house_num = crypto_gen.randrange(100000, 999999)
             address = fake.address()
+            email = fake.email()
             contact_number = fake.mobile_number()
             complainant_name = fake.name()
             date = datetime.now(tz=pytz.timezone("Asia/Manila"))
@@ -110,6 +111,7 @@ class ComplaintHomeView(TemplateView):
                     "contact_number": contact_number,
                     "complainant_name": complainant_name,
                     "date": date,
+                    "email": email,
                     "complaint_type": complaint_type,
                     "complaint_status": complaint_status,
                     "comment": comment,
