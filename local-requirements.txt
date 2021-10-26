@@ -14,7 +14,7 @@ django-storages==1.12.2
 django-stubs==1.9.0
 djangorestframework-stubs==1.4.0
 djhtml==1.4.9
-Faker==9.5.2
+Faker==9.6.0
 firebase-admin==5.0.3
 gcloud-aio-storage==6.2.0
 gcloud-rest-storage==6.2.0
