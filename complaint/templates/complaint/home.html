@@ -47,15 +47,63 @@
         <form action="{% url "complaint:home" %}" method="post" id="dummyComplaint" class="form-group w-25">
             {% csrf_token %}
             <!-- TODO: Remove dummy generation -->
-            <label for="numComplaint">How many Complaint to generate?</label>
+            {{ dummy_form.dummy_count.label_tag }}
             <div class="input-group">
-                <button type="submit" form="dummyComplaint" class="btn btn-primary input-group-text">
+                <button type="submit" form="dummyComplaint" name="dummy_form" class="btn btn-primary input-group-text">
                     <i class="fas fa-paper-plane" aria-hidden="true"></i>
                 </button>
-                <input type="number" class="form-control" name="dummy_count" id="numComplaint">
+                {{ dummy_form.dummy_count }}
             </div>
+            {% if dummy_form.dummy_count.errors %}
+                <div class="badge m-0 bg-danger text-uppercase">{{ dummy_form.dummy_count.errors|striptags }}</div>
+            {% endif %}
         </form>
     </div>
+    <!-- Modal Content -->
+    <div class="modal fade" id="complaint-modal" tabindex="-1" role="dialog" aria-labelledby="complaint-modal"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="h6 modal-title">Contact Complainant</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form -->
+                    <form action="{% url "complaint:home" %}" method="post" id="complaint-form">
+                        {% csrf_token %}
+
+                        {% if contact_form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    <p class="text-center">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {% for field in form %}
+                            <div class="form-group mb-4">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                <small class="form-text text-muted d-block px-1">{{ field.help_text }}</small>
+                                {% if field.errors %}
+                                    <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </form>
+                    <!-- End of Form -->
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" form="complaint-form" name="contact_form" class="btn btn-secondary">Send
+                    </button>
+                    <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Modal Content -->
     <div class="card border-0 shadow mb-4 position-relative">
         <div class="card-body">
             <div class="table-responsive overflow-hidden">
@@ -126,11 +174,12 @@
                                 <td>{{ complaint.house_num }}</td>
                                 <td>{{ complaint.date|date:"c" }}</td>
                                 <td>{{ complaint.complainant_name }}</td>
+                                <td>{{ complaint.email }}</td>
                                 <td>{{ complaint.contact_number }}</td>
                                 <td>{{ complaint.complaint_type }}</td>
                                 <td>{{ complaint.complaint_status }}</td>
                                 <td>{{ complaint.comment|truncatewords:10 }}</td>
-                                <td>{{ complaint.image_url }}</td>
+                                <td>{{ complaint.image_url|default_if_none:"No Proof Provided" }}</td>
                                 <td>{{ complaint.address }}</td>
                                 <td></td>
                             </tr>
@@ -205,25 +254,32 @@
         function customViewFormatter(data) {
             const template = $('#profileTemplate').html();
             let view = '';
-            $.each(data, function (i, row) {
-                view += template.replace('%NAME%', row.complainant_name)
-                    .replace('%IMAGE%', row.image)
-                    .replace('%COMPLAINT_ID%', row.complaint_id)
-                    .replace('%COMMENT%', row.comment)
-                    .replace('%STATUS%', row.status)
-                    .replaceAll('%BG%', row.status === 'Resolved' ? 'bg-success' : row.status === 'Handed to Police' ? 'bg-gray-500' : 'bg-secondary')
-                    .replace('%TYPE%', row.complaint_type)
-                    .replace('%PHONE_NUMBER%', row.contact_number)
-                    .replace('%ADDRESS%', row.address);
-            })
-            return `<div class="row mx-0">${view}</div>`
-        }
 
+            $.each(data, function (i, row) {
+                const image = row.image === "" ? '{% static "assets/img/default-image.jpg" %}' : row.image
+                const complaintLink = row.complaint_id.match(/href="([^"]*)/)[1]
+            const complaintId = complaintLink.split('/').pop()
+            view += template.replace('%NAME%', row.complainant_name)
+                .replace('%IMAGE%', image)
+                .replace('%COMPLAINT_ID%', complaintId)
+                .replace('%COMPLAINT_LINK%', complaintLink)
+                .replace('%EMAIL%', row.email)
+                .replace('%COMMENT%', row.comment)
+                .replace('%STATUS%', row.status)
+                .replaceAll('%BG%', row.status === 'Resolved' ? 'bg-success' : row.status === 'Handed to Police' ? 'bg-gray-500' : 'bg-secondary')
+                .replace('%TYPE%', row.complaint_type)
+                .replace('%PHONE_NUMBER%', row.contact_number)
+                .replace('%ADDRESS%', row.address);
+        })
+
+        return `<div class="row mx-0">${view}</div>`
+        }
     </script>
     <script>
         const $table = $('#table');
         const $remove = $('#remove');
         let selections = [];
+        const complaintModal = new bootstrap.Modal(document.getElementById('complaint-modal'));
 
         function getIdSelections() {
             return $.map($table.bootstrapTable('getSelections'), (row) => row.id);
@@ -361,6 +417,9 @@
             $('.bootstrap-table')
                 .addClass('bootstrap5')
                 .removeClass('bootstrap4');
+            {% if contact_form.errors %}
+                complaintModal.show()
+            {% endif %}
         });
 
         function createdFormatter(value) {
@@ -372,12 +431,6 @@
             /* eslint no-undef:0 */
             return moment(value, 'YYYY-MM-DD').format('dddd, MMMM Do YYYY');
         }
-
-        $(document).ready(() => {
-            $('.bootstrap-table')
-                .addClass('bootstrap5')
-                .removeClass('bootstrap4');
-        });
     </script>
     <script>
         {% if messages %}

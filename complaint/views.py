@@ -12,21 +12,47 @@ from django.core.files.storage import default_storage
 from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView
 from faker import Faker
 from firebase_admin import firestore
 from google.api_core.exceptions import NotFound
 
-from complaint.forms import ComplaintCreateForm, ComplaintDetailForm
+from complaint.forms import (
+    ComplaintContactForm,
+    ComplaintCreateForm,
+    ComplaintDetailForm,
+    ComplaintDummyForm,
+)
 from one_barangay.local_settings import logger
 from one_barangay.settings import firebase_app
 
 
 # TODO: Validators!
-class ComplaintHomeView(TemplateView):
+class ComplaintHomeView(FormView):
     """Template view for complaint home."""
 
     template_name = "complaint/home.html"
+    form_class = ComplaintContactForm
+    second_form_class = ComplaintDummyForm
+    success_url = reverse_lazy("complaint:home")
+
+    def get_context_data(self, **kwargs):
+        """Get context data to complaint home view.
+
+        Args:
+          **kwargs: Additional keyword arguments.
+
+        Returns:
+          The form class needed by complaint home view.
+        """
+        context = super().get_context_data(**kwargs)
+
+        if "contact_form" not in context:
+            context["contact_form"] = self.form_class()
+        if "dummy_form" not in context:
+            context["dummy_form"] = self.second_form_class()
+
+        return context
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """Get all complaints from firestore.
@@ -44,13 +70,12 @@ class ComplaintHomeView(TemplateView):
         db = firestore.client(app=firebase_app)
         docs = db.collection("complaints").order_by("date", direction="DESCENDING").stream()
         complaints = [doc.to_dict() for doc in docs]
-
         context["complaints"] = complaints
 
         return self.render_to_response(context)
 
-    def post(self, request, *args, **kwargs):
-        """Save POST request to firestore complaints collection.
+    def post(self, request, *args, **kwargs) -> Union[HttpResponse, HttpResponse]:
+        """Post request for contact and dummy form.
 
         Args:
           request: The URL request.
@@ -58,16 +83,52 @@ class ComplaintHomeView(TemplateView):
           **kwargs: Additional keyword arguments.
 
         Returns:
-          HttpResponse with the context data.
+          on success: Call form_valid with form as argument.
+          on fail: Call form_invalid along with the invalid form.
         """
-        context = self.get_context_data(**kwargs)
-        dummy_list = self.dummy_complaint(int(request.POST["dummy_count"]))
+        if "contact_form" in request.POST:
+            class_form = self.get_form_class()
+            form_name = "contact_form"
+        else:
+            class_form = self.second_form_class  # type: ignore
+            form_name = "dummy_form"
 
-        db = firestore.client(app=firebase_app)
-        for dummy in dummy_list:
-            db.collection("complaints").document(str(dummy["complaint_id"])).set(dummy)
+        form = self.get_form(class_form)
 
-        return self.render_to_response(context)
+        if form.is_valid():
+            db = firestore.client(app=firebase_app)
+            if form_name == "contact_form":
+                # TODO: Implement send_mail
+                pass
+            else:
+                dummy_list = self.dummy_complaint(form.cleaned_data["dummy_count"])
+                for dummy in dummy_list:
+                    db.collection("complaints").document(dummy["complaint_id"]).set(dummy)
+            return self.form_valid(form=form)
+        else:
+            return self.form_invalid(**{form_name: form})
+
+    def form_invalid(self, **kwargs):
+        """Call when ComplaintCreateForm is INVALID.
+
+        Args:
+          **kwargs: Additional keyword arguments
+
+        Returns:
+          The invalid ComplaintContactForm or ComplaintDummyForm submitted.
+        """
+        if kwargs.get("contact_form"):
+            form = kwargs["contact_form"]
+        else:
+            form = kwargs["dummy_form"]
+
+        for field in form.errors:
+            form[field].field.widget.attrs["class"] += " is-invalid"
+        messages.error(
+            self.request,
+            "Email not sent! Please fix the errors presented in the form.",
+        )
+        return self.render_to_response(self.get_context_data(**kwargs))
 
     def dummy_complaint(self, count):
         """Create dummy complaint.

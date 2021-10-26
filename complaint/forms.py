@@ -248,3 +248,43 @@ class ComplaintCreateForm(ComplaintBaseForm):
             return self.fields["complaint_status"].initial
         else:
             return self.fields["complaint_status"].initial
+
+
+class ComplaintContactForm(forms.Form):
+    """Contact form for complaint."""
+
+    error_css_class = "is-invalid"
+    required_css_class = "required"
+
+    email = forms.EmailField(
+        help_text="Email address must be a valid and registered email "
+        "from email address providers (e.g. Gmail, Outlook, etc.)",
+        label="Email",
+        label_suffix="",
+        widget=forms.EmailInput(
+            attrs={
+                "pattern": r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",
+                "placeholder": "Email",
+                "class": "form-control text-black",
+            }
+        ),
+    )
+    message = forms.CharField(
+        label_suffix="",
+        min_length=20,
+        label="Message",
+        widget=forms.Textarea(attrs={"class": "form-control text-black"}),
+    )
+
+
+class ComplaintDummyForm(forms.Form):
+    """Dummy form for complaint dummy generation."""
+
+    error_css_class = "is-invalid"
+    required_css_class = "required"
+
+    dummy_count = forms.IntegerField(
+        label="How many Complaint to generate?",
+        label_suffix="",
+        widget=forms.NumberInput(attrs={"class": "form-control", "name": "dummy_form"}),
+    )
