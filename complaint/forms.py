@@ -153,7 +153,7 @@ class ComplaintDetailForm(ComplaintBaseForm):
                         .strftime("%A, %B %d %Y, %I:%M %p")
                     )
                 else:
-                    self.fields[field].initial = complaint[field]
+                    self.fields[field].initial = complaint.get(field)
 
             self.fields[field].widget.attrs["readonly"] = True
 
