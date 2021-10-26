@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 
 from django import forms
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, validate_email
 from django.forms.utils import ErrorList
 
 
@@ -43,6 +43,25 @@ class ComplaintBaseForm(forms.Form):
         label_suffix="",
         widget=forms.TextInput(attrs={"class": "form-control text-black"}),
     )
+    email_regex = RegexValidator(
+        regex=r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",
+        message="Email address must be a valid and registered email "
+        "from email address providers (e.g. Gmail, Outlook, etc.)",
+    )
+    email = forms.EmailField(
+        validators=[email_regex, validate_email],
+        help_text="Email address must be a valid and registered email "
+        "from email address providers (e.g. Gmail, Outlook, etc.)",
+        label="Email",
+        label_suffix="",
+        widget=forms.EmailInput(
+            attrs={
+                "pattern": r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",
+                "placeholder": "Email",
+                "class": "form-control text-black",
+            }
+        ),
+    )
     phone_regex = RegexValidator(
         regex=r"^\+?1?\d{9,15}$",
         message="Phone number must be entered in the format: \
@@ -50,6 +69,8 @@ class ComplaintBaseForm(forms.Form):
     )
     contact_number = forms.CharField(
         validators=[phone_regex],
+        help_text="Phone number must be entered in the format: "
+        "'+999999999'. Up to 15 digits allowed.",
         label="Phone Number",
         label_suffix="",
         max_length=17,

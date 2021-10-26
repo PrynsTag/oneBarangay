@@ -47,10 +47,12 @@
                             <div class="form-group mb-4">
                                 {{ field.label_tag }}
                                 {{ field }}
+                                <small class="form-text text-muted d-block">{{ field.help_text }}</small>
                                 {% if field.errors %}
                                     <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
                                 {% endif %}
                             </div>
+
                         {% else %}
                             {{ field.as_hidden }}
                         {% endif %}
