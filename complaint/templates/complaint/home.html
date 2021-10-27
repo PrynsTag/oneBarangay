@@ -1,21 +1,6 @@
-{% extends "layouts/base.html" %}
+{% extends "layouts/base_table.html" %}
 {% block title %}{{ title }}{% endblock %}
 {% load static %}
-
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}
-    <link href="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.css" %}" rel="stylesheet" type="text/css">
-    <link href="{% static "/assets/vendor/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css" %}" rel="stylesheet" type="text/css">
-    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-    <script src="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.js" %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/copy-rows/bootstrap-table-copy-rows.min.js" %}"></script>
-    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/mobile/bootstrap-table-mobile.min.js" %}"></script>
-    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js" %}"></script>
-    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.js" %}"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="{% static "/assets/vendor/bootstrap-table/dist/locale/bootstrap-table-en-US.min.js" %}"></script>
-{% endblock stylesheets %}
 
 {% block content %}
     <style>
@@ -23,12 +8,15 @@
             display: block;
             width: 100%;
         }
+        .bs-checkbox label {
+            color: transparent;
+            text-align: center;
+        }
     </style>
     <div class="d-flex justify-content-between w-100 flex-wrap py-4">
         <div class="mb-3 mb-lg-0">
             <h1 class="h4">{{ title }}</h1>
-            <!-- TODO: sub_title -->
-            <p class="mb-0">A list of rows for complaints in the barangay.</p>
+            <p class="mb-0">{{ sub_title }}</p>
         </div>
         <div>
             <a href="#" class="btn btn-outline-gray">
@@ -104,91 +92,48 @@
         </div>
     </div>
     <!-- End of Modal Content -->
-    <div class="card border-0 shadow mb-4 position-relative">
-        <div class="card-body">
-            <div class="table-responsive overflow-hidden">
-                <table
-                    id="table"
-                    data-pagination="true"
-                    data-toggle="table"
-                    data-search="true"
-                    data-show-columns="true"
-                    data-page-list="[10, 25, 50, 100, all]"
-                    data-toolbar="#toolbar"
-                    data-buttons-order="['paginationSwitch', 'refresh', 'toggle', 'fullscreen', 'edit', 'export', 'copy', 'sort', 'columns']"
-                    data-buttons="customButtons"
-                    data-show-refresh="true"
-                    data-mobile-responsive="true"
-                    data-show-toggle="true"
-                    data-show-fullscreen="true"
-                    data-show-copy-rows="true"
-                    data-show-columns-toggle-all="true"
-                    data-detail-view="true"
-                    data-show-export="true"
-                    data-click-to-select="true"
-                    data-show-multi-sort="true"
-                    data-sort-priority='[{"sortName": "complaint_id","sortOrder":"asc"},{"data-server-sortName": "date","sortOrder":"desc"}]'
-                    data-detail-formatter="detailFormatter"
-                    data-minimum-count-columns="2"
-                    data-show-pagination-switch="true"
-                    data-toolbar-align="end"
-                    data-pagination-loop="true"
-                    data-id-field="complaint_id"
-                    data-id-table="advancedTable"
-                    data-advanced-search="true"
-                    data-search-accent-neutralise="true"
-                    data-search-highlight="true"
-                    data-show-footer="true"
-                    data-auto-refresh="true"
-                    data-cache="false"
-                    data-events="operateEvents"
-                    data-reorderable-columns="true"
-                    data-response-handler="responseHandler"
-                    data-show-custom-view="true"
-                    data-custom-view="customViewFormatter"
-                    data-show-custom-view-button="true"
-                >
-                    <thead class="table-dark">
-                        <tr>
-                            <th data-field="complaint_id" data-sortable="true" class="border-0">COMPLAINT I.D</th>
-                            <th data-field="house_num" data-sortable="true">HOUSE #</th>
-                            <th data-field="date" data-formatter="createdFormatter" data-sortable="true" class="border-0">CREATED</th>
-                            <th data-field="complainant_name" data-sortable="true" class="border-0">COMPLAINANT NAME</th>
-                            <th data-field="contact_number" data-sortable="true" class="border-0">CONTACT NUMBER</th>
-                            <th data-field="complaint_type" data-sortable="true" class="border-0">COMPLAINT TYPE</th>
-                            <th data-field="status" data-sortable="true" class="border-0">COMPLAINT STATUS</th>
-                            <th data-field="comment" data-visible="false" class="border-0">COMPLAINT COMMENT</th>
-                            <th data-field="image" data-visible="false" class="border-0">IMAGE</th>
-                            <th data-field="address" class="border-0">ADDRESS</th>
-                            <th data-field="action" data-formatter="operateFormatter" class="border-0">ACTION</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for complaint in complaints %}
-                            <tr>
-                                <td class="fw-bold d-flex align-items-center">
-                                    <a href="{% url "complaint:detail" complaint.complaint_id %}" class="text-info">
-                                        {{ complaint.complaint_id }}
-                                    </a>
-                                </td>
-                                <td>{{ complaint.house_num }}</td>
-                                <td>{{ complaint.date|date:"c" }}</td>
-                                <td>{{ complaint.complainant_name }}</td>
-                                <td>{{ complaint.email }}</td>
-                                <td>{{ complaint.contact_number }}</td>
-                                <td>{{ complaint.complaint_type }}</td>
-                                <td>{{ complaint.complaint_status }}</td>
-                                <td>{{ complaint.comment|truncatewords:10 }}</td>
-                                <td>{{ complaint.image_url|default_if_none:"No Proof Provided" }}</td>
-                                <td>{{ complaint.address }}</td>
-                                <td></td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+{% endblock content %}
+{% block table_content %}
+    <thead class="table-dark">
+        <tr>
+            <th data-checkbox="true"></th>
+            <th data-field="complaint_id" data-sortable="true" class="border-0">COMPLAINT I.D</th>
+            <th data-field="house_num" data-sortable="true">HOUSE #</th>
+            <th data-field="date" data-formatter="createdFormatter" data-sortable="true" class="border-0">CREATED</th>
+            <th data-field="complainant_name" data-sortable="true" class="border-0">COMPLAINANT NAME</th>
+            <th data-field="email" data-sortable="true" class="border-0">EMAIL</th>
+            <th data-field="contact_number" data-sortable="true" class="border-0">CONTACT NUMBER</th>
+            <th data-field="complaint_type" data-sortable="true" class="border-0">COMPLAINT TYPE</th>
+            <th data-field="status" data-sortable="true" class="border-0">COMPLAINT STATUS</th>
+            <th data-field="comment" data-visible="false" class="border-0">COMPLAINT COMMENT</th>
+            <th data-field="image" data-visible="false" class="border-0">IMAGE</th>
+            <th data-field="address" class="border-0">ADDRESS</th>
+            <th data-field="action" data-formatter="operateFormatter" class="border-0">ACTION</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for complaint in complaints %}
+            <tr>
+                <td></td>
+                <td class="fw-bold d-flex align-items-center">
+                    <a href="{% url "complaint:detail" complaint.complaint_id %}" class="text-info">{{ complaint.complaint_id }}</a>
+                </td>
+                <td>{{ complaint.house_num }}</td>
+                <td>{{ complaint.date|date:"c" }}</td>
+                <td>{{ complaint.complainant_name }}</td>
+                <td>{{ complaint.email }}</td>
+                <td>{{ complaint.contact_number }}</td>
+                <td>{{ complaint.complaint_type }}</td>
+                <td>{{ complaint.complaint_status }}</td>
+                <td>{{ complaint.comment|truncatewords:10 }}</td>
+                <td>{{ complaint.image_url|default_if_none:"No Proof Provided" }}</td>
+                <td>{{ complaint.address }}</td>
+                <td></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+{% endblock table_content %}
+{% block template %}
     <template id="profileTemplate">
         <div class="col-4 mt-3">
             <div class="card">
@@ -237,9 +182,9 @@
                                 Email
                             </button>
                             <button onclick="window.location.href='%COMPLAINT_LINK%'" class="btn btn-outline-info"
-                                data-toggle="tooltip" data-placement="top" title="View Detailed Complaint">
+                                data-toggle="tooltip" data-placement="top" title="View / Edit Detailed Complaint">
                                 <span class="fas fa-id-badge"></span>
-                                View
+                                Edit
                             </button>
                             <button class="btn btn-outline-info remove" onclick="removeRow('%COMPLAINT_ID%')"
                                 data-toggle="tooltip" data-placement="top" title="Delete Complaint">
@@ -252,67 +197,66 @@
             </div>
         </div>
     </template>
-{% endblock content %}
+{% endblock template %}
 
 {% block scripts %}
-    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/toolbar/bootstrap-table-toolbar.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/custom-view/bootstrap-table-custom-view.js"></script>
+    {{ block.super }}
+    <script src="{% static "/assets/js/base_table.js" %}"></script>
     <script>
+        const complaintModal = new bootstrap.Modal(document.getElementById('complaint-modal'));
+        const hrefRegex = new RegExp(/href="([^"]*)/)
+        const checkbox = $('td[class=bs-checkbox]').val('')
+
+        function getComplaintId(row) {
+            const complaintLink = getComplaintLink(row)
+            return complaintLink.split('/').pop()
+        }
+
+        function getComplaintLink(row) {
+            return row.complaint_id.match(hrefRegex)[1]
+        }
+
         function customViewFormatter(data) {
             const template = $('#profileTemplate').html();
             let view = '';
-
             $.each(data, function (i, row) {
                 const image = row.image === "" ? '{% static "assets/img/default-image.jpg" %}' : row.image
-                const complaintLink = row.complaint_id.match(/href="([^"]*)/)[1]
-            const complaintId = complaintLink.split('/').pop()
-            view += template.replace('%NAME%', row.complainant_name)
-                .replace('%IMAGE%', image)
-                .replace('%COMPLAINT_ID%', complaintId)
-                .replace('%COMPLAINT_LINK%', complaintLink)
-                .replace('%EMAIL%', row.email)
-                .replace('%COMMENT%', row.comment)
-                .replace('%STATUS%', row.status)
-                .replaceAll('%BG%', row.status === 'Resolved' ? 'bg-success' : row.status === 'Handed to Police' ? 'bg-gray-500' : 'bg-secondary')
-                .replace('%TYPE%', row.complaint_type)
-                .replace('%PHONE_NUMBER%', row.contact_number)
-                .replace('%ADDRESS%', row.address);
-        })
-
-        return `<div class="row mx-0">${view}</div>`
-        }
-    </script>
-    <script>
-        const $table = $('#table');
-        const $remove = $('#remove');
-        let selections = [];
-        const complaintModal = new bootstrap.Modal(document.getElementById('complaint-modal'));
-
-        function getIdSelections() {
-            return $.map($table.bootstrapTable('getSelections'), (row) => row.id);
+                const complaintId = getComplaintId(row)
+                const complaintLink = getComplaintLink(row)
+                view += template.replace('%NAME%', row.complainant_name)
+                    .replace('%IMAGE%', image)
+                    .replace('%COMPLAINT_ID%', complaintId)
+                    .replace('%COMPLAINT_LINK%', complaintLink)
+                    .replace('%EMAIL%', row.email)
+                    .replace('%COMMENT%', row.comment)
+                    .replace('%STATUS%', row.status)
+                    .replaceAll('%BG%', row.status === 'Resolved' ? 'bg-success' : row.status === 'Handed to Police' ? 'bg-gray-500' : 'bg-secondary')
+                    .replace('%TYPE%', row.complaint_type)
+                    .replace('%PHONE_NUMBER%', row.contact_number)
+                    .replace('%ADDRESS%', row.address);
+            })
+            return `<div class="row mx-0">${view}</div>`
         }
 
-        /* eslint no-unused-vars:0 */
-        function responseHandler(res) {
-            $.each(res.rows, (i, row) => {
-                /* eslint no-param-reassign:0 */
-                row.state = $.inArray(row.id, selections) !== -1;
-            });
-            return res;
-        }
-
-        function detailFormatter(index, row) {
-            const html = [];
-            $.each(row, (key, value) => {
-                if (!key.startsWith("_")) {
-                    html.push(`<p><b>${key.replace("_", " ").toUpperCase()}:</b> ${value}</p>`);
-                }
-            });
-            return html.join('');
-        }
+        window.operateEvents = {
+            /* eslint func-names:0 */
+            'click .remove': function (e, value, row, index) {
+                $table.bootstrapTable('remove', {
+                    field: 'complaint_id',
+                    values: [row.complaint_id],
+                })
+                $.ajax({
+                    url: '/barangay-admin/complaint/delete',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: JSON.stringify({payload: {complaint_id: getComplaintId(row)}}),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                })
+            },
+        };
 
         function contactComplaint(email) {
             $('#complaint-modal').on('shown.bs.modal', () => {
@@ -320,14 +264,36 @@
             })
         }
 
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-success',
-                cancelButton: 'btn btn-danger me-2'
-            },
-            buttonsStyling: false
-        })
-
+        function serverDelete(complaintId) {
+            $.ajax({
+                url: '/barangay-admin/complaint/delete',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({payload: {complaint_id: complaintId}}),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            }).always((jqXHR, textStatus, errorThrown) => {
+                if (jqXHR.status === 200 || jqXHR.status === 304) {
+                    swalWithBootstrapButtons.fire(
+                        'Success!',
+                        'complaints has been successfully deleted.',
+                        'success',
+                    ).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload();
+                        }
+                    })
+                } else {
+                    swalWithBootstrapButtons.fire(
+                        'Error!',
+                        `Something went wrong.<br>${errorThrown}`,
+                        'error',
+                    );
+                }
+            });
+        }
 
         function removeRow(complaintId) {
             swalWithBootstrapButtons.fire({
@@ -340,34 +306,7 @@
                 reverseButtons: true,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.ajax({
-                        url: '/barangay-admin/complaint/delete',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: JSON.stringify({payload: {complaint_id: complaintId}}),
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRFToken': getCookie('csrftoken'),
-                        },
-                    }).always((jqXHR, textStatus, errorThrown) => {
-                        if (jqXHR.status === 200 || jqXHR.status === 304) {
-                            swalWithBootstrapButtons.fire(
-                                'Success!',
-                                'complaints has been successfully deleted.',
-                                'success',
-                            ).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.reload();
-                                }
-                            })
-                        } else {
-                            swalWithBootstrapButtons.fire(
-                                'Error!',
-                                `Something went wrong.<br>${errorThrown}`,
-                                'error',
-                            );
-                        }
-                    });
+                    serverDelete(complaintId)
                 } else if (
                     result.dismiss === Swal.DismissReason.cancel
                 ) {
@@ -376,79 +315,74 @@
             });
         }
 
-        function operateFormatter(value, row, index) {
-            return [
-                '<a class="remove" href="javascript:void(0)" title="Remove">',
-                '<i class="fas fa-trash"></i>',
-                '</a>',
-            ].join('');
-        }
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i += 1) {
-                    const cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (`${name}=`)) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        window.operateEvents = {
-            /* eslint func-names:0 */
-            'click .remove': function (e, value, row, index) {
-                const complaintId = row.complaint_id.match(/href="([^"]*)/)[1].split("/").pop()
-        $table.bootstrapTable('remove', {
-            field: 'complaint_id',
-            values: [row.complaint_id],
-        })
-        $.ajax({
-            url: '/barangay-admin/complaint/delete',
-            type: 'POST',
-            dataType: 'json',
-            data: JSON.stringify({payload: {complaint_id: complaintId}}),
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken': getCookie('csrftoken'),
-            },
-        })
-        },
-        };
-
-        function totalTextFormatter(data) {
-            return 'Total';
-        }
-
-        function totalNameFormatter(data) {
-            return data.length;
-        }
-
-        $(document).ready(() => {
-            $('.bootstrap-table')
-                .addClass('bootstrap5')
-                .removeClass('bootstrap4');
-            {% if contact_form.errors %}
-                complaintModal.show()
-            {% endif %}
-        });
-
-        function createdFormatter(value) {
-            return moment(value).format('dddd, MMMM Do YYYY, h:mm A');
-        }
-
-        /* eslint no-unused-vars:0 */
-        function dateFormatter(value) {
-            /* eslint no-undef:0 */
-            return moment(value, 'YYYY-MM-DD').format('dddd, MMMM Do YYYY');
+        function customButtons() {
+            return {
+                btnDelete: {
+                    name: 'delete',
+                    text: 'Delete a number of rows',
+                    icon: 'fas fa-trash',
+                    event: () => {
+                        const rows = $table.bootstrapTable('getSelections');
+                        swalWithBootstrapButtons.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, delete it!',
+                            cancelButtonText: 'No, cancel!',
+                            reverseButtons: true,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.each(rows, (id, row) => {
+                                    const complaintId = getComplaintId(row)
+                                    serverDelete(complaintId)
+                                });
+                            } else if (
+                                result.dismiss === Swal.DismissReason.cancel
+                            ) {
+                                swalWithBootstrapButtons.fire('Cancelled', 'Data is safe :)!', 'info');
+                            }
+                        });
+                    },
+                    attributes: {
+                        title: 'Delete a number of rows',
+                        id: 'remove',
+                    },
+                },
+                btnEdit: {
+                    name: 'edit',
+                    text: 'Edit a row',
+                    icon: 'fas fa-edit',
+                    event() {
+                        // TODO: Toggle multiple edit when multiple rows is present.
+                        const row = $table.bootstrapTable('getSelections')[0];
+                        window.location.href = getComplaintLink(row)
+                    },
+                    attributes: {
+                        title: 'Edit a row in the table',
+                        id: 'edit',
+                    },
+                },
+                btnAdd: {
+                    name: 'add',
+                    text: 'Add a row',
+                    icon: 'fas fa-plus',
+                    event() {
+                        window.location.href = '{% url "complaint:create" %}'
+                    },
+                    attributes: {
+                        title: 'Add a row in the table',
+                        id: 'add',
+                    },
+                },
+            };
         }
     </script>
     <script>
+        {% if contact_form.errors %}
+            complaintModal.show()
+        {% endif %}
+
         {% if messages %}
             {% for message in messages %}
                 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}

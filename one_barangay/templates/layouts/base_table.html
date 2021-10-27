@@ -1,0 +1,83 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+{% load replace_single_quotes %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <link href="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "/assets/vendor/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css" %}" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/copy-rows/bootstrap-table-copy-rows.min.js" %}"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/mobile/bootstrap-table-mobile.min.js" %}"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js" %}"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.js" %}"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="{% static "/assets/vendor/bootstrap-table/dist/locale/bootstrap-table-en-US.min.js" %}"></script>
+{% endblock stylesheets %}
+
+{% block content %}{% endblock content %}
+{% block table %}
+    <div class="card border-0 shadow mb-4 position-relative">
+        <div class="card-body">
+            <div class="table-responsive overflow-hidden">
+                <table
+                    id="table"
+                    data-pagination="true"
+                    data-toggle="table"
+                    data-search="true"
+                    data-show-columns="true"
+                    data-page-list="[10, 25, 50, 100, all]"
+                    data-toolbar="#toolbar"
+                    data-buttons-order="['paginationSwitch', 'refresh', 'toggle', 'fullscreen', 'edit', 'export', 'copy', 'sort', 'columns']"
+                    data-buttons="customButtons"
+                    data-show-refresh="true"
+                    data-sticky-header="true"
+                    data-mobile-responsive="true"
+                    data-show-toggle="true"
+                    data-show-fullscreen="true"
+                    data-show-copy-rows="true"
+                    data-show-columns-toggle-all="true"
+                    data-detail-view="true"
+                    data-show-export="true"
+                    data-click-to-select="true"
+                    data-show-multi-sort="true"
+                    data-sort-priority="{{ sort|replace_single_quotes }}"
+                    data-detail-formatter="detailFormatter"
+                    data-minimum-count-columns="2"
+                    data-show-pagination-switch="true"
+                    data-toolbar-align="end"
+                    data-pagination-loop="true"
+                    data-id-field="{{ id }}"
+                    data-id-table="advancedTable"
+                    data-advanced-search="true"
+                    data-search-accent-neutralise="true"
+                    data-search-highlight="true"
+                    data-show-footer="true"
+                    data-auto-refresh="true"
+                    data-cache="false"
+                    data-events="operateEvents"
+                    data-reorderable-columns="true"
+                    data-response-handler="responseHandler"
+                    data-show-custom-view="true"
+                    data-custom-view="customViewFormatter"
+                    data-show-custom-view-button="true"
+                >
+                    {% block table_content %}{% endblock table_content %}
+                    {% block template %}{% endblock template %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock table %}
+
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/toolbar/bootstrap-table-toolbar.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/custom-view/bootstrap-table-custom-view.js"></script>
+{% endblock scripts %}

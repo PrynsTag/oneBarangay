@@ -52,6 +52,15 @@ class ComplaintHomeView(FormView):
         if "dummy_form" not in context:
             context["dummy_form"] = self.second_form_class()
 
+        context["title"] = "Complaint"
+        context["sub_title"] = "A list of rows for complaints in the barangay."
+        context["segment"] = "complaint"
+        context["id"] = "complaint_id"
+        context["sort"] = [
+            {"sortName": "id", "sortOrder": "asc"},
+            {"sortName": "date", "sortOrder": "desc"},
+        ]
+
         return context
 
     def get(self, request, *args, **kwargs) -> HttpResponse:

@@ -8,9 +8,7 @@ app_name = "complaint"
 urlpatterns = [
     path(
         "home",
-        views.ComplaintHomeView.as_view(
-            extra_context={"title": "Complaint", "segment": "complaint"}
-        ),
+        views.ComplaintHomeView.as_view(),
         name="home",
     ),
     path(
