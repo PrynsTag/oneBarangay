@@ -83,6 +83,10 @@
                         title: "Success",
                         icon: "success",
                         text: '{{ message }}',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{% url "complaint:home" %}";
+                        }
                     })
                 {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
                     Swal.fire({
