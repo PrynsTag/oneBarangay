@@ -12,6 +12,7 @@ from django.core.files.storage import default_storage
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import redirect
+from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 from faker import Faker
@@ -181,7 +182,7 @@ class ComplaintHomeView(FormView):
             )
             complaint_status = crypto_gen.choice(["Ongoing", "Handed to Police", "Resolved"])
             comment = fake.paragraphs(nb=5)[0]
-            image_url = fake.image_url()
+            image_url = static("/assets/img/default-complaint-image.png")
             uid = str(uuid.uuid4())
 
             dummy_data.append(
