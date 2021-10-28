@@ -9,6 +9,7 @@ from typing import Union
 import pytz
 from django.contrib import messages
 from django.core.files.storage import default_storage
+from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -105,11 +106,18 @@ class ComplaintHomeView(FormView):
         form = self.get_form(class_form)
 
         if form.is_valid():
-            db = firestore.client(app=firebase_app)
             if form_name == "contact_form":
-                # TODO: Implement send_mail
-                pass
+                # TODO: Add html template.
+                message = form.cleaned_data["message"]
+                email = form.cleaned_data["email"]
+                send_mail(
+                    subject="Your complaint has been processed.",
+                    message=message,
+                    from_email=os.getenv("ADMIN_EMAIL"),
+                    recipient_list=[email],
+                )
             else:
+                db = firestore.client(app=firebase_app)
                 dummy_list = self.dummy_complaint(form.cleaned_data["dummy_count"])
                 for dummy in dummy_list:
                     db.collection("complaints").document(dummy["complaint_id"]).set(dummy)

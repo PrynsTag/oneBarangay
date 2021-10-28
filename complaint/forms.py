@@ -206,6 +206,7 @@ class ComplaintCreateForm(ComplaintBaseForm):
 
         user = request.session["user"]
         self.fields["uid"].initial = user.get("uid")
+        self.fields["email"].initial = user.get("email")
         self.fields["house_num"].initial = user.get("house_num")
         self.fields["complainant_name"].initial = user.get("display_name")
         self.fields["contact_number"].initial = user.get("phone_number")
