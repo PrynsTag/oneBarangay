@@ -28,7 +28,6 @@ from one_barangay.local_settings import logger
 from one_barangay.settings import firebase_app
 
 
-# TODO: Validators!
 class ComplaintHomeView(FormView):
     """Template view for complaint home."""
 

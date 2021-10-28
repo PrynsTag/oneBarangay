@@ -169,7 +169,6 @@ class ComplaintDetailForm(ComplaintBaseForm):
 
         self.data = self.data.copy()
         self.data["contact_number"] = contact_number
-        # if self.errors: TODO: Test and remove this later.
         if self.errors.get("contact_number"):
             self.errors["contact_number"] = ErrorList(
                 [
