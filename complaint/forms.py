@@ -270,6 +270,14 @@ class ComplaintContactForm(forms.Form):
             }
         ),
     )
+    date = forms.DateTimeField(
+        label_suffix="",
+        label="Appointment Date",
+        input_formats=["%A, %B %d %Y, %H:%M %p"],
+        widget=forms.DateTimeInput(
+            attrs={"class": "form-control text-black", "autocomplete": "off"}
+        ),
+    )
     message = forms.CharField(
         label_suffix="",
         min_length=20,

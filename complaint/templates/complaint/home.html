@@ -2,6 +2,13 @@
 {% block title %}{{ title }}{% endblock %}
 {% load static %}
 
+{% block stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"
+        integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous"/>
+{% endblock stylesheets %}
+
 {% block content %}
     <style>
         td a {
@@ -202,6 +209,36 @@
 {% block scripts %}
     {{ block.super }}
     <script src="{% static "/assets/js/base_table.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"
+        integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk="
+        crossorigin="anonymous">
+    </script>
+    <script>
+        const $date = $('#id_date')
+        const $message = $('#id_message')
+        // TODO: retain previous message when selected another date.
+        $date.change(function() {
+            $message.val(` on ${$(this).val()}`);
+        });
+        $(function () {
+            $date.datetimepicker({
+                format: 'l, F d Y, H:i A',
+                minDate: 0,
+                minTime: '8:00',
+                maxTime: '17:00',
+                step: 30,
+                defaultDate: Date.now(),
+                defaultTime: '8:00',
+                weeks: true,
+                onGenerate:function( ct ){
+                    $(this).find('.xdsoft_date.xdsoft_weekend')
+                        .addClass('xdsoft_disabled');
+                }
+            });
+        });
+    </script>
     <script>
         const complaintModal = new bootstrap.Modal(document.getElementById('complaint-modal'));
         const hrefRegex = new RegExp(/href="([^"]*)/)
