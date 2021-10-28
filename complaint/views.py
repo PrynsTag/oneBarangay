@@ -163,7 +163,12 @@ class ComplaintHomeView(FormView):
             house_num = crypto_gen.randrange(100000, 999999)
             address = fake.address()
             email = fake.email()
-            contact_number = fake.mobile_number()
+            contact_number = fake.mobile_number().replace("-", "")
+            formatted_contact_number = (
+                contact_number.replace("0", "+63", 1)
+                if contact_number.startswith("0")
+                else contact_number
+            )
             complainant_name = fake.name()
             date = datetime.now(tz=pytz.timezone("Asia/Manila"))
             complaint_type = crypto_gen.choice(
@@ -185,7 +190,7 @@ class ComplaintHomeView(FormView):
                     "complaint_id": complaint_id,
                     "house_num": house_num,
                     "address": address,
-                    "contact_number": contact_number,
+                    "contact_number": formatted_contact_number,
                     "complainant_name": complainant_name,
                     "date": date,
                     "email": email,
