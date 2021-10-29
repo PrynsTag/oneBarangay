@@ -1,64 +1,163 @@
 """Create your views here."""
 import json
 import os
+from datetime import date, datetime
 from typing import Union
 
 from django.contrib import messages
 from django.core.files.storage import default_storage
+from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import redirect
+from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.views.generic import FormView
+from firebase_admin import auth, firestore
+from firebase_admin.auth import EmailAlreadyExistsError, UserNotFoundError
+from google.api_core.exceptions import NotFound
 
 from one_barangay.local_settings import logger
-from one_barangay.scripts.storage_backends import AzureStorageBlob
-from user_management.forms import AddUserForm
-from user_management.models import FirebaseAuth
+from one_barangay.settings import firebase_app
+from user_management.forms import UserManagementCreateForm
 
 
-# TODO: Send email signup invitation.
 # TODO: send email delete account.
-class AddUserFormView(FormView):
+# FIXME: Fix search in table, error in toString.
+class UserManagementHomeView(FormView):
     """Form for adding user."""
 
-    template_name = "user_management/user_table.html"
-    form_class = AddUserForm
-    success_url = reverse_lazy("user_management:user_management")
+    template_name = "user_management/home.html"
+    form_class = UserManagementCreateForm
+    success_url = reverse_lazy("user_management:home")
 
-    def form_valid(self, form, **kwargs) -> HttpResponse:
-        """Call when AddUserForm is valid.
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        """Get single complaint from firestore.
 
         Args:
-          form: The submitted AddUserForm form.
+          request: The URL request.
+          *args: Additional arguments.
+          **kwargs: Additional keyword arguments.
+
+        Returns:
+          Render HttpResponse to complaint/home.html along with context data.
+        """
+        context = self.get_context_data(**kwargs)
+
+        db = firestore.client(app=firebase_app)
+        docs = db.collection("users").where("uid", ">", "").stream()
+
+        users = []
+        for doc in docs:
+            user = doc.to_dict()
+            # Calculate Age
+            if user.get("birth_date"):
+                today = date.today()
+                birth_date_dt = datetime.strptime(user["birth_date"], "%B %d, %Y")
+                age = (
+                    today.year
+                    - birth_date_dt.year
+                    - ((today.month, today.day) < (birth_date_dt.month, birth_date_dt.day))
+                )
+                user["age"] = age
+            # Convert Unix Timestamp to Human Date.
+            if user.get("creation_date"):
+                try:
+                    user["creation_date"] = datetime.fromtimestamp(
+                        user["creation_date"] / 1000
+                    ).strftime("%A, %B %d %Y, %H:%M %p")
+                except ValueError:
+                    user["creation_date"] = None
+
+            if user.get("last_sign_in"):
+                user["last_sign_in"] = datetime.fromtimestamp(user["last_sign_in"] / 1000)
+
+            users.append(user)
+
+        context["users"] = users
+
+        return self.render_to_response(context)
+
+    def form_valid(self, form, **kwargs) -> HttpResponse:
+        """Call when UserManagementCreateForm is valid.
+
+        Args:
+          form: The submitted UserManagementCreateForm form.
           **kwargs: Keyword arguments.
 
         Returns:
-          Redirect to user_management index.
+          Redirect to user_management home.
         """
-        auth = FirebaseAuth()
-
         logger.info("Creating user..")
 
         image = form.cleaned_data["photo_url"]
-
         if image:
-            default_storage.save(image.name, image)
-            form.cleaned_data["photo_url"] = default_storage.url(image.name)
+            filename = default_storage.generate_filename(image.name)
+            default_storage.save(filename, image)
+            form.cleaned_data["photo_url"] = default_storage.url(filename)
+            form.cleaned_data["image"] = filename
 
-        # Get only modified (truthy) form fields
+        # # Get only truthy form fields
         truthy_values = {k: v for k, v in form.cleaned_data.items() if v}
         truthy_values["disabled"] = truthy_values["disabled"] == "True"
 
-        auth.add_user(truthy_values)
+        # Format / clean auth data
+        user_auth_data = truthy_values.copy()
+        role = user_auth_data.pop("role")
+        if user_auth_data.get("image"):
+            del user_auth_data["image"]
 
-        logger.info("Successfully created new user with role: %s", form.cleaned_data["role"])
-        messages.success(
-            self.request,
-            (
-                f"Created new user with role: {form.cleaned_data['role']}. "
-                "A password reset link has also been sent."
-            ),
-        )
+        try:
+            user = auth.create_user(**user_auth_data, app=firebase_app)
+            auth.set_custom_user_claims(user.uid, {role: True}, app=firebase_app)
+            first_name, last_name = user.display_name.split()
+            auth_data = {
+                "uid": user.uid,
+                "display_name": user.display_name,
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": user.email,
+                "role": role,
+                "provider": user.provider_id,
+                "creation_date": user.user_metadata.creation_timestamp,
+                "last_sign_in": user.user_metadata.last_sign_in_timestamp,
+                "email_verified": user.email_verified,
+                "disabled": user.disabled,
+                "phone_number": user.phone_number,
+                "photo_url": user.photo_url,
+            }
+
+            # Store Firebase Auth data to Firestore Users Collection
+            db = firestore.client(app=firebase_app)
+            db.collection("users").document(user.uid).set(auth_data)
+
+            # Generate password reset link.
+            reset_link = auth.generate_password_reset_link(
+                form.cleaned_data["email"],
+                app=firebase_app,
+            )
+            # TODO: Add html template.
+            send_mail(
+                subject="The oneBarangay app has created an account for you.",
+                message="You received this because your barangay has created you an account.",
+                html_message=f"click <a href='{reset_link}'>here</a> to setup your password",
+                from_email=os.getenv("ADMIN_EMAIL"),
+                recipient_list=[form.cleaned_data["email"]],
+            )
+
+            logger.info("Successfully created new user with role: %s", form.cleaned_data["role"])
+            messages.success(
+                self.request,
+                (
+                    f"Created new user with role: {form.cleaned_data['role']}. "
+                    "A password reset link has also been sent."
+                ),
+            )
+        except EmailAlreadyExistsError:
+            logger.exception("User with email %s already exists!", form.cleaned_data["email"])
+            messages.error(
+                self.request,
+                f"User with email {form.cleaned_data['email']} already exists!",
+            )
 
         return super().form_valid(form)
 
@@ -66,13 +165,19 @@ class AddUserFormView(FormView):
         """Return lock account form with errors.
 
         Args:
-          form: The submitted AddUserForm form.
+          form: The submitted UserManagementCreateForm form.
           **kwargs: Keyword arguments.
 
         Returns:
           Redirect to user_management index with form errors.
         """
-        messages.error(self.request, f"User creation not successful!\n{form.errors}")
+        for field in form.errors:
+            form[field].field.widget.attrs["class"] += " is-invalid"
+
+        messages.error(
+            self.request,
+            "User creation not successful! Please fix the errors displayed in the form!",
+        )
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs) -> dict:
@@ -86,90 +191,148 @@ class AddUserFormView(FormView):
         Returns:
           The dictionary data needed by user_management index.
         """
-        if os.getenv("GAE_ENV", "").startswith("standard"):
-            url = AzureStorageBlob(
-                sas_token=os.getenv("AZURE_STORAGE_CONTAINER_SAS_AUTH"),
-                blob_name=os.getenv("AZURE_STORAGE_BLOB_AUTH_NAME"),
-            ).file_url
-        else:
-            # run ./simple_cors_server.py
-            url = "http://127.0.0.1:9000/auth_data.json"
+        context = super().get_context_data()
 
-        return {
-            "url": url,
-            "segment": "user_management",
-            "form": self.form_class,
-            "title": "User Management",
-        }
+        context["segment"] = "user_management"
+        context["title"] = "User Management"
+        context["sub_title"] = "Manage user accounts in oneBarangay."
+        context["id"] = "uid"
+        context["default_image"] = static("/assets/img/icons/default_user.svg")
+        context["sort"] = [
+            {"sortName": "creation_date", "sortOrder": "desc"},
+            {"sortName": "display_name", "sortOrder": "asc"},
+            {"sortName": "disabled", "sortOrder": "desc"},
+        ]
+
+        return context
 
 
-class EditUserFormView(AddUserFormView):
+class UserManagementEditView(UserManagementHomeView):
     """Form for editing a user."""
 
     def form_valid(self, form, **kwargs) -> HttpResponse:
-        """Call when AddUserForm is valid.
+        """Call when UserManagementCreateForm is valid.
 
         Args:
-          form: The AddUserForm submitted.
+          form: The UserManagementCreateForm submitted.
           **kwargs: Keyword arguments.
 
         Returns:
           Redirect to user_management index.
         """
-        auth = FirebaseAuth()
-
         logger.info("Modifying user: %s", form.cleaned_data["uid"])
 
-        # Get only modified (truthy) form fields
-        truthy_values = {k: v for k, v in form.cleaned_data.items() if v}
-        truthy_values["disabled"] = truthy_values["disabled"] == "True"
+        # Get only truthy form fields
+        changed_fields = {k: v for k, v in form.cleaned_data.items() if v}
+        changed_fields["disabled"] = changed_fields["disabled"] == "True"
 
-        auth.modify_user(
-            form.cleaned_data["uid"],
-            truthy_values,
-        )
-        logger.info("Successfully updated user: %s", form.cleaned_data["email"])
-        messages.success(self.request, f"Successfully updated user: {form.cleaned_data['email']}")
+        # Format / clean data for auth.update_user
+        auth_data = changed_fields.copy()
+        if changed_fields.get("role"):
+            auth_data["custom_claims"] = {changed_fields["role"]: True}
+            del auth_data["role"]
+        if changed_fields.get("uid"):
+            del auth_data["uid"]
 
-        return super().form_valid(form)
+        try:
+            # Modify Firebase Auth
+            auth.update_user(form.cleaned_data["uid"], **auth_data, app=firebase_app)
+            # Modify Firestore User Collection
+            db = firestore.client(app=firebase_app)
+            changed_fields["updated_on"] = firestore.SERVER_TIMESTAMP
+            db.collection("users").document(form.cleaned_data["uid"]).update(changed_fields)
+
+            logger.info(
+                "Successfully updated user: %s",
+                form.cleaned_data["email"],
+            )
+            messages.success(
+                self.request,
+                f"Successfully updated user: {form.cleaned_data['email']}",
+            )
+        except NotFound:
+            logger.exception("User %s doesn't exists!", form.cleaned_data["email"])
+            messages.error(self.request, "User %s doesn't exists!", form.cleaned_data["email"])
+
+        return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, **kwargs) -> HttpResponse:
-        """Call when AddUserForm is invalid.
+        """Call when UserManagementCreateForm is invalid.
 
         Args:
-          form: The AddUserForm submitted.
+          form: The UserManagementCreateForm submitted.
           **kwargs: Keyword arguments.
 
         Returns:
           Redirect to user_management index with errors.
         """
-        messages.error(self.request, f"Modifying not successful!\n{form.errors}")
-        return super().form_invalid(form)
+        for field in form.errors:
+            form[field].field.widget.attrs["class"] += " is-invalid"
+
+        messages.error(
+            self.request,
+            "Modifying not successful! Please fix the errors displayed in the form!",
+        )
+        return self.render_to_response(self.get_context_data(form=form))
 
 
-class DeleteUserFormView(AddUserFormView):
-    """Form for deleting user."""
+def delete(request) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
+    """Delete user account.
 
-    def post(
-        self, request, *args, **kwargs
-    ) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
-        """Call when submitted form action is POST.
+    Args:
+      request: The URL request.
 
-        Delete a user from user_table.
-        Args:
-          request: The URL request.
-          *args: Arguments.
-          **kwargs: Keyword arguments.
+    Returns:
+      Redirect to user_management home.
+    """
+    data = json.load(request)
+    form_data = data.get("payload")
 
-        Returns:
-          Redirect to user_management index.
-        """
-        data = json.load(request)
-        form_data = data.get("payload")
+    db = firestore.client(app=firebase_app)
+    try:
+        # Delete from Firebase Auth
+        auth.delete_user(form_data["id"], app=firebase_app)
+        # Delete from Firestore
+        db.collection("users").document(form_data["id"]).delete()
 
-        logger.info("Deleting user: %s", form_data["uid"])
-        FirebaseAuth().delete_user(form_data["uid"])
-        logger.info("Successfully deleted user: %s", form_data["uid"])
-        messages.success(request, f"Successfully deleted user: {form_data['uid']}")
+        logger.info("Successfully deleted user: %s", form_data["id"])
+        # TODO: Display Flash message in template.
+        messages.success(request, f"Successfully deleted user: {form_data['id']}")
+    except UserNotFoundError:
+        logger.exception("User Not Found!")
 
-        return redirect("user_management:user_management")
+    return redirect("user_management:home")
+
+
+def reset(request) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
+    """Reset user password.
+
+    Args:
+      request: The URL request.
+
+    Returns:
+      Redirect to user_management home.
+    """
+    data = json.load(request)
+    form_data = data.get("payload")
+
+    try:
+        email = form_data["id"]
+        reset_link = auth.generate_password_reset_link(email, app=firebase_app)
+        # TODO: Add html template.
+        # https://stackoverflow.com/a/28476681/11668142
+        send_mail(
+            subject="Password reset",
+            message="You are receiving this because you requested a password reset.",
+            html_message=f"<a href='{reset_link}'>click here</a> to reset your password",
+            from_email=os.getenv("ADMIN_EMAIL"),
+            recipient_list=[email],
+        )
+        messages.success(
+            request, "Password reset link sent! Check your email for the reset link."
+        )
+    except KeyError:
+        messages.error(request, "Password reset failed!.")
+        logger.exception("Password reset failed!")
+
+    return redirect("user_management:home")

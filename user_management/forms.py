@@ -3,8 +3,8 @@ from django import forms
 from django.core.validators import RegexValidator
 
 
-class AddUserForm(forms.Form):
-    """Add User Form."""
+class UserManagementCreateForm(forms.Form):
+    """Create user form."""
 
     error_css_class = "is-invalid"
     required_css_class = "required"
@@ -13,12 +13,7 @@ class AddUserForm(forms.Form):
         required=False,
         label="User I.D.",
         label_suffix="",
-        widget=forms.TextInput(
-            attrs={
-                "readonly": True,
-                "class": "form-control text-black",
-            }
-        ),
+        widget=forms.HiddenInput(),
     )
 
     email = forms.EmailField(
