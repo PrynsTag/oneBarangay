@@ -8,17 +8,22 @@ app_name = "user_management"
 urlpatterns = [
     path(
         "",
-        views.AddUserFormView.as_view(),
-        name="user_management",
+        views.UserManagementHomeView.as_view(),
+        name="home",
     ),
     path(
-        "edit_user",
-        views.EditUserFormView.as_view(),
-        name="edit_user",
+        "edit",
+        views.UserManagementEditView.as_view(),
+        name="edit",
     ),
     path(
-        "delete_user",
-        views.DeleteUserFormView.as_view(),
-        name="delete_user",
+        "delete",
+        views.delete,
+        name="delete",
+    ),
+    path(
+        "reset",
+        views.reset,
+        name="reset",
     ),
 ]
