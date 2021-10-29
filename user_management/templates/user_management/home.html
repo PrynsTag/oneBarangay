@@ -1,0 +1,631 @@
+{% extends "layouts/base_table.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+<!-- Specific Page CSS goes HERE  -->
+
+{% block content %}
+    <style>
+        .form-group label.required:after {
+            content:" *";
+            color:red;
+        }
+    </style>
+    <div class="d-flex justify-content-between w-100 flex-wrap px-2 py-4">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4" id="text-title">{{ title }}</h1>
+            <p class="mb-0">{{ sub_title }}</p>
+        </div>
+        <div>
+            <a href="#" class="btn btn-outline-gray">
+                <i class="fas fa-question-circle me-1"></i>Filter
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Modal Content -->
+        <div class="modal fade" id="user-modal" tabindex="-1" role="dialog" aria-labelledby="user-modal"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add User</h5>
+                        <button type="button" id="close-modal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        {{ form.non_field_errors }}
+                    </div>
+                    <div class="modal-body" id="modal-body">
+                        <form enctype="multipart/form-data" method="post" id="modal-form">
+                            {% csrf_token %}
+                            {{ form.uid }}
+
+                            <div class="row">
+                                <div class="form-group col text-black">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.display_name.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.display_name }}
+                                        </div>
+                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.display_name.errors|striptags }}</div>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Form -->
+                                <div class="form-group mb-4 col">
+                                    {{ form.email.label_tag }}
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1">
+                                            <span class="fas fa-envelope"></span>
+                                        </span>
+                                        {{ form.email }}
+                                    </div>
+                                    <div class="badge m-0 bg-danger text-uppercase">{{ form.email.errors|striptags }}</div>
+                                </div>
+                                <!-- End of Form -->
+
+                                <div class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.password.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.password }}
+                                        </div>
+                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.password.errors|striptags }}</div>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.role.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.role }}
+                                        </div>
+                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.role.errors|striptags }}</div>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+
+                                <div class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.disabled.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.disabled }}
+                                        </div>
+                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.disabled.errors|striptags }}</div>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.phone_number.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <span class="fas fa-unlock-alt"></span>
+                                            </span>
+                                            {{ form.phone_number }}
+                                        </div>
+                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.phone_number.errors|striptags }}</div>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+
+                                <div class="form-group col">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        {{ form.photo_url.label_tag }}
+                                        {{ form.photo_url }}
+                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.photo_url.errors|striptags }}</div>
+                                    </div>
+                                    <!-- End of Form -->
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="reset" id="cancel-modal" class="btn btn-link text-gray-600 ms-auto"
+                            data-bs-dismiss="modal">Cancel
+                        </button>
+                        <button form="modal-form" type="submit" name="button" id="modal-submit-button"
+                            class="btn btn-secondary">Create User
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End of Modal Content -->
+    </div>
+{% endblock content %}
+
+{% block table_content %}
+    <thead class="table-dark">
+        <tr>
+            <th data-checkbox="true"></th>
+            <th data-field="creation_date" data-halign="center" data-align="center" data-sortable="true" data-footer-formatter="totalTextFormatter" class="border-0">DATE CREATED</th>
+            <th data-field="uid" data-halign="center" data-align="center" data-sortable="true" data-footer-formatter="totalFormatter">USER #</th>
+            <th data-field="display_name" data-halign="center" data-align="center" data-sortable="true">NAME</th>
+            <!-- New -->
+            <th data-field="first_name" data-halign="center" data-align="center" data-sortable="true">FIRST NAME</th>
+            <th data-field="middle_name" data-halign="center" data-align="center" data-sortable="true">MIDDLE NAME</th>
+            <th data-field="last_name" data-halign="center" data-align="center" data-sortable="true">LAST NAME</th>
+            <th data-field="address" data-halign="center" data-align="center" data-sortable="true">ADDRESS</th>
+            <th data-field="birth_date" data-halign="center" data-align="center" data-sortable="true">BIRTH DATE</th>
+            <th data-field="citizenship" data-halign="center" data-align="center" data-sortable="true">CITIZENSHIP</th>
+            <th data-field="age" data-halign="center" data-align="center" data-sortable="true">AGE</th>
+            <th data-field="remarks" data-halign="center" data-align="center" data-sortable="true">FAMILY ROLE</th>
+            <th data-field="street" data-halign="center" data-align="center" data-sortable="true">STREET</th>
+            <th data-field="civil_status" data-halign="center" data-align="center" data-sortable="true">CIVIL STATUS</th>
+            <th data-field="birth_place" data-halign="center" data-align="center" data-sortable="true">BIRTH PLACE</th>
+            <th data-field="sex" data-halign="center" data-align="center" data-sortable="true">GENDER</th>
+            <th data-field="monthly_income" data-halign="center" data-align="center" data-sortable="true">MONTHLY INCOME</th>
+            <th data-field="house_num" data-halign="center" data-align="center" data-sortable="true">HOUSE #</th>
+            <!-- New -->
+            <th data-field="email" data-halign="center" data-visible="false" data-align="center" data-sortable="true">EMAIL</th>
+            <th data-field="phone_number" data-halign="center" data-align="center" data-sortable="true">PHONE NUMBER</th>
+            <th data-field="role" data-halign="center" data-align="center" data-sortable="true">USER ROLE</th>
+            <th data-field="provider" data-halign="center" data-align="center" data-sortable="true">ACCOUNT PROVIDER</th>
+            <th data-field="last_sign_in" data-halign="center" data-align="center" data-sortable="true">ACTIVE</th>
+            <th data-field="email_verified" data-halign="center" data-align="center" data-sortable="true" data-formatter="emailVerifiedFormatter">EMAIL VERIFIED</th>
+            <th data-field="disabled" data-halign="center" data-align="center" data-formatter="accountStatusFormatter" data-sortable="true">ACCOUNT STATUS</th>
+            <th data-field="photo_url" data-halign="center" data-align="center" data-visible="false">PROFILE PICTURE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td></td>
+                <td class="fw-bold d-flex align-items-center">{{ user.creation_date|default:"None Provided" }}</td>
+                <td>{{ user.uid|default:"None Provided" }}</td>
+                <td>{{ user.display_name|default:"None Provided" }}</td>
+                <td>{{ user.first_name|default:"None Provided" }}</td>
+                <td>{{ user.middle_name|default:"None Provided" }}</td>
+                <td>{{ user.last_name|default:"None Provided" }}</td>
+                <td>{{ user.address|default:"None Provided" }}</td>
+                <td>{{ user.birth_date|default:"None Provided" }}</td>
+                <td>{{ user.citizenship|default:"None Provided" }}</td>
+                <td>{{ user.age|default:"None" }}</td>
+                <td>{{ user.remarks|default:"None Provided" }}</td>
+                <td>{{ user.street|default:"None Provided" }}</td>
+                <td>{{ user.civil_status|default:"None Provided" }}</td>
+                <td>{{ user.birth_place|default:"None Provided" }}</td>
+                <td>{{ user.sex|default:"None Provided" }}</td>
+                <td>{{ user.monthly_income|default:"None Provided" }}</td>
+                <td>{{ user.house_num|default:"None Provided" }}</td>
+                <td>{{ user.email|default:"None Provided" }}</td>
+                <td>{{ user.phone_number|default:"None Provided" }}</td>
+                <td>{{ user.role|default:"None Provided" }}</td>
+                <td>{{ user.provider|default:"None Provided" }}</td>
+                <td>{{ user.last_sign_in|timesince|default:"Unknown" }}</td>
+                <td>{{ user.email_verified|default:"None Provided" }}</td>
+                <td>{{ user.disabled|default:"None Provided" }}</td>
+                <td>{{ user.photo_url|default:default_image }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+{% endblock %}
+
+{% block template %}
+    <template id="profileTemplate">
+        <div class="col-4 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-8 col-md-6">
+                            <h3 class="mb-0 text-truncated">%NAME%</h3>
+                            <div class="row">
+                                <div class="fw-extrabold mt-3">Address</div>
+                                <p class="fs-6">%ADDRESS%</p>
+                            </div>
+                            <div class="row">
+                                <div class="col col-md-auto">
+                                    <div class="fw-extrabold">Contact Number</div>
+                                    <p class="fs-6">%PHONE_NUMBER%</p>
+                                </div>
+                                <div class="col col-md-auto">
+                                    <p>
+                                        <span class="fw-extrabold d-block">Age</span>
+                                        %AGE%
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-md-auto">
+                                    <div class="fw-extrabold w-auto">Family Role</div>
+                                    <p>%FAMILY_ROLE%</p>
+                                </div>
+                                <div class="col col-md-auto">
+                                    <div class="fw-extrabold w-auto">User Role</div>
+                                    <p>%USER_ROLE%</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-md-auto">
+                                    <div class="fw-extrabold w-auto">Active</div>
+                                    <p>%ACTIVE%</p>
+                                </div>
+                                <div class="col px-0">
+                                    <div class="fw-extrabold text-nowrap">Civil Status</div>
+                                    <p>%CIVIL_STATUS%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4 col-md-6 text-center">
+                            <img id="proof-image" src="%IMAGE%" alt="Profile Picture"
+                                class="mx-auto img-thumbnail img-fluid"
+                                style="height: 120px;">
+                            <br>
+                            <span id="proof-image-desc" class="fw-extrabold form-text">Profile Picture</span>
+                        </div>
+                        <div class="col-12 col-lg-12 pt-5 d-flex flex-row-reverse">
+                            <button name="reset" class="btn btn-outline-tertiary" onclick="actionButton('%EMAIL%', '{% url "user_management:reset" %}', 'reset')"
+                                data-toggle="tooltip" data-placement="top" title="Reset Password">
+                                <span class="fas fa-id-badge"></span>
+                                Reset
+                            </button>
+                            <button class="btn btn-outline-danger remove" name="delete" onclick="actionButton('%ID%', '{% url "user_management:delete" %}', 'delete')"
+                                data-toggle="tooltip" data-placement="top" title="Delete Account">
+                                <span class="fas fa-trash"></span>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+{% endblock template %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        function customViewFormatter(data) {
+            const template = $('#profileTemplate').html();
+            let view = '';
+            $.each(data, function (i, row) {
+                const image = row.photo_url === "" ? '{% static "assets/img/default-image.jpg" %}' : row.photo_url
+                $.each(row, function (key, _) { row[key] = row[key] === "" ? null : row[key] })
+                view += template
+                    .replace('%NAME%', row.display_name)
+                    .replace('%IMAGE%', image)
+                    .replace('%ID%', row.uid)
+                    .replace('%COMPLAINT_LINK%', row.creation_date)
+                    .replace('%EMAIL%', row.email)
+                    .replace('%AGE%', row.age)
+                    .replace('%FAMILY_ROLE%', row.remarks)
+                    .replace('%USER_ROLE%', row.role)
+                    .replace('%ACTIVE%', row.last_sign_in)
+                    .replace('%CIVIL_STATUS%', row.civil_status)
+                    .replace('%TYPE%', row.disabled)
+                    .replace('%PHONE_NUMBER%', row.phone_number)
+                    .replace('%ADDRESS%', row.address);
+            })
+            return `<div class="row mx-0">${view}</div>`
+        }
+    </script>
+    <script>
+        const $table = $('#table');
+
+        const userModal = new bootstrap.Modal(document.getElementById('user-modal'));
+        const modalForm = document.getElementById('modal-form');
+        const $modalTitle = $('h5.modal-title');
+        const $modalSubmitBtn = $('#modal-submit-button');
+
+        const $uid = $('input[name=uid]');
+        const $name = $('input[name=display_name]');
+        const $password = $('input[name=password]');
+        const $email = $('input[name=email]');
+        const $role = $('select[name=role]');
+        const $disabled = $('select[name=disabled]');
+        const $phoneNumber = $('input[name=phone_number]');
+
+        let selections = [];
+
+        function getIdSelections() {
+            return $.map($table.bootstrapTable('getSelections'), (row) => row.uid);
+        }
+
+        $('#cancel-modal').on('click', () => { userModal.hide(); });
+        $('#close-modal').on('click', () => { userModal.hide(); });
+
+        /* eslint no-unused-vars:0 */
+        function responseHandler(res) {
+            $.each(res.rows, (i, row) => {
+                /* eslint no-param-reassign:0 */
+                row.state = $.inArray(row.id, selections) !== -1;
+            });
+            return res;
+        }
+
+        function operateFormatter(value, row, index) {
+            return [
+                '<a class="remove" href="javascript:void(0)" title="Remove">',
+                '<i class="fas fa-trash"></i>',
+                '</a>',
+            ].join('');
+        }
+
+        function detailFormatter(index, row) {
+            const html = [];
+            $.each(row, (key, value) => {
+                if (!key.startsWith("_")) {
+                    html.push(`<p><b>${key.replace("_", " ").toUpperCase()}:</b> ${value}</p>`);
+                }
+            });
+            return html.join('');
+        }
+
+        function totalTextFormatter() {
+            return 'Total';
+        }
+
+        function totalFormatter(data) {
+            return data.length;
+        }
+
+        function emailVerifiedFormatter(value) {
+            return (value === true ? 'Yes' : 'No');
+        }
+
+        function accountStatusFormatter(value) {
+            return (value === true ? 'Disabled' : 'Enabled');
+        }
+
+        function actionButton(account, url, action) {
+            swalWithBootstrapButtons.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, do it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (action === 'delete') {
+                        serverActionAccount(account, url, "User deleted successfully!")
+                    } else if (action === 'reset') {
+                        serverActionAccount(account, url, "Password reset sent!")
+                    }
+                } else if (
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire('Cancelled', `User ${account} is safe :)`, 'info');
+                }
+            });
+        }
+
+        function serverActionAccount(account, url, msg) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({payload: {id: account}}),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            }).always((jqXHR, textStatus, errorThrown) => {
+                if (jqXHR.status === 200 || jqXHR.status === 304) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: `Success!`,
+                        text: msg,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => { window.location.reload(); })
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: `Something went wrong.<br>${errorThrown}`,
+                    });
+                }
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i += 1) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (`${name}=`)) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table load-success.bs.table custom-view-post-body.bs.table', () => {
+            $('#remove').prop('disabled', !$table.bootstrapTable('getSelections').length);
+            $('#edit').prop('disabled', !$table.bootstrapTable('getSelections').length);
+            $('#add').prop('disabled', $table.bootstrapTable('getSelections').length);
+
+            selections = getIdSelections();
+        });
+
+        $table.on('all.bs.table', (e, name, args) => {
+            // console.log(name, args);
+        });
+
+        function customButtons() {
+            return {
+                btnDelete: {
+                    name: 'delete',
+                    text: 'Delete a number of rows',
+                    icon: 'fas fa-trash',
+                    event: () => {
+                        const users = $table.bootstrapTable('getSelections');
+                        swalWithBootstrapButtons.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, delete it!',
+                            cancelButtonText: 'No, cancel!',
+                            reverseButtons: true,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.each(users, (id, user) => {
+                                    $table.bootstrapTable('remove', { field: 'uid', values: user.uid });
+                                    $.ajax({
+                                        url: '/barangay-admin/user_management/delete',
+                                        type: 'POST',
+                                        dataType: 'json',
+                                        data: JSON.stringify({ payload: { id: user.uid } }),
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest',
+                                            'X-CSRFToken': getCookie('csrftoken'),
+                                        },
+                                    }).always((jqXHR, textStatus, errorThrown) => {
+                                        $('#add').removeAttr('disabled');
+
+                                        if (jqXHR.status === 200 || jqXHR.status === 304) {
+                                            const msg = users.length > 1
+                                            ? `${users.length} users has been successfully deleted.`
+                                            : `${users[0].email} has been deleted.`;
+
+                                            swalWithBootstrapButtons.fire(
+                                                'Success!',
+                                                msg,
+                                                'success',
+                                            );
+                                        } else {
+                                            swalWithBootstrapButtons.fire(
+                                                'Error!',
+                                                `Something went wrong.<br>${errorThrown}`,
+                                                'error',
+                                            );
+                                        }
+                                    });
+                                });
+                            } else if (
+                                result.dismiss === Swal.DismissReason.cancel
+                            ) {
+                                const msg = users.length > 1 ? `${users.length} users is safe :)` : `${users[0].email} is safe :)`;
+                                swalWithBootstrapButtons.fire('Cancelled', msg, 'info');
+                            }
+                        });
+                    },
+                    attributes: {
+                        title: 'Delete a number of rows',
+                        id: 'remove',
+                    },
+                },
+                btnEdit: {
+                    name: 'edit',
+                    text: 'Edit a row',
+                    icon: 'fas fa-edit',
+                    event() {
+                        // TODO: Toggle multiple edit when multiple rows is present.
+                        const rows = $table.bootstrapTable('getSelections')[0];
+
+                        $('#modal-form').attr('action', '/barangay-admin/user_management/edit');
+                        $modalTitle.html('Update User');
+                        $modalSubmitBtn.html('Update User');
+
+                        $password.prop('required', false);
+                        $uid.val(rows.uid);
+                        $name.val(rows.display_name);
+                        $email.val(rows.email);
+                        $role.val(rows.role).change();
+                        $disabled.val(rows.disabled === true ? 'True' : 'False').change();
+                        if (!rows.phone_number.startsWith("None")) {
+                            $phoneNumber.val(rows.phone_number);
+                        }
+
+                        userModal.show();
+                    },
+                    attributes: {
+                        title: 'Edit a row in the table',
+                        id: 'edit',
+                    },
+                },
+                btnAdd: {
+                    name: 'add',
+                    text: 'Add a row',
+                    icon: 'fas fa-plus',
+                    event() {
+                        modalForm.reset();
+
+                        $('#modal-form').attr('action', '/barangay-admin/user_management/');
+                        $password.prop('required', false);
+
+                        $modalTitle.html('Add User');
+                        $modalSubmitBtn.html('Add User');
+
+                        userModal.show();
+                    },
+                    attributes: {
+                        title: 'Add a row in the table',
+                        id: 'add',
+                    },
+                },
+            };
+        }
+
+        $(() => {
+            customButtons();
+
+            // Replace bootstrap4 with bootstrap5
+            $(document).ready(() => {
+                $('.bootstrap-table')
+                    .addClass('bootstrap5')
+                    .removeClass('bootstrap4');
+            });
+        });
+    </script>
+    <script>
+        {% if form.errors %}
+            userModal.show()
+        {% endif %}
+    </script>
+    <script>
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger me-2'
+            },
+            buttonsStyling: false
+        })
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    swalWithBootstrapButtons.fire('Success!', `{{ message }}.`, 'success')
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    swalWithBootstrapButtons.fire('Error!', `{{ message }}.`, 'error')
+                {% else %}
+                    swalWithBootstrapButtons.fire({{ message }})
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock scripts %}
