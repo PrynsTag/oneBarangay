@@ -22,7 +22,6 @@ from user_management.forms import UserManagementCreateForm
 
 
 # TODO: send email delete account.
-# FIXME: Fix search in table, error in toString.
 class UserManagementHomeView(FormView):
     """Form for adding user."""
 

@@ -307,7 +307,11 @@
             let view = '';
             $.each(data, function (i, row) {
                 const image = row.photo_url === "" ? '{% static "assets/img/default-image.jpg" %}' : row.photo_url
-                $.each(row, function (key, _) { row[key] = row[key] === "" ? null : row[key] })
+                $.each(row, function (key, _) {
+                    if (row[key]) {
+                        row[key] = row[key] === "" ? null : row[key]
+                    }
+                })
                 view += template
                     .replace('%NAME%', row.display_name)
                     .replace('%IMAGE%', image)
