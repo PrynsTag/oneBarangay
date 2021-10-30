@@ -8,15 +8,15 @@
 {% block content %}
     <div class="container">
         <h2 class="my-4">Add a new file</h2>
-        <form action="{% url "upload" %}" class="dropzone dz" id="my-awesome-dropzone">
+        <form action="{% url "ocr:upload" %}" class="dropzone dz" id="my-awesome-dropzone">
             {% csrf_token %}
             <div class="fallback">
                 <input name="files" type="file" multiple/>
-                <input type="hidden" id="url" data-url="{% url "files" %}" />
+                <input type="hidden" id="url" data-url="{% url "ocr:files" %}" />
             </div>
         </form>
         <div class="d-flex justify-content-center">
-            <a class="btn btn-primary my-4 mr-4" id="scan" hidden href="{% url "ocr_files" %}">Proceed to Scan</a>
+            <a class="btn btn-primary my-4 mr-4" id="scan" hidden href="{% url "ocr:ocr_files" %}">Proceed to Scan</a>
             <button class="btn btn-primary my-4" id="submit" hidden type="submit">Upload</button>
         </div>
         <div id="preview"></div>

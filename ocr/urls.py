@@ -3,6 +3,8 @@ from django.urls import path
 
 from . import views
 
+app_name = "ocr"
+
 urlpatterns = [
     path("upload", views.FileUploadView.as_view(), name="upload"),
     path("files", views.ScanFileView.as_view(), name="files"),

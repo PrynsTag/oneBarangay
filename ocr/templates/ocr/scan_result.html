@@ -7,7 +7,7 @@
         <h3 class="text-dark mb-1">Scan Result</h3>
     </div>
     <div class="container-fluid">
-        <form id="save_result" action="{% url "save_result" %}" method="POST" enctype="multipart/form-data">
+        <form id="save_result" action="{% url "ocr:save_result" %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row">
                 <div class="col-12">
