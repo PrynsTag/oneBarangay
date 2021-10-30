@@ -1,0 +1,78 @@
+{% extends "layouts/base.html" %}
+{% block title %} {{ title }} {% endblock %}
+{% load static %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <div class="container-fluid py-4 w-25">
+        <div class="card border-0 shadow components-section">
+            <div class="card-body">
+                <form enctype="multipart/form-data" method="post" id="ocr-edit-form">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for error in form.non_field_errors %}
+                                <p class="text-center">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {{ form.house_num }}
+
+                    <div class="row">
+                        <div class="form-group col text-black">
+                            <!-- Form -->
+                            <div class="form-group mb-4 col">
+                                {{ form.address.label_tag }}
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon2">
+                                        <span class="fas fa-unlock-alt"></span>
+                                    </span>
+                                    {{ form.address }}
+
+
+                                </div>
+                                <div class="badge m-0 bg-danger text-uppercase">{{ form.address.errors|striptags }}</div>
+                            </div>
+                            <!-- End of Form -->
+
+                            <!-- Form -->
+                            <div class="form-group mb-4 col">
+                                {{ form.street.label_tag }}
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon2">
+                                        <span class="fas fa-unlock-alt"></span>
+                                    </span>
+                                    {{ form.street }}
+                                </div>
+                                <div class="badge m-0 bg-danger text-uppercase">{{ form.street.errors|striptags }}</div>
+                            </div>
+                            <!-- End of Form -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a
+                    class="btn btn-link text-gray-600 ms-auto"
+                    type="reset"
+                    href="{% url  "ocr:home" %}"
+                >
+                    Cancel
+                </a>
+                <button
+                    class="btn btn-secondary"
+                    form="ocr-edit-form"
+                    name="Submit Edit Changes"
+                    type="submit"
+                >
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block scripts %}{% endblock scripts %}

@@ -1,13 +1,8 @@
 const $table = $('#table');
-const $remove = $('#remove');
 let selections = [];
 
 function getIdSelections() {
   return $.map($table.bootstrapTable('getSelections'), (row) => row.uid);
-}
-
-function getIdSelections() {
-    return $.map($table.bootstrapTable('getSelections'), (row) => row.id);
 }
 
 $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table load-success.bs.table custom-view-post-body.bs.table', () => {
@@ -19,7 +14,7 @@ $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.tab
 });
 $table.on('all.bs.table', (e, name, args) => {
     /* eslint no-console:0 */
-    console.log(name, args);
+    // console.log(name, args);
 });
 
 /* eslint no-unused-vars:0 */
@@ -41,38 +36,12 @@ function detailFormatter(index, row) {
     return html.join('');
 }
 
-
-const swalWithBootstrapButtons = Swal.mixin({
-    customClass: {
-        confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger me-2'
-    },
-    buttonsStyling: false
-})
-
-
 function operateFormatter(value, row, index) {
     return [
         '<a class="remove" href="javascript:void(0)" title="Remove">',
         '<i class="fas fa-trash"></i>',
         '</a>',
     ].join('');
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i += 1) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (`${name}=`)) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
 }
 
 function totalTextFormatter(data) {

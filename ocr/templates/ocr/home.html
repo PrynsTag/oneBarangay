@@ -1,0 +1,175 @@
+{% extends "layouts/base_table.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+<!-- Specific Page CSS goes HERE  -->
+
+{% block content %}
+    <div class="d-flex justify-content-between w-100 flex-wrap px-2 py-4">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4" id="text-title">{{ title }}</h1>
+            <p class="mb-0">{{ sub_title }}</p>
+        </div>
+        <div>
+            <a href="#" class="btn btn-outline-gray">
+                <i class="fas fa-question-circle me-1"></i>Filter
+            </a>
+        </div>
+    </div>
+    <div class="buttons pb-4">
+        <a href="{% url "ocr:upload" %}">
+            <button type="button" class="btn btn-primary d-inline-flex align-items-center">
+                <i class="fas fa-qrcode pe-2" aria-hidden="true"></i>
+                Scan
+            </button>
+        </a>
+    </div>
+    <!-- Modal Content -->
+    <div class="modal fade" id="ocr-modal" tabindex="-1" role="dialog" aria-labelledby="ocr-modal"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="h6 modal-title">Edit RBI</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="close-modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form -->
+                    <form method="post" id="ocr-form">
+                        {% csrf_token %}
+
+                        {% if contact_form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    <p class="text-center">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {% for field in form %}
+                            <div class="form-group mb-4">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                <small class="form-text text-muted d-block px-1">{{ field.help_text }}</small>
+                                {% if field.errors %}
+                                    <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </form>
+                    <!-- End of Form -->
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" form="ocr-form" name="Save RBI Form" class="btn btn-secondary">
+                        Save
+                    </button>
+                    <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal" id="cancel-modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Modal Content -->
+{% endblock content %}
+{% block table_content %}
+    <thead class="table-dark">
+        <tr>
+            <th data-checkbox="true"></th>
+            <th data-field="creation_date" data-halign="center" data-align="center" data-sortable="true" data-footer-formatter="totalTextFormatter" class="border-0">DATE CREATED</th>
+            <th data-field="date_accomplished" data-halign="center" data-align="center" data-sortable="true" data-footer-formatter="totalNameFormatter">DATE ACCOMPLISHED</th>
+            <th data-field="house_num" data-halign="center" data-align="center" data-sortable="true">HOUSE #</th>
+            <th data-field="address" data-halign="center" data-align="center" data-sortable="true">ADDRESS</th>
+            <th data-field="street" data-halign="center" data-align="center" data-sortable="true">STREET</th>
+            <th data-field="family_name" data-halign="center" data-align="center" data-sortable="true">FAMILY NAME</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for house in rbi %}
+            <tr>
+                <td></td>
+                <td class="fw-bold">{{ house.creation_date|default:"None Provided" }}</td>
+                <td>{{ house.date_accomplished|default:"None Provided" }}</td>
+                <td>
+                    <a href="{% url "ocr:detail" house.house_num %}" class="text-info text-decoration-underline">
+                        {{ house.house_num|default:"None Provided" }}
+                    </a>
+                </td>
+                <td>{{ house.address|default:"None Provided" }}</td>
+                <td>{{ house.street|default:"None Provided" }}</td>
+                <td>{{ house.family_name|default:"None Provided" }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+{% endblock %}
+
+{% block template %}
+    <template id="profileTemplate">
+        <div class="col-4 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-8 col-md-6">
+                            <h3 class="mb-0 text-truncated">%FAMILY_NAME%</h3>
+                            <div class="row">
+                                <div class="fw-extrabold mt-3">Address</div>
+                                <p class="fs-6">%ADDRESS%</p>
+                            </div>
+                            <div class="row">
+                                <div class="col col-md-auto">
+                                    <div class="fw-extrabold w-auto">Street</div>
+                                    <p>%STREET%</p>
+                                </div>
+                                <div class="col px-0">
+                                    <div class="fw-extrabold text-nowrap">House Number</div>
+                                    <p>%HOUSE_NUM%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4 col-md-6 text-center">
+                            <img id="proof-image" src="{{ default_image }}" alt="Profile Picture"
+                                class="mx-auto img-thumbnail img-fluid"
+                                style="height: 120px;">
+                            <br>
+                            <span id="house-image" class="fw-extrabold form-text">House Image</span>
+                        </div>
+                        <div class="col-12 col-lg-12 pt-5 d-flex flex-row-reverse">
+                            <a class="btn btn-outline-info" href="%FAMILY_TREE%"
+                                data-toggle="tooltip" data-placement="top" title="View Family Tree">
+                                <span class="fas fa-trash"></span>
+                                Family Tree
+                            </a>
+                            <a class="btn btn-outline-tertiary" onclick="redirectToEdit('{% url "ocr:edit" house_num=0 %}', '%HOUSE_NUM%')"
+                                data-toggle="tooltip" data-placement="top" title="Edit RBI">
+                                <span class="fas fa-id-badge"></span>
+                                Edit
+                            </a>
+                            <button class="btn btn-outline-danger remove" name="delete" onclick="actionButton('%HOUSE_NUM%', 'delete')"
+                                data-toggle="tooltip" data-placement="top" title="Delete Account">
+                                <span class="fas fa-trash"></span>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+{% endblock template %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        const editUrl = '{% url "ocr:edit" house_num=0 %}'
+        const deleteUrl = '{% url "ocr:delete" house_num=0 %}'
+    </script>
+    <script src="{% static "/ocr/js/ocr.js" %}"></script>
+    <script>
+        {% if form.address.value is not None %}
+            ocrModal.show()
+        {% endif %}
+        {% if form.errors %}
+            ocrModal.show()
+        {% endif %}
+    </script>
+{% endblock scripts %}

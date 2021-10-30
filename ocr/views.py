@@ -2,27 +2,30 @@
 import asyncio
 import json
 import os
-from datetime import datetime
+from datetime import date, datetime
+from typing import Union
 
 import pytz
 from django.contrib import messages
 from django.core.cache import cache
 from django.core.files.storage import default_storage
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import redirect, render
+from django.templatetags.static import static
+from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
-from google.api_core.exceptions import InvalidArgument
+from firebase_admin import firestore
+from google.api_core.exceptions import InvalidArgument, NotFound
 
-from ocr.dummy_data import RBIDummy
 from ocr.firestore_model import FirestoreModel
 from ocr.form_recognizer import form_recognizer_runner
-from ocr.forms import UploadForm
+from ocr.forms import OcrEditForm, UploadForm
 from ocr.scripts import Script
 from one_barangay.local_settings import logger
 from one_barangay.scripts.storage_backends import AzureStorageBlob
+from one_barangay.settings import firebase_app
 
 
-# TODO: Use Django Forms for displaying html forms.
 class FileUploadView(FormView):
     """View for file upload."""
 
@@ -232,67 +235,237 @@ class SaveScanResultView(FormView):
         return redirect("ocr_files")
 
 
-# TODO: Add custom view for profiling.
-class RBITableView(TemplateView):
+class OcrHomeView(TemplateView):
     """View for rbi_table.html."""
 
-    template_name = "ocr/rbi_table.html"
+    template_name = "ocr/home.html"
 
-    def get_context_data(self, **kwargs):
-        """Get json file url.
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        """GET request to display rbi collection to ocr home.
 
-        Get the json file to display RBI table.
+        Args:
+          **args: Additional arguments.
+          **kwargs: Additional keyword arguments.
+
+        Returns:
+          The firestore rbi collection data.
+        """
+        context = self.get_context_data(**kwargs)
+
+        db = firestore.client(app=firebase_app)
+        docs = db.collection("rbi").stream()
+
+        rbi = [doc.to_dict() for doc in docs]
+        context["rbi"] = rbi
+
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs) -> dict:
+        """Get context data to ocr home.
+
         Args:
           **kwargs: Keyword arguments.
 
         Returns:
-          The url for json file.
+          The dictionary data needed by ocr home.
         """
-        if os.getenv("GAE_ENV", "").startswith("standard"):
-            url = AzureStorageBlob().file_url
+        context = super().get_context_data()
+
+        context["segment"] = "ocr"
+        context["title"] = "OCR"
+        context["sub_title"] = "List of RBI in the database."
+        context["id"] = "house_num"
+        context["default_image"] = static("/assets/img/default-rbi-image.jpg")
+        context["sort"] = [
+            {"sortName": "creation_date", "sortOrder": "desc"},
+            {"sortName": "house_num", "sortOrder": "asc"},
+        ]
+
+        return context
+
+
+class OcrEditView(FormView):
+    """View for editing rbi."""
+
+    template_name = "ocr/edit.html"
+    form_class = OcrEditForm
+    success_url = reverse_lazy("ocr:home")
+
+    def get_form_kwargs(self):
+        """Pass house number data to OcrEditForm."""
+        kwargs = super().get_form_kwargs()
+
+        house_num = self.kwargs["house_num"]
+        db = firestore.client(app=firebase_app)
+        rbi = db.collection("rbi").document(house_num).get().to_dict()
+
+        kwargs["rbi"] = rbi
+
+        return kwargs
+
+    def form_valid(self, form):
+        """Call when OcrEditForm is VALID.
+
+        Updates the rbi collection with the given house number.
+        Args:
+          form: The submitted OcrEditForm.
+
+        Returns:
+          The valid OcrEditForm submitted.
+        """
+        changed_fields = {}
+        if form.has_changed():
+            for field in form.changed_data:
+                changed_fields[field] = form.cleaned_data[field]
+
+        if changed_fields:
+            db = firestore.client(app=firebase_app)
+            try:
+                # Update rbi collection.
+                (
+                    db.collection("rbi")
+                    .document(form.cleaned_data["house_num"])
+                    .update(changed_fields)
+                )
+            except NotFound:
+                messages.info(
+                    self.request,
+                    f"RBI data not updated! NO RBI \
+                    #${form.cleaned_data['house_num']} in the database!",
+                )
+                logger.info("[OcrEditView.form_valid] User data not updated!")
+
+            changed_fields_name = [form.fields[key].label for key in changed_fields]
+            messages.success(self.request, f"Edited {''.join(changed_fields_name)} successfully!")
+            logger.info(
+                "[OcrEditView.form_valid] Form successfully updated for fields %s.",
+                "".join(changed_fields_name),
+            )
         else:
-            # run ./simple_cors_server.py
-            url = "http://127.0.0.1:9000/rbi_data.json"
+            messages.info(self.request, "No change detected! Database is not updated.")
+            logger.info("[OcrEditView.form_valid] No fields to updated!")
 
-        return {"url": url}
+        messages.success(self.request, "")
 
+        return super().form_valid(form)
 
-class DummyRBIView(FormView):
-    """View for rbi_dummy.html."""
-
-    form_class = UploadForm
-    template_name = "ocr/rbi_dummy.html"
-
-    def post(self, request, *args, **kwargs):
-        """POST method to render dummy rbi.
+    def form_invalid(self, form):
+        """Call when OcrEditForm is INVALID.
 
         Args:
-          request: The URL request.
-          *args: Additional arguments.
+          form: The submitted OcrEditForm.
+
+        Returns:
+          The invalid OcrEditForm submitted.
+        """
+        for field in form.errors:
+            form[field].field.widget.attrs["class"] += " is-invalid"
+
+        messages.error(
+            self.request, "RBI edit not successful! Please fix the errors displayed in the form!"
+        )
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs) -> dict:
+        """Get context data to ocr edit.
+
+        Args:
           **kwargs: Additional keyword arguments.
 
         Returns:
-          The rbi_dummy.html along with the generated dummy list.
+          The dictionary data needed by ocr home.
         """
-        generated_dummy_list = []
-        dummy_count = int(request.POST["dummyCount"])
+        context = super().get_context_data()
 
-        firestore = FirestoreModel()
-        script = Script()
-        azure_storage = AzureStorageBlob()
+        context["segment"] = "ocr"
+        context["title"] = "OCR"
+        context["sub_title"] = "List of RBI in the database."
 
-        for _ in range(dummy_count):
-            dummy_data = RBIDummy().create_dummy_rbi()
-            formatted_data = script.format_firestore_data([dummy_data])
+        return context
 
-            generated_dummy_list += formatted_data["rows"]
 
-            if os.getenv("GAE_ENV", "").startswith("standard"):
-                json_data = azure_storage.append_to_json_data(formatted_data["rows"])
-                azure_storage.upload_json_data(json_data)
-            else:
-                script.append_to_local_json_file(formatted_data)
+class OcrDetailView(TemplateView):
+    """View for detailed rbi."""
 
-            firestore.store_rbi(dummy_data)
+    template_name = "ocr/detail.html"
 
-        return render(request, self.template_name, {"generated_dummy": generated_dummy_list})
+    def get(self, request, house_num, *args, **kwargs) -> HttpResponse:  # type: ignore
+        """Get Request to ocr detail to display single rbi.
+
+        Args:
+          request: The URL request.
+          house_num: The unique id of RBI.
+          **args: Additional arguments.
+          **kwargs: Additional keyword arguments.
+
+        Returns:
+          A single firestore rbi document.
+        """
+        context = self.get_context_data(**kwargs)
+
+        db = firestore.client(app=firebase_app)
+        family = db.collection("rbi").document(house_num).collection("family").get()
+
+        clean_family = []
+        for member in family:
+            family_member = member.to_dict()
+
+            # Calculate Age
+            birth_date_dt = datetime.strptime(family_member["birth_date"], "%B %d, %Y")
+            today = date.today()
+            age = (
+                today.year
+                - birth_date_dt.year
+                - ((today.month, today.day) < (birth_date_dt.month, birth_date_dt.day))
+            )
+            family_member["age"] = age
+
+            clean_family.append(family_member)
+
+        context["family"] = clean_family
+
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs) -> dict:
+        """Get context data to ocr detail.
+
+        Args:
+          **kwargs: Additional keyword arguments.
+
+        Returns:
+          The dictionary data needed by ocr detail.
+        """
+        context = super().get_context_data()
+
+        context["segment"] = "ocr"
+        context["title"] = "Family"
+        context["sub_title"] = "Information about family stored in RBI."
+
+        return context
+
+
+def delete(request, house_num) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
+    """Delete RBI.
+
+    Args:
+      request: The URL Request.
+      house_num: The unique id of RBI.
+
+    Returns:
+      Redirect to ocr home.
+    """
+    db = firestore.client(app=firebase_app)
+    if house_num:
+        try:
+            db.collection("rbi").document(house_num).delete()
+            messages.success(request, f"RBI with house number ${house_num} Deleted Successfully!")
+            logger.info(request, "RBI with house number %s Deleted Successfully!", house_num)
+        except NotFound:
+            messages.error(request, f"RBI with house #${house_num} Not Found!")
+            logger.info(request, "RBI with house #%s Not Found!", house_num)
+        except ValueError as e:
+            messages.error(request, f"Something when wrong {e}")
+    else:
+        messages.error(request, "NO house number Provided!")
+
+    return redirect("ocr:home")

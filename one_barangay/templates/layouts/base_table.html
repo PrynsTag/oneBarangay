@@ -9,11 +9,11 @@
     <link href="{% static "/assets/vendor/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.css" %}" rel="stylesheet" type="text/css">
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="{% static "/assets/vendor/bootstrap-table/dist/bootstrap-table.min.js" %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/copy-rows/bootstrap-table-copy-rows.min.js" %}"></script>
     <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/mobile/bootstrap-table-mobile.min.js" %}"></script>
     <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js" %}"></script>
     <script src="{% static "/assets/vendor/bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="{% static "/assets/vendor/bootstrap-table/dist/locale/bootstrap-table-en-US.min.js" %}"></script>
 {% endblock stylesheets %}
@@ -76,8 +76,11 @@
 
 {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/toolbar/bootstrap-table-toolbar.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/custom-view/bootstrap-table-custom-view.js"></script>
+    <script src="{% static "/assets/js/base_table.js" %}"></script>
 {% endblock scripts %}

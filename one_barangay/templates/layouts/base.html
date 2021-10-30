@@ -70,6 +70,9 @@
 
         <!-- Stylesheets -->
         <link href="{% static "/assets/css/volt.css" %}" rel="stylesheet" type="text/css">
+
+        <!-- Custom Stylesheets -->
+        <link href="{% static "/assets/css/styles.css" %}" rel="stylesheet" type="text/css">
         {% block stylesheets %}{% endblock stylesheets %}
     </head>
     <body>
@@ -86,5 +89,16 @@
         {% include 'includes/before_script.html' %}
         {% block scripts %}{% endblock scripts %}
         {% include 'includes/scripts.html' %}
+        <script>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                        showSuccess('{{ message }}')
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                        swalWithBootstrapButtons.fire('Error!', '{{ message }}.', 'error')
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </script>
     </body>
 </html>
