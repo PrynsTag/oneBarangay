@@ -99,7 +99,7 @@ repos:
         files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
         types: [file]
         additional_dependencies:
-          - eslint@latest
+          - eslint@7.32.0
           - eslint-config-standard@latest
         exclude: |
             (?x)^(
