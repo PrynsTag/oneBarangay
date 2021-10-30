@@ -29,14 +29,20 @@ def main():
         opts, args = getopt.getopt(argv, "n:", ["num_email"])
         # Check if the options' length is 1 (can be enhanced)
         if len(opts) == 0 and len(opts) > 1:
-            logger("usage: generate_emails.py -n <first_operand>")
+            print("usage: generate_emails.py -n <first_operand>")  # noqa: T001
         else:
             _, num_emails = opts[0]
 
             for _ in range(int(num_emails)):
                 family_data = create_dummy_rbi()
-                logger(json.dumps(family_data, indent=4, sort_keys=True, default=str))
-                save_rbi(family_data, family_data["house_num"])
+                print(  # noqa: T001
+                    json.dumps(
+                        family_data,
+                        indent=4,
+                        sort_keys=True,
+                        default=str,
+                    )
+                )
 
     except getopt.GetoptError:
         # Print something useful
@@ -61,7 +67,7 @@ def create_dummy_rbi():
     street = crypto_gen.choice(STREET_CHOICES)
     date_accomplished = datetime.combine(fake.date_between(start_date="-2y"), datetime.min.time())
     last_name = fake.last_name()
-    created_at = datetime.now(tz=pytz.timezone("Asia/Manila"))
+    creation_date = datetime.now(tz=pytz.timezone("Asia/Manila"))
 
     db = firestore.client(app=firebase_app)
     family_dictionary = {}
@@ -123,9 +129,10 @@ def create_dummy_rbi():
         family_dictionary[first_name].update(auth_data)
         # Add RBI info to user
         rbi_info = {"house_num": house_num, "address": address, "street": street}
-        save_users_collection(family_dictionary[first_name] | rbi_info, auth_data["uid"])
-        user_list.append(auth_data["uid"])
+        save_users_collection(family_dictionary[first_name] | rbi_info, auth_data["user_id"])
+        user_list.append(auth_data["user_id"])
 
+    # Save family in each user.
     family_chunk = {}
     for family_member, index in zip(
         family_dictionary.items(), range(len(family_dictionary.keys()))
@@ -142,14 +149,26 @@ def create_dummy_rbi():
         doc_ref = db.collection("users").document(user).collection("family").document(house_num)
         doc_ref.set(family_chunk, merge=True)
 
-    return {
+    family_data = {
         "house_num": house_num,
-        "created_at": created_at,
+        "creation_date": creation_date,
         "address": address,
         "date_accomplished": date_accomplished,
         "street": street,
-        "family_members": family_dictionary,
+        "family_name": last_name,
     }
+
+    db = firestore.client(app=firebase_app)
+    doc_ref = db.collection("rbi").document(house_num)
+    family_data["house_num"] = house_num
+    doc_ref.set(family_data)
+
+    for _, value in family_dictionary.items():
+        family_ref = doc_ref.collection("family").document()
+        value["member_id"] = family_ref.id
+        family_ref.set(value)
+
+    return family_data
 
 
 def save_rbi(family_data, house_num):
@@ -239,7 +258,7 @@ def create_dummy_user(first_name, last_name):
         email_writer.writerow([f"{email}", f"{password}", f"{role}"])
 
     return {
-        "uid": user_record.uid,
+        "user_id": user_record.uid,
         "display_name": user_record.display_name,
         "email": user_record.email,
         "role": role,
@@ -304,7 +323,6 @@ STREET_CHOICES = [
     "T. Santiago Street",
     "West Road",
 ]
-
 
 if __name__ == "__main__":
     main()
