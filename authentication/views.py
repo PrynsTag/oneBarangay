@@ -83,6 +83,7 @@ class ForgotPasswordFormView(FormView):
         reset_link = auth.generate_password_reset_link(
             form.cleaned_data["email"], app=firebase_app
         )
+        # TODO: Add html template.
         send_mail(
             subject="Password reset",
             message=f"click <a href='{reset_link}'>here</a> to reset your password.",
@@ -209,7 +210,12 @@ def login(request):
         first_name = request.session["user"].get("first_name")
         photo_url = request.session["user"].get("photo_url")
 
-        if not first_name:
+        if not request.session["user"] and auth_data.get("email"):
+            request.session["user"]["email"] = auth_data["email"]
+            request.session["user"]["first_name"] = auth_data["email"].split("@")[0]
+            request.session["user"]["last_name"] = ""
+
+        elif not first_name:
             request.session["user"]["first_name"] = request.session["user"]["email"].split("@")[0]
             request.session["user"]["last_name"] = ""
 

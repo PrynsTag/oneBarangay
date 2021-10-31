@@ -280,7 +280,7 @@
                             verifyEmail()
                             if (token) { sendToServer(user.uid, token, providerData, additionalInfo, "/login"); }
                         } else if (result.isConfirmed) {
-                            if (token) { sendToServer(user.uid, token, providerData, additionalInfo, "/barangay-admin/user_profile"); }
+                            if (token) { sendToServer(user.uid, token, providerData, additionalInfo, "/barangay-admin/user_profile", email.value); }
                         }
                     })
                     console.log(response)
@@ -330,7 +330,7 @@
             return cookieValue;
         }
 
-        function sendToServer(uid, token, providerData, additionalInfo, redirectTo) {
+        function sendToServer(uid, token, providerData, additionalInfo, redirectTo, email=null) {
             let firstName;
             let lastName;
             if (additionalInfo.providerId !== "password") {
@@ -351,6 +351,7 @@
                         first_name: firstName,
                         last_name: lastName,
                         newUser: additionalInfo.isNewUser,
+                        email: email
                     }
                 }),
                 headers: {
