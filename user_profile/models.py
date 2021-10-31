@@ -27,9 +27,14 @@ class UserModel:
         # try:
         user_data = self.user_ref.document(uid).get().to_dict()
         try:
-            user_data["updated_on"] = user_data["updated_on"].strftime("%B %d, %Y, %H:%M:%S")
+            if user_data.get("updated_on"):
+                user_data["updated_on"] = user_data["updated_on"].strftime("%B %d, %Y, %H:%M:%S")
+            else:
+                logger.exception("[UserModel.get_user_data] User updated_on key not found.")
+                return user_data
         except KeyError:
             logger.exception("[UserModel.get_user_data] No timestamp key..")
+            return user_data
         except NotFound as e:
             logger.exception("[UserModel.get_user_data] User not found. %s", e)
             return {}
