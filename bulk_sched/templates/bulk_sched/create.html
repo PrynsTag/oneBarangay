@@ -17,27 +17,14 @@
         ul {
             padding: 0;
         }
-
-        .form-group label.required:after {
-            content: " *";
-            color: red;
-        }
     </style>
 {% endblock stylesheets %}
 
-{% block content %}
-    <div class="d-flex justify-content-between w-100 flex-wrap px-5 py-4">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">{{ title }}</h1>
-            <p class="mb-0">Schedule mass events, appointments and notifications.</p>
-        </div>
-        <div>
-            <a href="#" class="btn btn-outline-gray">
-                <i class="fas fa-question-circle me-1"></i>Help
-            </a>
-        </div>
-    </div>
+<!-- Page Title & Subtitle -->
+{% block page_title %}{{ title }}{% endblock page_title %}
+{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
 
+{% block content %}
     <div class="container py-4 w-50">
         <div class="card border-0 shadow components-section">
             <div class="card-body">

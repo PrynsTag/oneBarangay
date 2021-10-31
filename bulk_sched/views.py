@@ -40,3 +40,19 @@ class BulkSchedCreateView(FormView):
         messages.error(self.request, "Post has not been saved!")
 
         return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs) -> dict:
+        """Get context data to announcement create view.
+
+        Args:
+          **kwargs: Keyword arguments.
+
+        Returns:
+          The dictionary data needed by announcement create view.
+        """
+        context = super().get_context_data()
+        context["segment"] = "bulk_sched"
+        context["title"] = "Bulk Scheduling"
+        context["sub_title"] = "Schedule mass events, appointments and notifications."
+
+        return context

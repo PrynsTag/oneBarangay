@@ -8,9 +8,7 @@ app_name = "bulk_sched"
 urlpatterns = [
     path(
         "",
-        views.BulkSchedCreateView.as_view(
-            extra_context={"title": "Bulk Scheduling", "segment": "bulk_sched"}
-        ),
+        views.BulkSchedCreateView.as_view(),
         name="create",
     ),
 ]
