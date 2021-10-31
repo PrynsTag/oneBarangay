@@ -146,6 +146,8 @@ process.yml
 test-results/
 manage.py
 emails.csv
+auth_data.json
+rbi_data.json
 
 media/
 
