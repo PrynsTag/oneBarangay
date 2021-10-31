@@ -53,6 +53,7 @@ cors.json
 
 # Explicitly include
 !one_barangay/settings.py
+!one_barangay/local_settings.py
 !manage.py
 !**/templates
 !.env
