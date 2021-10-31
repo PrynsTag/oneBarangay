@@ -12,10 +12,8 @@ function showSuccess(msg) {
         title: `Success!`,
         text: msg,
         showConfirmButton: false,
-        timer: 2500
-    }).then(() => {
-        window.location.reload();
-    });
+        timer: 3000
+    })
 }
 
 function showError(error) {
