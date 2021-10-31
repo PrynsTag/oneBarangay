@@ -85,26 +85,8 @@
                     <span class="sidebar-text">Complaint</span>
                 </a>
             </li>
-            <li class="nav-item {% if 'announcement' in segment %} active {% endif %}">
-                <a href="{% url "announcement:home" %}" class="nav-link">
-                    <span class="fas fa-scroll me-3 sidebar-icon"></span>
-                    <span class="sidebar-text">Announcement</span>
-                </a>
-            </li>
-            <li class="nav-item {% if 'bulk_sched' in segment %} active {% endif %}">
-                <a href="{% url "bulk_sched:create" %}" class="nav-link">
-                    <i class="fas fa-mail-bulk me-3 sidebar-icon"></i>
-                    <span class="sidebar-text">Bulk Schedule</span>
-                </a>
-            </li>
-            <li class="nav-item {% if 'complaint' in segment %} active {% endif %}">
-                <a href="{% url "complaint:home" %}" class="nav-link">
-                    <i class="fas fa-fingerprint me-3 sidebar-icon"></i>
-                    <span class="sidebar-text">Complaint</span>
-                </a>
-            </li>
             <li class="nav-item {% if 'ocr_files' in segment %} active {% endif %}">
-                <a href="{% url "rbi_table" %}" class="nav-link">
+                <a href="{% url "ocr:home" %}" class="nav-link">
                     <span class="sidebar-icon">
                         <svg id="bold" class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
@@ -120,7 +102,7 @@
                 </a>
             </li>
             <li class="nav-item {% if 'user_management' in segment %} active {% endif %}">
-                <a href="{% url "user_management:user_management" %}" class="nav-link">
+                <a href="{% url "user_management:home" %}" class="nav-link">
                     <span class="sidebar-icon pe-2">
                         <i class="fas fa-user-cog"></i>
                     </span>
