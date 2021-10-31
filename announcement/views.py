@@ -36,6 +36,22 @@ class AnnouncementHomeView(TemplateView):
 
         return self.render_to_response(context)
 
+    def get_context_data(self, **kwargs) -> dict:
+        """Get context data to announcement create view.
+
+        Args:
+          **kwargs: Keyword arguments.
+
+        Returns:
+          The dictionary data needed by announcement create view.
+        """
+        context = super().get_context_data()
+        context["segment"] = "announcement"
+        context["title"] = "Announcement"
+        context["sub_title"] = "View announcements / events created by oneBarangay."
+
+        return context
+
 
 class AnnouncementCreateView(FormView):
     """Form view for creating announcement."""

@@ -2,20 +2,11 @@
 {% block title %}{{ title }}{% endblock %}
 {% load static %}
 
-<!-- Specific Page CSS goes HERE  -->
+<!-- Page Title & Subtitle -->
+{% block page_title %}{{ title }}{% endblock page_title %}
+{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
 
 {% block content %}
-    <div class="d-flex justify-content-between w-100 flex-wrap px-2 py-4">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4" id="text-title">{{ title }}</h1>
-            <p class="mb-0">{{ sub_title }}</p>
-        </div>
-        <div>
-            <a href="#" class="btn btn-outline-gray">
-                <i class="fas fa-question-circle me-1"></i>Filter
-            </a>
-        </div>
-    </div>
     <div class="buttons pb-4">
         <a href="{% url "ocr:upload" %}">
             <button type="button" class="btn btn-primary d-inline-flex align-items-center">
