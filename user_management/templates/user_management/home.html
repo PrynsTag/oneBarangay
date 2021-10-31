@@ -188,7 +188,7 @@
                 <td>{{ user.provider|default:"None Provided" }}</td>
                 <td>{{ user.last_sign_in|timesince|default:"Unknown" }}</td>
                 <td>{{ user.email_verified|default:"None Provided" }}</td>
-                <td>{{ user.disabled|default:"None Provided" }}</td>
+                <td>{{ user.disabled|default_if_none:"None Provided" }}</td>
                 <td>{{ user.photo_url|default:default_image }}</td>
             </tr>
         {% endfor %}
@@ -202,41 +202,38 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12 col-lg-8 col-md-6">
-                            <h3 class="mb-0 text-truncated">%NAME%</h3>
-                            <div class="row">
-                                <div class="fw-extrabold mt-3">Address</div>
-                                <p class="fs-6">%ADDRESS%</p>
-                            </div>
-                            <div class="row">
-                                <div class="col col-md-auto">
-                                    <div class="fw-extrabold">Contact Number</div>
-                                    <p class="fs-6">%PHONE_NUMBER%</p>
+                            <h3 class="font-weight-bold">User I.D.</h3>
+                            <h4 class="font-weight-bold">%ID%</h4>
+                            <div class="align-items-center justify-content-center">
+                                <div class="row">
+                                    <div class="fw-extrabold mt-3">Display Name</div>
+                                    <p class="fs-6">%NAME%</p>
                                 </div>
-                                <div class="col col-md-auto">
-                                    <p>
-                                        <span class="fw-extrabold d-block">Age</span>
-                                        %AGE%
-                                    </p>
+                                <div class="row">
+                                    <div class="col col-md-auto">
+                                        <p>
+                                            <span class="fw-extrabold d-block">Email Address</span>
+                                            %EMAIL%
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col col-md-auto">
-                                    <div class="fw-extrabold w-auto">Family Role</div>
-                                    <p>%FAMILY_ROLE%</p>
-                                </div>
-                                <div class="col col-md-auto">
-                                    <div class="fw-extrabold w-auto">User Role</div>
-                                    <p>%USER_ROLE%</p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col col-md-auto">
-                                    <div class="fw-extrabold w-auto">Active</div>
-                                    <p>%ACTIVE%</p>
-                                </div>
-                                <div class="col px-0">
-                                    <div class="fw-extrabold text-nowrap">Civil Status</div>
-                                    <p>%CIVIL_STATUS%</p>
+                                <div class="row justify-content-start">
+                                    <div class="col col-md-auto">
+                                        <div class="fw-extrabold">Contact Number</div>
+                                        <p class="fs-6">%PHONE_NUMBER%</p>
+                                    </div>
+                                    <div class="col col-md-auto">
+                                        <div class="fw-extrabold w-auto">User Role</div>
+                                        <p>%USER_ROLE%</p>
+                                    </div>
+                                    <div class="col col-md-auto">
+                                        <div class="fw-extrabold w-auto">Active</div>
+                                        <p>%ACTIVE%</p>
+                                    </div>
+                                    <div class="col col-md-auto">
+                                        <div class="fw-extrabold text-nowrap">Account Status</div>
+                                        <p>%STATUS%</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
