@@ -292,7 +292,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "one_barangay", "static"),
     os.path.join(BASE_DIR, "authentication", "static"),
     os.path.join(BASE_DIR, "ocr", "static"),
-    os.path.join(BASE_DIR, "services", "static"),
     os.path.join(BASE_DIR, "data_viz", "static"),
     os.path.join(BASE_DIR, "user_profile", "static"),
     os.path.join(BASE_DIR, "user_management", "static"),
