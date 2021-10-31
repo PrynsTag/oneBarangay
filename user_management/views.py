@@ -1,5 +1,4 @@
 """Create your views here."""
-import json
 import os
 from datetime import date, datetime
 from typing import Union
@@ -275,48 +274,44 @@ class UserManagementEditView(UserManagementHomeView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-def delete(request) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
+def delete(request, uid) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
     """Delete user account.
 
     Args:
       request: The URL request.
+      uid: The unique I.D. of the user to delete.
 
     Returns:
       Redirect to user_management home.
     """
-    data = json.load(request)
-    form_data = data.get("payload")
-
     db = firestore.client(app=firebase_app)
     try:
         # Delete from Firebase Auth
-        auth.delete_user(form_data["id"], app=firebase_app)
+        auth.delete_user(uid, app=firebase_app)
         # Delete from Firestore
-        db.collection("users").document(form_data["id"]).delete()
+        db.collection("users").document(uid).delete()
 
-        logger.info("Successfully deleted user: %s", form_data["id"])
+        logger.info("Successfully deleted user: %s", uid)
         # TODO: Display Flash message in template.
-        messages.success(request, f"Successfully deleted user: {form_data['id']}")
+        messages.success(request, f"Successfully deleted user: %{uid}")
     except UserNotFoundError:
-        logger.exception("User Not Found!")
+        logger.exception("User %s Not Found!", uid)
+        messages.error(request, f"User ${uid} Not Found!")
 
     return redirect("user_management:home")
 
 
-def reset(request) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
+def reset(request, email) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
     """Reset user password.
 
     Args:
       request: The URL request.
+      email: The email to send the reset password.
 
     Returns:
       Redirect to user_management home.
     """
-    data = json.load(request)
-    form_data = data.get("payload")
-
     try:
-        email = form_data["id"]
         reset_link = auth.generate_password_reset_link(email, app=firebase_app)
         # TODO: Add html template.
         # https://stackoverflow.com/a/28476681/11668142

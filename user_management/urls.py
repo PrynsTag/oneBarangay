@@ -12,17 +12,17 @@ urlpatterns = [
         name="home",
     ),
     path(
-        "edit",
+        "edit/<str:uid>",
         views.UserManagementEditView.as_view(),
         name="edit",
     ),
     path(
-        "delete",
+        "delete/<str:uid>",
         views.delete,
         name="delete",
     ),
     path(
-        "reset",
+        "reset/<str:email>",
         views.reset,
         name="reset",
     ),
