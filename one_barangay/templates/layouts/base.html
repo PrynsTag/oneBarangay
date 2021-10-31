@@ -106,7 +106,7 @@
                     {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
                         showSuccess('{{ message }}')
                     {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                        swalWithBootstrapButtons.fire('Error!', '{{ message }}.', 'error')
+                        showError('{{ message }}')
                     {% endif %}
                 {% endfor %}
             {% endif %}
