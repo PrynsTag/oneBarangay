@@ -245,12 +245,18 @@
                             <span id="proof-image-desc" class="fw-extrabold form-text">Profile Picture</span>
                         </div>
                         <div class="col-12 col-lg-12 pt-5 d-flex flex-row-reverse">
-                            <button name="reset" class="btn btn-outline-tertiary" onclick="actionButton('%EMAIL%', '{% url "user_management:reset" %}', 'reset')"
-                                data-toggle="tooltip" data-placement="top" title="Reset Password">
-                                <span class="fas fa-id-badge"></span>
-                                Reset
+                            <button class="btn btn-outline-info remove" name="delete" id="edit-account"
+                                onclick="editAccount('%ID%', '%NAME%', '%EMAIL%', '%USER_ROLE%', '%PHONE_NUMBER%', '%TYPE%')"
+                                data-toggle="tooltip" data-placement="top" title="Edit Account">
+                                <span class="fas fa-edit"></span>
+                                Edit
                             </button>
-                            <button class="btn btn-outline-danger remove" name="delete" onclick="actionButton('%ID%', '{% url "user_management:delete" %}', 'delete')"
+                            <button name="reset" class="btn btn-outline-tertiary" onclick="actionButton('%EMAIL%', 'reset')"
+                                data-toggle="tooltip" data-placement="top" title="Reset Password">
+                                <span class="fas fa-unlock"></span>
+                                Reset Password
+                            </button>
+                            <button class="btn btn-outline-danger remove" name="delete" onclick="actionButton('%ID%', 'delete')"
                                 data-toggle="tooltip" data-placement="top" title="Delete Account">
                                 <span class="fas fa-trash"></span>
                                 Delete
