@@ -8,7 +8,7 @@ $('#close-modal').on('click', () => {
   ocrModal.hide();
 });
 
-function sendToServer(account, url, msg) {
+function sendToServer(url, msg) {
   $.ajax({
     url,
     type: 'POST',
@@ -92,7 +92,7 @@ function actionButton(houseNum, action) {
         url = deleteUrl.replace(/0/, houseNum?.toString());
         msg = `RBI with house number of ${houseNum} has been deleted successfully!`;
       }
-      sendToServer(houseNum, url, msg);
+      sendToServer(url, msg);
     } else if (
       result.dismiss === Swal.DismissReason.cancel
     ) {
