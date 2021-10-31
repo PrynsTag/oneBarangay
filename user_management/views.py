@@ -12,15 +12,16 @@ from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 from firebase_admin import auth, firestore
-from firebase_admin.auth import EmailAlreadyExistsError, UserNotFoundError
+from firebase_admin.auth import EmailAlreadyExistsError, UidAlreadyExistsError, UserNotFoundError
 from google.api_core.exceptions import NotFound
 
 from one_barangay.local_settings import logger
 from one_barangay.settings import firebase_app
+
+# TODO: send email delete account.
 from user_management.forms import UserManagementCreateForm
 
 
-# TODO: send email delete account.
 class UserManagementHomeView(FormView):
     """Form for adding user."""
 
@@ -107,7 +108,12 @@ class UserManagementHomeView(FormView):
         try:
             user = auth.create_user(**user_auth_data, app=firebase_app)
             auth.set_custom_user_claims(user.uid, {role: True}, app=firebase_app)
-            first_name, last_name = user.display_name.split()
+
+            if user.display_name:
+                first_name, last_name = user.display_name.split()
+            else:
+                first_name, last_name = None, None
+
             auth_data = {
                 "uid": user.uid,
                 "display_name": user.display_name,
@@ -155,6 +161,12 @@ class UserManagementHomeView(FormView):
             messages.error(
                 self.request,
                 f"User with email {form.cleaned_data['email']} already exists!",
+            )
+        except UidAlreadyExistsError:
+            logger.exception("User with uid %s already exists!", form.cleaned_data["uid"])
+            messages.error(
+                self.request,
+                f"User with uid {form.cleaned_data['uid']} already exists!",
             )
 
         return super().form_valid(form)
