@@ -33,7 +33,7 @@ class UserProfileForm(forms.Form):
             }
         ),
     )
-
+    email_regex = r"/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/"
     email = forms.EmailField(
         label="User Email",
         label_suffix="",
@@ -42,6 +42,7 @@ class UserProfileForm(forms.Form):
                 "placeholder": "name@company.com",
                 "class": "form-control text-black",
                 "readonly": True,
+                "pattern": email_regex,
             }
         ),
     )
