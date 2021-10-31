@@ -18,7 +18,6 @@ from django.urls import include, path
 urlpatterns = [
     path("barangay-admin/ocr/", include("ocr.urls")),
     path("", include("app.urls")),
-    path("barangay-admin/appointment/", include("appointment.urls")),
     path("barangay-admin/services/", include("services.urls")),
     path("barangay-admin/dashboard", include("data_viz.urls")),
     path("", include("authentication.urls")),
