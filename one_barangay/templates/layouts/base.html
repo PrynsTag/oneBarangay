@@ -80,6 +80,17 @@
 
         <main class="content">
             {% include 'includes/navigation.html' %}
+            <div class="d-flex justify-content-between w-100 flex-wrap px-2 py-4">
+                <div class="mb-3 mb-lg-0">
+                    <h1 class="h4" id="text-title">{% block page_title %}{% endblock page_title %}</h1>
+                    <p class="mb-0">{% block page_subtitle %}{% endblock page_subtitle %}</p>
+                </div>
+                <div>
+                    <a href="#" class="btn btn-outline-gray">
+                        <i class="fas fa-question-circle me-1"></i>Help
+                    </a>
+                </div>
+            </div>
             {% block content %}{% endblock content %}
             {% block table %}{% endblock table %}
             {% include 'includes/settings-box.html' %}
