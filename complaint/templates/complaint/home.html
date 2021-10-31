@@ -9,6 +9,10 @@
         integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous"/>
 {% endblock stylesheets %}
 
+<!-- Page Title & Subtitle -->
+{% block page_title %}{{ title }}{% endblock page_title %}
+{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
+
 {% block content %}
     <style>
         td a {
@@ -19,22 +23,7 @@
             color: transparent;
             text-align: center;
         }
-        .form-group label.required:after {
-            content: " *";
-            color: red;
-        }
     </style>
-    <div class="d-flex justify-content-between w-100 flex-wrap py-4">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">{{ title }}</h1>
-            <p class="mb-0">{{ sub_title }}</p>
-        </div>
-        <div>
-            <a href="#" class="btn btn-outline-gray">
-                <i class="fas fa-question-circle me-1"></i>Filter
-            </a>
-        </div>
-    </div>
     <div class="py-4">
         <!-- TODO: Add Complaint only for residents -->
         <a href="{% url "complaint:create" %}" class="btn btn-primary">
