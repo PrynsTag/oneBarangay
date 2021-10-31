@@ -27,18 +27,6 @@ class UserManagementCreateForm(forms.Form):
         ),
     )
 
-    password = forms.CharField(
-        required=False,
-        label="User Password",
-        label_suffix="",
-        widget=forms.PasswordInput(
-            attrs={
-                "placeholder": "Password",
-                "class": "form-control text-black",
-            },
-        ),
-    )
-
     display_name = forms.CharField(
         required=False,
         label="Display Name",

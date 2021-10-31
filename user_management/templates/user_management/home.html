@@ -40,23 +40,6 @@
                             {{ form.uid }}
 
                             <div class="row">
-                                <div class="form-group col text-black">
-                                    <!-- Form -->
-                                    <div class="form-group mb-4">
-                                        {{ form.display_name.label_tag }}
-                                        <div class="input-group">
-                                            <span class="input-group-text" id="basic-addon2">
-                                                <span class="fas fa-unlock-alt"></span>
-                                            </span>
-                                            {{ form.display_name }}
-                                        </div>
-                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.display_name.errors|striptags }}</div>
-                                    </div>
-                                    <!-- End of Form -->
-                                </div>
-                            </div>
-
-                            <div class="row">
                                 <!-- Form -->
                                 <div class="form-group mb-4 col">
                                     {{ form.email.label_tag }}
@@ -73,14 +56,14 @@
                                 <div class="form-group col">
                                     <!-- Form -->
                                     <div class="form-group mb-4">
-                                        {{ form.password.label_tag }}
+                                        {{ form.display_name.label_tag }}
                                         <div class="input-group">
                                             <span class="input-group-text" id="basic-addon2">
-                                                <span class="fas fa-unlock-alt"></span>
+                                                <span class="fas fa-passport"></span>
                                             </span>
-                                            {{ form.password }}
+                                            {{ form.display_name }}
                                         </div>
-                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.password.errors|striptags }}</div>
+                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.display_name.errors|striptags }}</div>
                                     </div>
                                     <!-- End of Form -->
                                 </div>
