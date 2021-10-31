@@ -42,13 +42,13 @@ class BulkSchedCreateView(FormView):
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs) -> dict:
-        """Get context data to announcement create view.
+        """Get context data to bulk_sched create view.
 
         Args:
           **kwargs: Keyword arguments.
 
         Returns:
-          The dictionary data needed by announcement create view.
+          The dictionary data needed by bulk_sched create view.
         """
         context = super().get_context_data()
         context["segment"] = "bulk_sched"
