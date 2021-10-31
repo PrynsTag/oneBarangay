@@ -131,7 +131,7 @@ class AnnouncementEditView(FormView):
         """
         changed_fields = {}
         announcement_id = self.kwargs["announcement_id"]
-
+        # TODO: default_storage.generate_filename
         if form.has_changed():
             # Accumulate all data of changed fields.
             for field in form.changed_data:
