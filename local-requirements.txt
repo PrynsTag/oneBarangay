@@ -3,7 +3,7 @@ aiohttp>=3.7.4
 azure-ai-formrecognizer==3.1.2
 azure-identity==1.7.0
 azure-storage-blob==12.9.0
-black==21.9b0
+black==21.10b0
 blackfire==1.7.1
 browserstack-local==1.2.3
 coveralls==3.2.0
