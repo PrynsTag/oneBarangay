@@ -313,17 +313,8 @@ USE_TZ = True
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "one_barangay", "static"),
-    os.path.join(BASE_DIR, "authentication", "static"),
-    os.path.join(BASE_DIR, "ocr", "static"),
-    os.path.join(BASE_DIR, "data_viz", "static"),
-    os.path.join(BASE_DIR, "user_profile", "static"),
-    os.path.join(BASE_DIR, "user_management", "static"),
-    os.path.join(BASE_DIR, "announcement", "static"),
-    os.path.join(BASE_DIR, "bulk_sched", "static"),
-    os.path.join(BASE_DIR, "complaint", "static"),
-]
+# Static app dirs automatically finds it by AppDirectoriesFinder
+# https://docs.djangoproject.com/en/3.1/ref/settings/#staticfiles-finders
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
