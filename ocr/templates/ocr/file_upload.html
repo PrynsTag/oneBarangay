@@ -1,29 +1,62 @@
 {% extends "layouts/base.html" %}
-{% block title %} File Upload {% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% load static %}
+
 {% block stylesheets %}
-    <link rel="stylesheet" href="{% static "/assets/vendor/dropzonejs/dist/dropzone.min.css" %}">
-    <link rel="stylesheet" href="{% static "/ocr/css/style.css" %}">
+    {{ form.media.css }}
 {% endblock %}
+
+<!-- Page Title & Subtitle -->
+{% block page_title %}{{ title }}{% endblock page_title %}
+{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
+
 {% block content %}
     <div class="container">
-        <h2 class="my-4">Add a new file</h2>
-        <form action="{% url "ocr:upload" %}" class="dropzone dz" id="my-awesome-dropzone">
+        <form action="{% url "ocr:upload" %}" method="post" class="dropzone dz" id="ocr-file-upload" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="fallback">
-                <input name="files" type="file" multiple/>
-                <input type="hidden" id="url" data-url="{% url "ocr:files" %}" />
+                {{ form }}
             </div>
         </form>
+        <!-- Buttons -->
         <div class="d-flex justify-content-center">
-            <a class="btn btn-primary my-4 mr-4" id="scan" hidden href="{% url "ocr:ocr_files" %}">Proceed to Scan</a>
-            <button class="btn btn-primary my-4" id="submit" hidden type="submit">Upload</button>
+            <button class="btn btn-primary my-4" form="ocr-file-upload" id="submit" hidden type="submit">
+                Upload
+            </button>
         </div>
-        <div id="preview"></div>
+        <!-- End of Buttons -->
 
+        <div id="preview" class="py-5" data-url="{% static "/assets/img/default-pdf-image.png" %}">
+            {% if request.session.files %}
+                <div class="row g-4">
+                    {% for filename, img_url in request.session.files %}
+                        <div class="col-3 col-md-3 col-sm-4">
+                            <div class="card shadow text-center p-2">
+                                <img src="{{ img_url }}" class="card-img-top img-thumbnail" alt="Uploaded File"/>
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ filename }}</h6>
+                                </div>
+                                <div class="btn-group">
+                                    <a type="button" class="btn mt-auto btn-outline-danger"
+                                        href="{% url "ocr:remove_file" filename %}">
+                                        Remove
+                                    </a>
+                                    <a type="button" class="btn mt-auto btn-outline-tertiary"
+                                        href="{% url "ocr:scan_result" filename %}">
+                                        <span class="fas fa-remove"></span>
+                                        Scan
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
     </div>
+
 {% endblock %}
 {% block scripts %}
-    <script src="{% static "/assets/vendor/dropzonejs/dist/dropzone.min.js" %}"></script>
-    <script src="{% static "/ocr/js/upload_file.js" %}"></script>
+    {{ form.media.js }}
 {% endblock %}

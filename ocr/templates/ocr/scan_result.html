@@ -1,163 +1,244 @@
 {% extends "layouts/base.html" %}
-{% block title %} OCR Index {% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% load static %}
-<!-- Specific Page CSS goes HERE  -->
+
+<!-- Page Title & Subtitle -->
+{% block page_title %}{{ title }}{% endblock page_title %}
+{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
+
 {% block content %}
-    <div class="container-fluid">
-        <h3 class="text-dark mb-1">Scan Result</h3>
-    </div>
-    <div class="container-fluid">
-        <form id="save_result" action="{% url "ocr:save_result" %}" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-12">
-                    <div class="row">
-                        <div class="col-3">
-                            <div class="mb-3">
-                                <label for="region" class="form-label">Region</label>
-                                <input type="text" class="form-control" id="region" value="NCR" disabled/>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="mb-3">
-                                <label for="province" class="form-label">Province</label>
-                                <input type="text" class="form-control" id="province" value="3rd District" disabled/>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="mb-3">
-                                <label for="city" class="form-label">City</label>
-                                <input type="text" class="form-control" id="city" value="Valenzuela City" disabled/>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="mb-3">
-                                <label for="barangay" class="form-label">Barangay</label>
-                                <input type="text" class="form-control" id="barangay" value="Malanday" disabled/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="container-fluid d-flex flex-column">
+        <div class="row">
+            <div class="h4 text-danger">Instructions</div>
+            <div class="col">
+                <div class="h5">Change the data here depending on the value on the right.</div>
             </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="row">
-                        <div class="col-3">
-                            <div class="mb-3">
-                                <label for="houseNo" class="form-label">House #</label>
-                                <input type="text" class="form-control is-valid" id="houseNo" name="house_num" value="{{ ocr_header.house_hold_no.text }}">
-                                <div class="valid-feedback">Confidence Level: {{ ocr_header.house_hold_no.confidence }}</div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Address</label>
-                                <input type="text" class="form-control is-valid" id="address" name="address" value="{{ ocr_header.address.text }}"/>
-                                <div class="valid-feedback">Confidence Level: {{ ocr_header.address.confidence }}</div>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="mb-3">
-                                <label for="date" class="form-label">Date</label>
-                                <input type="text" class="form-control is-valid" id="date" name="date" value="{{ ocr_header.date.text }}"/>
-                                <div class="valid-feedback">Confidence Level: {{ ocr_header.date.confidence }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% for fam_member in ocr_text %}
-                    {% if forloop.first %}
-                        <h3 class="text-dark mb-5 mt-5">Family Head</h3>
-                    {% else %}
-                        <h3 class="text-dark mb-5 mt-5">Family Member {{ forloop.counter0 }}</h3>
-                    {% endif %}
+            <div class="col">
+                <div class="h5">Validate the data on the left according to this document.</div>
+            </div>
+        </div>
+        <div class="row flex-fill mh-0">
+            <form class="col vh-100 overflow-scroll" id="save_result" action="{% url "ocr:save_result" %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" class="form-control" name="filename" value="{{ document_name }}"/>
+                <div class="row">
                     <div class="col-12">
                         <div class="row">
                             <div class="col-3">
                                 <div class="mb-3">
-                                    <label for="lastname" class="form-label">Last Name</label>
-                                    <input type="text" class="form-control is-valid" id="lastname" name="last_name" value="{{ fam_member.last_name_apelyido.text }}"/>
-                                    <div class="valid-feedback">Confidence Level: {{ fam_member.last_name_apelyido.confidence }}</div>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="mb-3">
-                                    <label for="firstname" class="form-label">First Name</label>
-                                    <input type="text" class="form-control is-valid" id="firstname" name="fist_name" value="{{ fam_member.first_name_pangalan.text }}"/>
-                                    <div class="valid-feedback">Confidence Level: {{ fam_member.first_name_pangalan.confidence }}</div>
+                                    <label for="region" class="form-label">Region</label>
+                                    <input type="text" class="form-control" id="region" value="NCR" disabled/>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="mb-3">
-                                    <label for="middlename" class="form-label">Middle Name</label>
-                                    <input type="text" class="form-control is-valid" id="middlename" name="middle_name" value="{{ fam_member.middle_name.text }}"/>
-                                    <div class="valid-feedback">Confidence Level: {{ fam_member.middle_name.confidence }}</div>
-                                </div>
-                            </div>
-                            <div class="col-2">
-                                <div class="mb-3">
-                                    <label for="ext" class="form-label">Extension</label>
-                                    <input type="text" class="form-control is-valid" id="ext" name="ext" value="{{ fam_member.ext.text }}"/>
-                                    <div class="valid-feedback">Confidence Level: {{ fam_member.ext.confidence }}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-3">
-                                <div class="mb-3">
-                                    <label for="placeOfBirth" class="form-label">Place of Birth</label>
-                                    <input type="text" class="form-control is-valid" id="placeOfBirth" name="birth_place" value="{{ fam_member.place_of_birth.text }}"/>
-                                    <div class="valid-feedback">Confidence Level: {{ fam_member.place_of_birth.confidence }}</div>
+                                    <label for="province" class="form-label">Province</label>
+                                    <input type="text" class="form-control" id="province" value="3rd District"
+                                        disabled/>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="mb-3">
-                                    <label for="dateOfBirth" class="form-label">Date of Birth</label>
-                                    <input type="text" class="form-control is-valid" id="dateOfBirth" name="birth_date" value="{{ fam_member.date_of_birth.text }}"/>
-                                    <div class="valid-feedback">Confidence Level: {{ fam_member.date_of_birth.confidence }}</div>
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="city" value="Valenzuela City" disabled/>
                                 </div>
                             </div>
                             <div class="col-3">
-                                <label for="sex" class="form-label">Sex</label>
-                                <input type="text" class="form-control is-valid" id="sex" name="sex" value="{{ fam_member.sex_m_or_f.text }}"/>
-                                <div class="valid-feedback">Confidence Level: {{ fam_member.sex_m_or_f.confidence }}</div>
-                            </div>
-                            <div class="col-3">
-                                <label for="civilStatus" class="form-label">Civil Status</label>
-                                <input type="text" class="form-control is-valid" id="civilStatus" name="civil_status" value="{{ fam_member.civil_status.text }}"/>
-                                <div class="valid-feedback">Confidence Level: {{ fam_member.civil_status.confidence }}</div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4">
                                 <div class="mb-3">
-                                    <label for="citizenship" class="form-label">Citizenship</label>
-                                    <input type="text" class="form-control is-valid" id="citizenship" name="citizenship" value="{{ fam_member.citizenship.text }}"/>
-                                    <div class="valid-feedback">Confidence Level: {{ fam_member.citizenship.confidence }}</div>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="mb-3">
-                                    <label for="monthlyIncome" class="form-label">Monthly Income</label>
-                                    <input type="text" class="form-control is-valid" id="monthlyIncome" name="monthly_income" value="{{ fam_member.monthly_income.text }}"/>
-                                    <div class="valid-feedback">Confidence Level: {{ fam_member.monthly_income.confidence }}</div>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="mb-3">
-                                    <label for="remarks" class="form-label">Remarks</label>
-                                    <input type="text" class="form-control is-valid" id="remarks" name="remarks" value="{{ fam_member.remarks.text }}"/>
-                                    <div class="valid-feedback">Confidence Level: {{ fam_member.remarks.confidence }}</div>
+                                    <label for="barangay" class="form-label">Barangay</label>
+                                    <input type="text" class="form-control" id="barangay" value="Malanday" disabled/>
                                 </div>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="mb-3">
+                                    <label for="houseNo" class="form-label">House #</label>
+                                    <input type="text" class="form-control is-valid" id="houseNo" name="house_num"
+                                        value="{{ ocr_header.house_hold_no.text }}">
+                                    <div class="valid-feedback">Confidence
+                                        Level: {{ ocr_header.house_hold_no.confidence }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <input type="text" class="form-control is-valid" id="address" name="address"
+                                        value="{{ ocr_header.address.text }}"/>
+                                    <div class="valid-feedback">Confidence
+                                        Level: {{ ocr_header.address.confidence }}</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="mb-3">
+                                    <label for="date" class="form-label">Date</label>
+                                    <input type="text" class="form-control is-valid" id="date" name="date"
+                                        value="{{ ocr_header.date.text }}"/>
+                                    <div class="valid-feedback">Confidence Level: {{ ocr_header.date.confidence }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% for fam_member in ocr_text %}
+                        {% if forloop.first %}
+                            <h3 class="text-dark mb-5 mt-5">Family Head</h3>
+                        {% else %}
+                            <h3 class="text-dark mb-5 mt-5">Family Member {{ forloop.counter0 }}</h3>
+                        {% endif %}
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="mb-3">
+                                        <label for="lastname" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control is-valid" id="lastname" name="last_name"
+                                            value="{{ fam_member.last_name_apelyido.text }}"/>
+                                        <div class="valid-feedback">Confidence
+                                            Level: {{ fam_member.last_name_apelyido.confidence }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="mb-3">
+                                        <label for="firstname" class="form-label">First Name</label>
+                                        <input type="text" class="form-control is-valid" id="firstname" name="fist_name"
+                                            value="{{ fam_member.first_name_pangalan.text }}"/>
+                                        <div class="valid-feedback">Confidence
+                                            Level: {{ fam_member.first_name_pangalan.confidence }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="mb-3">
+                                        <label for="middlename" class="form-label">Middle Name</label>
+                                        <input type="text" class="form-control is-valid" id="middlename"
+                                            name="middle_name" value="{{ fam_member.middle_name.text }}"/>
+                                        <div class="valid-feedback">Confidence
+                                            Level: {{ fam_member.middle_name.confidence }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="mb-3">
+                                        <label for="ext" class="form-label">Extension</label>
+                                        <input type="text" class="form-control is-valid" id="ext" name="ext"
+                                            value="{{ fam_member.ext.text }}"/>
+                                        <div class="valid-feedback">Confidence
+                                            Level: {{ fam_member.ext.confidence }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="mb-3">
+                                        <label for="placeOfBirth" class="form-label">Place of Birth</label>
+                                        <input type="text" class="form-control is-valid" id="placeOfBirth"
+                                            name="birth_place" value="{{ fam_member.place_of_birth.text }}"/>
+                                        <div class="valid-feedback">Confidence
+                                            Level: {{ fam_member.place_of_birth.confidence }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="mb-3">
+                                        <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                                        <input type="text" class="form-control is-valid" id="dateOfBirth"
+                                            name="birth_date" value="{{ fam_member.date_of_birth.text }}"/>
+                                        <div class="valid-feedback">Confidence
+                                            Level: {{ fam_member.date_of_birth.confidence }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <label for="sex" class="form-label">Sex</label>
+                                    <input type="text" class="form-control is-valid" id="sex" name="sex"
+                                        value="{{ fam_member.sex_m_or_f.text }}"/>
+                                    <div class="valid-feedback">Confidence
+                                        Level: {{ fam_member.sex_m_or_f.confidence }}</div>
+                                </div>
+                                <div class="col-3">
+                                    <label for="civilStatus" class="form-label">Civil Status</label>
+                                    <input type="text" class="form-control is-valid" id="civilStatus"
+                                        name="civil_status" value="{{ fam_member.civil_status.text }}"/>
+                                    <div class="valid-feedback">Confidence
+                                        Level: {{ fam_member.civil_status.confidence }}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="mb-3">
+                                        <label for="citizenship" class="form-label">Citizenship</label>
+                                        <input type="text" class="form-control is-valid" id="citizenship"
+                                            name="citizenship" value="{{ fam_member.citizenship.text }}"/>
+                                        <div class="valid-feedback">Confidence
+                                            Level: {{ fam_member.citizenship.confidence }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="mb-3">
+                                        <label for="monthlyIncome" class="form-label">Monthly Income</label>
+                                        <input type="text" class="form-control is-valid" id="monthlyIncome"
+                                            name="monthly_income" value="{{ fam_member.monthly_income.text }}"/>
+                                        <div class="valid-feedback">Confidence
+                                            Level: {{ fam_member.monthly_income.confidence }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="mb-3">
+                                        <label for="remarks" class="form-label">Remarks</label>
+                                        <input type="text" class="form-control is-valid" id="remarks" name="remarks"
+                                            value="{{ fam_member.remarks.text }}"/>
+                                        <div class="valid-feedback">Confidence
+                                            Level: {{ fam_member.remarks.confidence }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button form="save_result" class="btn btn-primary my-4" id="submit" type="submit"
+                    onclick="return submitForm(this.form)">Save
+                </button>
+            </form>
+            <div class="col">
+                {% if document_type == ".pdf" %}
+                    <div id="adobe-dc-view"></div>
+                {% else %}
+                    <img id="image" src="{{ document_url }}" alt="RBI Form">
+                {% endif %}
             </div>
-            <button form="save_result" class="btn btn-primary my-4" id="submit" type="submit" onclick="return submitForm(this.form)">Save</button>
-        </form>
+        </div>
     </div>
 {% endblock content %}
 {% block scripts %}
+    {% if document_type == ".pdf" %}
+        <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+        <script type="text/javascript">
+            const documentUrl = '{{ document_url }}'
+            const documentName = '{{ document_name }}'
+            const adobeId = '{{ client_id }}'
+            document.addEventListener("adobe_dc_view_sdk.ready", function () {
+                var adobeDCView = new AdobeDC.View({clientId: adobeId, divId: "adobe-dc-view"});
+                adobeDCView.previewFile({
+                    content: {location: {url: documentUrl}},
+                    metaData: {fileName: documentName}
+                }, {});
+            });
+        </script>
+    {% else %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.2/viewer.css"
+            integrity="sha512-HGWrJz+Lr07phD0DNoLsSVwn3przno/eSLf1cGOrLzr6c7NUZROZJPhQdSPmLHNbsO0HP2UfUnpKTMiVxonEHw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.2/viewer.min.js"
+            integrity="sha512-lzNiA4Ry7CjL8ewMGFZ5XD4wIVaUhvV3Ct9BeFmWmyq6MFc42AdOCUiuUtQgkrVVELHA1kT7xfSLoihwssusQw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+            const viewer = new Viewer(document.getElementById('image'), {
+                inline: true,
+                toolbar: false,
+                viewed() {
+                    viewer.zoomTo(0.5);
+                },
+            });
+        </script>
+    {% endif %}
     <script src="{% static "/ocr/js/upload_form.js" %}"></script>
 {% endblock %}

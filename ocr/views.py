@@ -1,118 +1,142 @@
 """Routing Request to Views of OCR Pages."""
 import asyncio
-import json
 import os
 from datetime import date, datetime
 from typing import Union
+from urllib.parse import urlparse
 
 import pytz
 from django.contrib import messages
 from django.core.cache import cache
 from django.core.files.storage import default_storage
-from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
-from django.shortcuts import redirect, render
+from django.http import (
+    HttpResponse,
+    HttpResponsePermanentRedirect,
+    HttpResponseRedirect,
+    JsonResponse,
+)
+from django.shortcuts import redirect
 from django.templatetags.static import static
 from django.urls import reverse_lazy
+from django.utils.datastructures import MultiValueDict
 from django.views.generic import FormView, TemplateView
 from firebase_admin import firestore
 from google.api_core.exceptions import InvalidArgument, NotFound
 
-from ocr.firestore_model import FirestoreModel
 from ocr.form_recognizer import form_recognizer_runner
-from ocr.forms import OcrEditForm, UploadForm
-from ocr.scripts import Script
+from ocr.forms import OcrEditForm, OcrResultForm, OcrUploadForm
 from one_barangay.local_settings import logger
-from one_barangay.scripts.storage_backends import AzureStorageBlob
+from one_barangay.mixins import ContextPageMixin
 from one_barangay.settings import firebase_app
 
 
-class FileUploadView(FormView):
+class OcrFileUploadView(ContextPageMixin, FormView):
     """View for file upload."""
 
-    form_class = UploadForm
+    form_class = OcrUploadForm
     template_name = "ocr/file_upload.html"
+    success_url = reverse_lazy("ocr:upload")
+    title = "File Upload"
+    sub_title = "Upload RBI documents for scanning."
 
-    def __init__(self):
-        """Initialize FileUploadView class variables."""
-        self.script = Script()
+    def get_form_kwargs(self):
+        """Return the keyword arguments for instantiating the form."""
+        kwargs = super().get_form_kwargs()
+        files = [self.request.FILES[file] for file in self.request.FILES]
+        kwargs.update({"files": MultiValueDict({"file_upload": files})})
+
+        return kwargs
 
     def post(self, request, *args, **kwargs):
-        """Post request from file upload.
+        """POST request to upload OCR form files.
 
         Args:
           request: The URL request.
-          *args: Additional arguments.
+          **args: Additional arguments.
           **kwargs: Additional keyword arguments.
 
         Returns:
-          on success: The ocr_files along with context.
-          on fail: The file_upload.html along with context.
+          A JSONResponse for success and failure of upload.
         """
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
         files = [request.FILES[file] for file in request.FILES]
-        # TODO: Refactor OCR Files UI for redundant UI.
-        dict_files = [json.loads(file) for file in request.POST.getlist("fileData")]
 
-        request.session["files"] = self.script.format_file_upload_card(dict_files)
+        file_data = []
+        request.session["files"] = []
+        if form.is_valid():
+            for file in files:
+                filename = default_storage.generate_filename(file.name)
+                default_storage.save(filename, file)
+                thumbnail_url = default_storage.url(filename)
 
-        for file in files:
-            default_storage.save(file.name, file)
+                path = urlparse(thumbnail_url).path
+                ext = os.path.splitext(path)[1]
+                if ext == ".pdf":
+                    thumbnail_url = static("/assets/img/default-pdf-image.jpg")
 
-        return HttpResponse(request.session["files"])
+                file_data.append((filename, thumbnail_url))
+            request.session["files"] += file_data
 
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
-# Todo: Fix settings-box.html.
-class ScanFileView(FormView):
-    """View for file upload."""
-
-    template_name = "ocr/file_upload.html"
-
-    def post(self, request, *args, **kwargs):
-        """Get context data and run form recognizer.
-
-        Args:
-          request: The URL Request.
-          **kwargs: Additional keyword argument (Filename).
-          *args: Additional Arguments
-
-        Returns:
-          : scan_result.html with context of detected text from table image.
-        """
-        return render(request, self.template_name)
-
-
-# Todo: Fix File Card UI.
-class OCRFilesView(TemplateView):
-    """Display ocr_files template."""
-
-    template_name = "ocr/ocr_files.html"
-
-    def get_context_data(self, **kwargs):
-        """Get context data of ocr_files.
+    def form_invalid(self, form):
+        """Call when OcrUploadForm is INVALID.
 
         Args:
-          **kwargs: Keyword arguments.
+          form: The submitted OcrUploadForm.
 
         Returns:
-          : files as context data.
+          The invalid OcrUploadForm submitted.
         """
-        return {"files": self.request.session["files"]}
+        for field in form.errors:
+            form[field].field.widget.attrs["class"] += " is-invalid"
+
+        messages.error(self.request, "Files not uploaded!")
+        return JsonResponse({"error": form.errors.as_json()}, status=400)
+
+
+def remove_file(request, filename):
+    """Remove a OCR uploaded file.
+
+    Args:
+      request: The URL request.
+      filename: The name of the file to be remove.
+
+    Returns:
+      A HTTPResponseRedirect to OCR upload page.
+    """
+    remove(request.session, filename)
+
+    return redirect("ocr:upload")
 
 
 # TODO: Change color of feedback depending on confidence level.
-class ScanResultView(TemplateView):
-    """View for scan_result.html."""
+class OcrResultView(ContextPageMixin, FormView):
+    """View for scan result of ocr."""
 
     template_name = "ocr/scan_result.html"
+    form_class = OcrResultForm
+    success_url = reverse_lazy("ocr:upload")
+    title = "OCR Result"
+    sub_title = "Page for ocr result."
 
-    def get_context_data(self, **kwargs):
-        """Get context data and run form recognizer.
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        """GET request to display OCR scan result.
 
         Args:
-          **kwargs: Additional keyword argument (Filename).
+          request: The URL request.
+          **args: Additional arguments.
+          **kwargs: Additional keyword arguments.
 
         Returns:
-          : scan_result.html with context of detected text from table image.
+          The context data with OCR result.
         """
+        form_kwargs = self.get_form_kwargs()
+        context = self.get_context_data(**kwargs)
+
         ocr = cache.get("ocr")
         if ocr is None:
             ocr = asyncio.run(form_recognizer_runner(kwargs["filename"]))
@@ -122,34 +146,26 @@ class ScanResultView(TemplateView):
         else:
             logger.info("OCR result is cached!")
 
-        scanned_file_index = next(
-            (
-                idx
-                for idx, dictionary in enumerate(self.request.session["files"])
-                if dictionary["name"] == kwargs["filename"]
-            ),
-            None,
-        )
+        context["ocr_header"] = ocr[0]
+        context["ocr_text"] = ocr[1]
 
-        if scanned_file_index is not None:
-            del self.request.session["files"][scanned_file_index]
-            self.request.session.modified = True
+        form_kwargs["header"] = ocr[0]
+        form_kwargs["ocr_result"] = ocr[1]
 
-            default_storage.delete(kwargs["filename"])
+        # For displaying RBI in HTML.
+        context["document_type"] = os.path.splitext(kwargs["filename"])[1]
+        context["document_url"] = default_storage.url(kwargs["filename"])
+        context["document_name"] = kwargs["filename"]
+        context["client_id"] = os.getenv("ADOBE_CLIENT_ID")
 
-        return {"ocr_header": ocr[0], "ocr_text": ocr[1]}
+        return self.render_to_response(context)
 
 
 # TODO: Add regex checking in input fields.
-class SaveScanResultView(FormView):
+class OcrSaveView(FormView):
     """View for file upload."""
 
     template_name = "ocr/scan_result.html"
-
-    def __init__(self):
-        """Initialize SaveScanResultView class variables."""
-        self.firestore = FirestoreModel()
-        self.script = Script()
 
     def post(self, request, *args, **kwargs):
         """Get context data and run form recognizer.
@@ -178,7 +194,7 @@ class SaveScanResultView(FormView):
         monthly_income = request.POST.getlist("monthly_income")
         remarks = request.POST.getlist("remarks")
 
-        family_member_dictionary = {}
+        family_member_data = {}
         for data in zip(
             last_name,
             fist_name,
@@ -192,7 +208,7 @@ class SaveScanResultView(FormView):
             monthly_income,
             remarks,
         ):
-            family_member_dictionary[data[1]] = {
+            family_member_data[data[1]] = {
                 "last_name": data[0],
                 "first_name": data[1],
                 "middle_name": data[2],
@@ -206,33 +222,32 @@ class SaveScanResultView(FormView):
                 "remarks": data[10],
             }
 
-        my_data = {
+        family_data = {
             "house_num": house_num,
             "created_at": created_at,
             "address": address,
             "date_accomplished": date_accomplished,
-            "family_members": family_member_dictionary,
         }
 
         try:
-            formatted_data = self.script.format_firestore_data([my_data])
-            if os.getenv("GAE_ENV", "").startswith("standard"):
-                azure_storage = AzureStorageBlob()
-                json_data = azure_storage.append_to_json_data(formatted_data["rows"])
-                azure_storage.upload_json_data(json_data)
-            else:
-                self.script.append_to_local_json_file(formatted_data)
-
-            self.firestore.store_rbi(my_data)
+            db = firestore.client(app=firebase_app)
+            db.collection("rbi").document(house_num).set(family_data, merge=True)
+            (
+                db.collection("rbi")
+                .document(house_num)
+                .collection("family")
+                .document(house_num)
+                .set(family_member_data, merge=True)
+            )
+            remove(self.request.session, request.POST["filename"])
 
             logger.info("RBI Document saved!")
             messages.add_message(request, messages.SUCCESS, "RBI Document is saved!")
-
         except InvalidArgument as e:
             logger.exception("RBI document not saved! %s", e)
             messages.add_message(request, messages.ERROR, "RBI document not saved!")
 
-        return redirect("ocr_files")
+        return redirect("ocr:upload")
 
 
 class OcrHomeView(TemplateView):
@@ -385,7 +400,7 @@ class OcrEditView(FormView):
 
 
 class OcrDetailView(TemplateView):
-    """View for detailed rbi."""
+    """View for single rbi."""
 
     template_name = "ocr/detail.html"
 
@@ -445,7 +460,7 @@ class OcrDetailView(TemplateView):
 
 
 def delete(request, house_num) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
-    """Delete RBI.
+    """Delete RBI in the table.
 
     Args:
       request: The URL Request.
@@ -457,6 +472,10 @@ def delete(request, house_num) -> Union[HttpResponseRedirect, HttpResponsePerman
     db = firestore.client(app=firebase_app)
     if house_num:
         try:
+            docs = db.collection("rbi").document(house_num).collection("family").stream()
+            for doc in docs:
+                doc.reference.delete()
+
             db.collection("rbi").document(house_num).delete()
             messages.success(request, f"RBI with house number ${house_num} Deleted Successfully!")
             logger.info(request, "RBI with house number %s Deleted Successfully!", house_num)
@@ -469,3 +488,26 @@ def delete(request, house_num) -> Union[HttpResponseRedirect, HttpResponsePerman
         messages.error(request, "NO house number Provided!")
 
     return redirect("ocr:home")
+
+
+def remove(session, filename):
+    """Get the index of the filename from session.
+
+    Args:
+      session: The session variable that contains the 'file' variable.
+      filename: The name of the file to be deleted.
+
+    Returns:
+      None.
+    """
+    scanned_file_index = next(
+        (idx for idx, file in enumerate(session["files"]) if file[0] == filename),
+        None,
+    )
+
+    # Delete file from "session files" given index
+    if scanned_file_index is not None:
+        del session["files"][scanned_file_index]
+        session.modified = True
+
+        default_storage.delete(filename)
