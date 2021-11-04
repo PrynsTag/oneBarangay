@@ -6,7 +6,7 @@ azure-storage-blob==12.9.0
 black==21.10b0
 blackfire==1.7.1
 browserstack-local==1.2.3
-coveralls==3.2.0
+coveralls==3.3.0
 Django==3.2.9
 django-ckeditor==6.1.0
 django-coverage-plugin==2.0.1
