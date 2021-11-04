@@ -156,3 +156,5 @@ media/
 /node_modules/
 
 chart.ipynb
+
+frontend/node_modules/
