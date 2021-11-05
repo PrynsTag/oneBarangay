@@ -1,4 +1,5 @@
 """Custom Mixins."""
+from django.contrib import messages
 
 
 class ContextPageMixin:
@@ -20,3 +21,25 @@ class ContextPageMixin:
         context["segment"] = self.segment
 
         return context
+
+
+class FormInvalidMixin:
+    """Custom mixin for form errors."""
+
+    def form_invalid(self, form):
+        """Call when AnnouncementCreateForm is INVALID.
+
+        Args:
+          form: The submitted AnnouncementEditForm.
+
+        Returns:
+          The invalid form submitted.
+        """
+        for field in form.errors:
+            form[field].field.widget.attrs["class"] += " is-invalid"
+
+        messages.error(
+            self.request,
+            self.error_message,
+        )
+        return super().form_invalid(form)
