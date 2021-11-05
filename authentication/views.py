@@ -16,6 +16,7 @@ from firebase_admin.auth import UserRecord
 
 from ocr.firestore_model import FirestoreModel
 from one_barangay.local_settings import logger
+from one_barangay.mixins import FormInvalidMixin
 from one_barangay.scripts.storage_backends import AzureStorageBlob
 from one_barangay.settings import firebase_app
 from user_management.json_functions import UserManagementJSON
@@ -26,14 +27,13 @@ from .models import AuthModel
 
 
 # TODO: Fix client-side validation
-class AuthenticationFormView(FormView):
+class AuthenticationFormView(FormInvalidMixin, FormView):
     """Form view for login."""
 
     template_name = "authentication/authentication.html"
     form_class = AuthenticationForm
     success_url = reverse_lazy("data_viz:dashboard")
-    error_css_class = "invalid-feedback"
-    required_css_class = "required"
+    error_message = "Invalid credentials."
 
     def form_valid(self, form) -> HttpResponse:
         """Authenticate user when login form is valid.
@@ -50,26 +50,14 @@ class AuthenticationFormView(FormView):
 
         return super().form_valid(form)
 
-    def form_invalid(self, form) -> HttpResponse:
-        """Return login form with errors when login form is invalid.
 
-        Args:
-          form: The html login form submitted.
-
-        Returns:
-          Render form with errors.
-        """
-        messages.error(self.request, "Invalid credentials.")
-
-        return super().form_invalid(form)
-
-
-class ForgotPasswordFormView(FormView):
+class ForgotPasswordFormView(FormInvalidMixin, FormView):
     """Form view for forgot password form."""
 
     template_name = "authentication/authentication.html"
     form_class = ForgotPasswordForm
     success_url = reverse_lazy("auth:sign_in")
+    error_message = "Password reset not sent!"
 
     def form_valid(self, form) -> HttpResponse:
         """Send a password reset email to a user when login form is valid.
@@ -96,28 +84,14 @@ class ForgotPasswordFormView(FormView):
 
         return super().form_valid(form)
 
-    def form_invalid(self, form) -> HttpResponse:
-        """Return forgot password form with errors when login form is invalid.
 
-        Args:
-          form: The html forgot password form submitted
-
-        Returns:
-          Render form with errors.
-        """
-        messages.error(self.request, "Password reset not sent!")
-        for field in form.errors:
-            form[field].field.widget.attrs["class"] += " is-invalid"
-
-        return super().form_invalid(form)
-
-
-class LockAccountFormView(FormView):
+class LockAccountFormView(FormInvalidMixin, FormView):
     """Form view for lock account form."""
 
     template_name = "authentication/lock_account.html"
     form_class = LockAccountForm
     success_url = reverse_lazy("data_viz:dashboard")
+    error_message = "Login not successful! Please fix the error presented in the form."
 
     def form_valid(self, form) -> HttpResponse:
         """Authenticate locked user.
@@ -131,21 +105,6 @@ class LockAccountFormView(FormView):
         messages.add_message(self.request, messages.SUCCESS, "Login successful!")
 
         return super().form_valid(form)
-
-    def form_invalid(self, form):
-        """Return LockAccountForm form with errors.
-
-        Args:
-          form: The LockAccountForm form submitted
-
-        Returns:
-          Render LockAccountForm form with errors.
-        """
-        messages.add_message(
-            self.request, messages.ERROR, f"Login not successful!\n{form.errors}"
-        )
-
-        return super().form_invalid(form)
 
 
 def login(request):

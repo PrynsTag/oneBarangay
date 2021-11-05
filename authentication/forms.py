@@ -24,7 +24,7 @@ class ForgotPasswordForm(forms.Form):
 class LockAccountForm(forms.Form):
     """Lock Account Form."""
 
-    error_css_class = "invalid-feedback"
+    error_css_class = "is-invalid"
     required_css_class = "required"
 
     password = forms.CharField(
@@ -60,6 +60,9 @@ class LockAccountForm(forms.Form):
 class AuthenticationForm(LockAccountForm, ForgotPasswordForm):
     """Login, Signup and Forgot Password Form."""
 
+    error_css_class = "is-invalid"
+    required_css_class = "required"
+
     confirm_password = forms.CharField(
         label="Confirm Password",
         label_suffix="",
@@ -79,7 +82,6 @@ class AuthenticationForm(LockAccountForm, ForgotPasswordForm):
         label_suffix="",
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
     )
-
     terms_condition = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
     )

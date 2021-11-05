@@ -1,13 +1,8 @@
 {% extends "layouts/base-fullscreen.html" %}
-
-{% block title %} {{ title }} {% endblock %}
-
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
 
 {% block content %}
-    {%  load static %}
-
     <main>
         <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
             <div class="container">
@@ -37,6 +32,7 @@
                                 {{ form.non_field_errors }}
                             </div>
                             <form method="post" action="" class="mt-5">
+                                {% csrf_token %}
                                 <!-- Form -->
                                 <div class="form-group mb-4">
                                     {{ form.password.label_tag }}
@@ -46,7 +42,7 @@
                                         </span>
                                         {{ form.password }}
                                     </div>
-                                    <span class="text-error">{{ form.password.errors }}</span>
+                                    <div class="badge m-0 bg-danger text-uppercase">{{ form.password.errors|striptags }}</div>
                                 </div>
                                 <!-- End of Form -->
                                 <div class="d-grid mt-3">
