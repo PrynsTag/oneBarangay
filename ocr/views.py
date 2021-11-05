@@ -38,6 +38,7 @@ class OcrFileUploadView(ContextPageMixin, FormView):
     success_url = reverse_lazy("ocr:upload")
     title = "File Upload"
     sub_title = "Upload RBI documents for scanning."
+    segment = "ocr"
 
     def get_form_kwargs(self):
         """Return the keyword arguments for instantiating the form."""
@@ -122,6 +123,7 @@ class OcrResultView(ContextPageMixin, FormView):
     success_url = reverse_lazy("ocr:upload")
     title = "OCR Result"
     sub_title = "Page for ocr result."
+    segment = "ocr"
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """GET request to display OCR scan result.
@@ -137,14 +139,18 @@ class OcrResultView(ContextPageMixin, FormView):
         form_kwargs = self.get_form_kwargs()
         context = self.get_context_data(**kwargs)
 
-        ocr = cache.get("ocr")
-        if ocr is None:
+        if os.getenv("GAE_ENV", "").startswith("standard"):
             ocr = asyncio.run(form_recognizer_runner(kwargs["filename"]))
-            cache.set("ocr", ocr, timeout=None)
-            logger.warning("OCR result is not cached!")
-
         else:
-            logger.info("OCR result is cached!")
+            # For Local Testing
+            ocr = cache.get("ocr")
+            if ocr is None:
+                ocr = asyncio.run(form_recognizer_runner(kwargs["filename"]))
+                cache.set("ocr", ocr, timeout=None)
+                logger.warning("OCR result is not cached!")
+
+            else:
+                logger.info("OCR result is cached!")
 
         context["ocr_header"] = ocr[0]
         context["ocr_text"] = ocr[1]
