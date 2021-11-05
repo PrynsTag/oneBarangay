@@ -47,14 +47,14 @@
                                     <i class="fas fa-bullhorn"></i>
                                 </span>
                                 {{ form.event }}
-                                {% if form.event.errors %}
-                                    <div>
-                                        <div class="badge m-0 bg-danger text-uppercase">
-                                            {{ form.event.errors|striptags }}
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
+                            {% if form.event.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.event.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="form-group col">
                             {{ form.resident_quantity.label_tag }}
@@ -63,14 +63,14 @@
                                     <i class="fas fa-balance-scale"></i>
                                 </span>
                                 {{ form.resident_quantity }}
-                                {% if form.resident_quantity.errors %}
-                                    <div>
-                                        <div class="badge m-0 bg-danger text-uppercase">
-                                            {{ form.resident_quantity.errors|striptags }}
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
+                            {% if form.resident_quantity.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.resident_quantity.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="form-group col">
                             <div class="row">
@@ -78,14 +78,14 @@
                                 <div class="input-group justify-content-start">
                                     {{ form.notification_type }}
                                 </div>
-                                {% if form.notification_type.errors %}
-                                    <div>
-                                        <div class="badge m-0 bg-danger text-uppercase">
-                                            {{ form.notification_type.errors|striptags }}
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
+                            {% if form.notification_type.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.notification_type.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -96,14 +96,15 @@
                                     <i class="fas fa-people-arrows"></i>
                                 </span>
                                 {{ form.relationship_type }}
-                                {% if form.relationship_type.errors %}
-                                    <div>
-                                        <div class="badge m-0 bg-danger text-uppercase">
-                                            {{ form.relationship_type.errors|striptags }}
-                                        </div>
-                                    </div>
-                                {% endif %}
+
                             </div>
+                            {% if form.relationship_type.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.relationship_type.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="form-group col">
                             {{ form.street.label_tag }}
@@ -112,14 +113,14 @@
                                     <i class="fas fa-road"></i>
                                 </span>
                                 {{ form.street }}
-                                {% if form.street.errors %}
-                                    <div>
-                                        <div class="badge m-0 bg-danger text-uppercase">
-                                            {{ form.street.errors|striptags }}
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
+                            {% if form.street.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.street.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="form-group col">
                             {{ form.time_interval.label_tag }}
@@ -128,14 +129,14 @@
                                     <i class="fas fa-clock"></i>
                                 </span>
                                 {{ form.time_interval }}
-                                {% if form.time_interval.errors %}
-                                    <div>
-                                        <div class="badge m-0 bg-danger text-uppercase">
-                                            {{ form.time_interval.errors|striptags }}
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
+                            {% if form.time_interval.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.time_interval.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="row">
@@ -146,14 +147,14 @@
                                     <i class="fas fa-calendar-plus icon-box"></i>
                                 </span>
                                 {{ form.start_date }}
-                                {% if form.start_date.errors %}
-                                    <div>
-                                        <div class="badge m-0 bg-danger text-uppercase">
-                                            {{ form.start_date.errors|striptags }}
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
+                            {% if form.start_date.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.start_date.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="form-group col">
                             {{ form.end_date.label_tag }}
@@ -162,14 +163,14 @@
                                     <i class="fas fa-calendar-minus icon-box"></i>
                                 </span>
                                 {{ form.end_date }}
-                                {% if form.end_date.errors %}
-                                    <div>
-                                        <div class="badge m-0 bg-danger text-uppercase">
-                                            {{ form.end_date.errors|striptags }}
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
+                            {% if form.end_date.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.end_date.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="text-center mt-4">

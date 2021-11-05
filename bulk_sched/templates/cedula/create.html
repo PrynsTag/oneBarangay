@@ -1,0 +1,84 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+<!-- Page Title & Subtitle -->
+{% block page_title %}{{ title }}{% endblock page_title %}
+{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style>
+        ul#id_notification_type li {
+            list-style: none;
+            display: inline;
+            margin-right: 10px;
+        }
+
+        ul {
+            padding: 0;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="container py-4 w-50">
+        <div class="card border-0 shadow components-section">
+            <div class="card-body">
+                <form action="" method="post" id="bulk-sched-form">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for error in form.non_field_errors %}
+                                <p class="text-center">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                        <div class="row mb-3">
+                            <label class="p-1 col-sm-2 col-form-label {% if field.field.required %}required{% endif %}" for="{{ field.auto_id }}">
+                                {{ field.label }}
+                            </label>
+                            <div class="col-sm-10">
+                                {{ field }}
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <div class="badge bg-danger text-wrap w-auto text-end text-uppercase">
+                                            {{ error|striptags }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    {{ form.media }}
+    <script>
+        $(function () {
+            const $date = $('#id_date')
+            $(function () {
+                $date.datetimepicker({
+                    format: 'l, F d Y, H:i A',
+                    minDate: 0,
+                    minTime: '8:00',
+                    maxTime: '17:00',
+                    step: 30,
+                    defaultDate: Date.now(),
+                    defaultTime: '8:00',
+                    weeks: true,
+                    onGenerate: function (ct) {
+                        $(this).find('.xdsoft_date.xdsoft_weekend')
+                            .addClass('xdsoft_disabled');
+                    },
+                });
+            });
+        });
+    </script>
+{% endblock scripts %}

@@ -3,15 +3,20 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 
-from bulk_sched.forms import BulkSchedCreateForm
+from bulk_sched.forms import BarangayCertificate, BulkSchedCreateForm
+from one_barangay.mixins import ContextPageMixin, FormInvalidMixin
 
 
-class BulkSchedCreateView(FormView):
+class BulkSchedCreateView(FormInvalidMixin, ContextPageMixin, FormView):
     """Form view for creating bulk scheduling."""
 
     template_name = "bulk_sched/create.html"
     form_class = BulkSchedCreateForm
     success_url = reverse_lazy("bulk_sched:create")
+    error_message = "Post has not been saved! Please fix the error presented in the form."
+    title = "Bulk Scheduling"
+    sub_title = "Schedule mass events, appointments and notifications."
+    segment = "bulk_sched"
 
     def form_valid(self, form):
         """Call when BulkSchedCreateForm is VALID.
@@ -26,33 +31,27 @@ class BulkSchedCreateView(FormView):
 
         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        """Call when BulkSchedCreateForm is INVALID.
+
+class CedulaCreateView(FormInvalidMixin, ContextPageMixin, FormView):
+    """Form view for creating cedula."""
+
+    template_name = "cedula/create.html"
+    form_class = BarangayCertificate
+    success_url = reverse_lazy("cedula:create")
+    error_message = "Post has not been saved! Please fix the error presented in the form."
+    title = "Cedula"
+    sub_title = "Create cedula for your residents in oneBarangay!"
+    segment = "cedula"
+
+    def form_valid(self, form):
+        """Call when BarangayCertificate is VALID.
 
         Args:
           form: The submitted BulkSchedCreateForm.
 
         Returns:
-          The invalid BulkSchedCreateForm submitted.
+          The valid BulkSchedCreateForm submitted.
         """
-        for field in form.errors:
-            form[field].field.widget.attrs["class"] += " is-invalid"
-        messages.error(self.request, "Post has not been saved!")
+        messages.success(self.request, "Post has been saved! Do you want to create another post?")
 
-        return super().form_invalid(form)
-
-    def get_context_data(self, **kwargs) -> dict:
-        """Get context data to bulk_sched create view.
-
-        Args:
-          **kwargs: Keyword arguments.
-
-        Returns:
-          The dictionary data needed by bulk_sched create view.
-        """
-        context = super().get_context_data()
-        context["segment"] = "bulk_sched"
-        context["title"] = "Bulk Scheduling"
-        context["sub_title"] = "Schedule mass events, appointments and notifications."
-
-        return context
+        return super().form_valid(form)
