@@ -19,7 +19,7 @@
                     </svg>
                     New
                 </button>
-                <button class="btn btn-secondary d-inline-flex align-items-center me-2" type="button" id="removeAttr">Edit</button>
+                <button class="btn btn-secondary d-inline-flex align-items-center me-2" type="button" id="edit-button">Edit</button>
                 <div class="dropdown-menu dashboard-dropdown dropdown-menu-start mt-2 py-1">
                     <a class="dropdown-item d-flex align-items-center nav-link text-dark notification-bell unread dropdown-toggle" href="#">
                         <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20"
@@ -215,13 +215,16 @@
                                 <div class="invalid-feedback">{{ form.address.errors|striptags }}</div>
                             </div>
                         </div>
+                        <!--
                         <div class="col-sm-3 mb-3">
                             <div class="form-group">
                                 <label for="number">Number</label>
-                                <input class="form-control" id="number" type="number" placeholder="No." required>
+                                <input class="form-control" id="number" type="number" placeholder="No." disabled>
                             </div>
                         </div>
+                        -->
                     </div>
+                    <!--
                     <div class="row">
                         <div class="col-sm-4 mb-3">
                             <div class="form-group">
@@ -294,8 +297,9 @@
                             </div>
                         </div>
                     </div>
+                    -->
                     <div class="mt-3">
-                        <button class="btn btn-gray-800 mt-2 animate-up-2" type="submit">Save</button>
+                        <button class="btn btn-gray-800 mt-2 animate-up-2" type="submit" id="submit-button" hidden>Save</button>
                     </div>
                 </form>
             </div>
@@ -395,3 +399,40 @@
         </div>
     </div>
 {% endblock content %}
+{% block scripts %}
+    <script>
+        const editBtn = document.getElementById('edit-button');
+        const saveProfileBtn = document.getElementById('submit-button')
+        const phoneNumber = document.getElementById('id_phone_number')
+        const address = document.getElementById('id_address')
+
+        editBtn.addEventListener('click', function () {
+            // Remove hidden button
+            saveProfileBtn.hidden = !saveProfileBtn;
+            const phoneNumberReadonly = phoneNumber.hasAttribute('readonly');
+            const addressReadonly = address.hasAttribute('readonly');
+
+            if (phoneNumberReadonly || addressReadonly) {
+                phoneNumber.removeAttribute('readonly');
+                address.removeAttribute('readonly');
+            } else {
+                phoneNumber.toggleAttribute('readonly');
+                address.toggleAttribute('readonly');
+            }
+        });
+    </script>
+    <script>
+        const logoutUrl = '{% url "auth:logout" %}'
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    Swal.fire('Success!', `{{ message }}.`, 'success').then(() => {
+                        window.location.href = logoutUrl
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    Swal.fire('Error!', `{{ message }}.`, 'error')
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock %}
