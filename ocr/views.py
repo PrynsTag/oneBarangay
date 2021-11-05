@@ -26,7 +26,7 @@ from google.api_core.exceptions import InvalidArgument, NotFound
 from ocr.form_recognizer import form_recognizer_runner
 from ocr.forms import OcrEditForm, OcrResultForm, OcrUploadForm
 from one_barangay.local_settings import logger
-from one_barangay.mixins import ContextPageMixin
+from one_barangay.mixins import ContextPageMixin, FormInvalidMixin
 from one_barangay.settings import firebase_app
 
 
@@ -305,12 +305,16 @@ class OcrHomeView(TemplateView):
         return context
 
 
-class OcrEditView(FormView):
+class OcrEditView(FormInvalidMixin, ContextPageMixin, FormView):
     """View for editing rbi."""
 
     template_name = "ocr/edit.html"
     form_class = OcrEditForm
     success_url = reverse_lazy("ocr:home")
+    title = "OCR"
+    sub_title = "List of RBI in the database."
+    segment = "ocr"
+    error_message = "RBI edit not successful! Please fix the errors displayed in the form!"
 
     def get_form_kwargs(self):
         """Pass house number data to OcrEditForm."""
@@ -369,40 +373,6 @@ class OcrEditView(FormView):
         messages.success(self.request, "")
 
         return super().form_valid(form)
-
-    def form_invalid(self, form):
-        """Call when OcrEditForm is INVALID.
-
-        Args:
-          form: The submitted OcrEditForm.
-
-        Returns:
-          The invalid OcrEditForm submitted.
-        """
-        for field in form.errors:
-            form[field].field.widget.attrs["class"] += " is-invalid"
-
-        messages.error(
-            self.request, "RBI edit not successful! Please fix the errors displayed in the form!"
-        )
-        return super().form_invalid(form)
-
-    def get_context_data(self, **kwargs) -> dict:
-        """Get context data to ocr edit.
-
-        Args:
-          **kwargs: Additional keyword arguments.
-
-        Returns:
-          The dictionary data needed by ocr home.
-        """
-        context = super().get_context_data()
-
-        context["segment"] = "ocr"
-        context["title"] = "OCR"
-        context["sub_title"] = "List of RBI in the database."
-
-        return context
 
 
 class OcrDetailView(TemplateView):
