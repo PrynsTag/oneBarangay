@@ -41,6 +41,7 @@ class AnnouncementHomeView(ContextPageMixin, TemplateView):
         return self.render_to_response(context)
 
 
+# TODO: Go back to home after finished creating
 class AnnouncementCreateView(FormView):
     """Form view for creating announcement."""
 
@@ -102,6 +103,8 @@ class AnnouncementCreateView(FormView):
         return context
 
 
+# TODO: Go back to home after finished editing
+#  TODO: Add buttons to prompt the user to go back
 class AnnouncementEditView(FormInvalidMixin, FormView):
     """Form view for creating announcement."""
 
@@ -171,6 +174,8 @@ class AnnouncementEditView(FormInvalidMixin, FormView):
         return context
 
 
+# TODO: Add confirmation for deleting.
+# TODO: Notify for success or fail of deleting
 class AnnouncementDeleteView:
     """Class for deleting announcement."""
 
