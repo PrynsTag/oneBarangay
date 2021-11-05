@@ -31,10 +31,11 @@
             Add Complaint
         </a>
     </div>
+    {#TODO: Remove dummy generation#}
+    <!--
     <div class="py-4 d-flex text-center justify-content-center">
         <form action="{% url "complaint:home" %}" method="post" id="dummyComplaint" class="form-group w-25">
             {% csrf_token %}
-            <!-- TODO: Remove dummy generation -->
             {{ dummy_form.dummy_count.label_tag }}
             <div class="input-group">
                 <button type="submit" form="dummyComplaint" name="dummy_form" class="btn btn-primary input-group-text">
@@ -47,6 +48,7 @@
             {% endif %}
         </form>
     </div>
+    -->
     <!-- Modal Content -->
     <div class="modal fade" id="complaint-modal" tabindex="-1" role="dialog" aria-labelledby="complaint-modal"
         aria-hidden="true">
