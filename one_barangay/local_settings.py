@@ -315,6 +315,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Static app dirs automatically finds it by AppDirectoriesFinder
 # https://docs.djangoproject.com/en/3.1/ref/settings/#staticfiles-finders
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "frontend", "build"),
+]
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
