@@ -9,8 +9,7 @@
   "theme_color": "#d21404",
   "background_color": "#d21404",
   "display": "standalone",
-  "start_url": "./",
-  "scope": ".",
+  "start_url": "/",
   "icons": [
     {
       "src": "android-chrome-36x36.png",
