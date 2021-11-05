@@ -200,6 +200,7 @@ class UserManagementHomeView(FormInvalidMixin, FormView):
         return context
 
 
+# TODO: disabled accounts must not be logged in.
 class UserManagementEditView(UserManagementHomeView, FormInvalidMixin):
     """Form for editing a user."""
 
