@@ -13,7 +13,7 @@ if __name__ == "__main__":
         uvicorn.run(
             "main:app",
             port=int(os.getenv("PORT")),
-            host="127.0.0.1",
+            host="localhost",
             workers=1,
             lifespan="off",
         )
@@ -29,7 +29,7 @@ if __name__ == "__main__":
             port=8000,
             reload=True,
             access_log=True,
-            host="127.0.0.1",
+            host="localhost",
             workers=4,
             lifespan="off",
         )
