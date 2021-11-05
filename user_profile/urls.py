@@ -8,9 +8,7 @@ app_name = "user_profile"
 urlpatterns = [
     path(
         "",
-        views.UserProfileFormView.as_view(
-            extra_context={"title": "User Profile"},
-        ),
-        name="user_profile",
+        views.UserProfileFormView.as_view(),
+        name="home",
     )
 ]

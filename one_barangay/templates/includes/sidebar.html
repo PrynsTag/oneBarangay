@@ -109,6 +109,12 @@
                     <span class="sidebar-text">User Management</span>
                 </a>
             </li>
+            <li class="nav-item {% if 'user_profile' in segment %} active {% endif %}">
+                <a href="{% url "user_profile:home" %}" class="nav-link">
+                    <i class="fas fa-id-badge me-3 fa-fw sidebar-icon"></i>
+                    <span class="sidebar-text">User Profile</span>
+                </a>
+            </li>
             <li class="nav-item {% if 'transactions' in segment %} active {% endif %}">
                 <a href="/transactions.html" class="nav-link">
                     <span class="sidebar-icon">

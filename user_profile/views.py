@@ -18,7 +18,7 @@ class UserProfileFormView(ContextPageMixin, FormInvalidMixin, FormView):
     title = "User Profile"
     sub_title = "Manage your data on this page."
     form_class = UserProfileForm
-    success_url = reverse_lazy("auth:logout")
+    success_url = reverse_lazy("user_profile:home")
     error_message = "Form not updated! Please fix the error presented in the form."
 
     def get_form_kwargs(self):
