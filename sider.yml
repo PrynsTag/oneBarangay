@@ -16,13 +16,13 @@ linter:
 
   # ESLint example. See https://help.sider.review/tools/javascript/eslint
   eslint:
-    target: one_barangay/static/assets/js/
+    target: frontend/src/scripts/
     npm_install: false
     dependencies:
       - eslint-plugin-vue
     ext: [.js, .jsx, .es6]
     ignore-path: .gitignore
-    config: .eslintrc.json
+    config: frontend/.eslintrc
     ignore-pattern: "**/assets/vendor/*"
     no-ignore: true
 
@@ -72,7 +72,7 @@ linter:
   # stylelint example. See https://help.sider.review/tools/css/stylelint
   stylelint:
     npm_install: false
-    config: .stylelintrc.yaml
+    config: frontend/.stylelintrc.json
     ignore-path: .gitignore
     ignore-disables: true
     report-needless-disables: true
