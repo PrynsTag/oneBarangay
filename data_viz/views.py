@@ -1,47 +1,56 @@
 """Py file for data_viz views."""
-import json
-import os
 
 import pandas as pd
-import requests
+from django.http import HttpResponse
 from django.views.generic import TemplateView
+from firebase_admin import firestore
 
 from one_barangay.local_settings import logger
-from one_barangay.scripts.storage_backends import AzureStorageBlob
-
+from one_barangay.mixins import ContextPageMixin
 
 # TODO: Implement toggling of charts
-class DataVizView(TemplateView):
+from one_barangay.settings import firebase_app
+
+
+class DataVizView(ContextPageMixin, TemplateView):
     """View dashboard.html."""
 
     template_name = "data_viz/dashboard.html"
+    title = "Dashboard"
+    sub_title = "Get to know your residents aggregated data."
+    segment = "data_viz"
 
-    def get_context_data(self, **kwargs):
+    def get(self, request, *args, **kwargs) -> HttpResponse:
         """Get context data.
 
         Args:
-          **kwargs: Keyword arguments.
+          request: The URL request.
+          *args: Additional arguments
+          **kwargs: Additional keyword arguments.
 
         Returns:
           The statistics to be generated and displayed to dashboard.html
         """
-        context = self.generate_stats()
+        context = self.get_context_data()
+        context["stats"] = self.generate_stats()
 
-        return context
+        return self.render_to_response(context)
 
     def generate_stats(self):
         """Generate statistics based from RBI JSON file."""
         # ### Initial Setup
-        if os.getenv("GAE_ENV", "").startswith("standard"):
-            data = json.loads(requests.get(AzureStorageBlob().file_url).text)
-        else:
-            with open("rbi_data.json", encoding="UTF-8") as json_file:
-                data = json.load(json_file)
+        db = firestore.client(app=firebase_app)
+        rbi_docs = db.collection("rbi").stream()
+        data = {"rows": []}
+        for rbi in rbi_docs:
+            family_docs = db.collection("rbi").document(rbi.id).collection("family").stream()
+            for family in family_docs:
+                data["rows"].append(rbi.to_dict() | family.to_dict())
 
         df = pd.DataFrame(data["rows"])
 
         # ### Convert Dates to Datetime
-        df["created_at"] = pd.to_datetime(df["created_at"], utc=True)
+        df["creation_date"] = pd.to_datetime(df["creation_date"], utc=True)
         df["birth_date"] = pd.to_datetime(df["birth_date"], errors="coerce", format="%B %d, %Y")
         df["date_accomplished"] = pd.to_datetime(
             df["date_accomplished"], errors="coerce", format="%Y-%m-%d"

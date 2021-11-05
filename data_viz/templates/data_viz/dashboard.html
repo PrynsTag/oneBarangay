@@ -1,9 +1,10 @@
 {% extends "layouts/base.html" %}
-{% block title %} Dashboard {% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% load static %}
 
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+<!-- Page Title & Subtitle -->
+{% block page_title %}{{ title }}{% endblock page_title %}
+{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
 
 {% block content %}
     <div id="print-area">
@@ -146,13 +147,13 @@
                                 </div>
                                 <div class="d-sm-none">
                                     <h2 class="h5"># of Recorded RBI</h2>
-                                    <h3 class="fw-extrabold mb-1">{{ rbi.count }}</h3>
+                                    <h3 class="fw-extrabold mb-1">{{ stats.rbi.count }}</h3>
                                 </div>
                             </div>
                             <div class="col-12 col-xl-7 px-xl-0">
                                 <div class="d-none d-sm-block">
                                     <h2 class="h6 text-gray-400 mb-0"># of Recorded RBI</h2>
-                                    <h3 class="fw-extrabold mb-2">{{ rbi.count }}</h3>
+                                    <h3 class="fw-extrabold mb-2">{{ stats.rbi.count }}</h3>
                                 </div>
                                 <small class="d-flex align-items-center text-gray-500">
                                     Feb 1 - Apr 1,
@@ -207,13 +208,13 @@
                                 </div>
                                 <div class="d-sm-none">
                                     <h2 class="h5">Total Population</h2>
-                                    <h3 class="fw-extrabold mb-1">{{ total_population.values }}</h3>
+                                    <h3 class="fw-extrabold mb-1">{{ stats.total_population.values }}</h3>
                                 </div>
                             </div>
                             <div class="col-12 col-xl-7 px-xl-0">
                                 <div class="d-none d-sm-block">
                                     <h2 class="h6 text-gray-400 mb-0">Total Population</h2>
-                                    <h3 class="fw-extrabold mb-2">{{ total_population.values }}</h3>
+                                    <h3 class="fw-extrabold mb-2">{{ stats.total_population.values }}</h3>
                                 </div>
                                 <small class="d-flex align-items-center text-gray-500">
                                     Feb 1 - Apr 1,
@@ -266,13 +267,13 @@
                                 </div>
                                 <div class="d-sm-none">
                                     <h2 class="fw-extrabold h5">Average Salary</h2>
-                                    <h3 class="mb-1">₱{{ avg_salary.household }} <small class="font-small text-gray-500 fw-bold">/ Household</small></h3>
+                                    <h3 class="mb-1">₱{{ stats.avg_salary.household }} <small class="font-small text-gray-500 fw-bold">/ Household</small></h3>
                                 </div>
                             </div>
                             <div class="col-12 col-xl-7 px-xl-0">
                                 <div class="d-none d-sm-block">
                                     <h2 class="h6 text-gray-400 mb-0">Average Salary</h2>
-                                    <h3 class="fw-extrabold mb-2">₱{{ avg_salary.household }}</h3>
+                                    <h3 class="fw-extrabold mb-2">₱{{ stats.avg_salary.household }}</h3>
                                 </div>
                                 <small class="d-flex align-items-center text-gray-500">
                                     Feb 1 - Apr 1,
@@ -326,13 +327,13 @@
                                 </div>
                                 <div class="d-sm-none">
                                     <h2 class="fw-extrabold h5">Average Person</h2>
-                                    <h3 class="mb-1">{{ house_members.avg }} <small class="font-small text-gray-500 fw-bold">/ Household</small></h3>
+                                    <h3 class="mb-1">{{ stats.house_members.avg }} <small class="font-small text-gray-500 fw-bold">/ Household</small></h3>
                                 </div>
                             </div>
                             <div class="col-12 col-xl-7 px-xl-0">
                                 <div class="d-none d-sm-block">
                                     <h2 class="h6 text-gray-400 mb-0">Average Person</h2>
-                                    <h3 class="fw-extrabold mb-2">{{ house_members.avg }} <small class="font-small text-gray-500 fw-bold">/ Household</small></h3>
+                                    <h3 class="fw-extrabold mb-2">{{ stats.house_members.avg }} <small class="font-small text-gray-500 fw-bold">/ Household</small></h3>
                                 </div>
                                 <small class="text-gray-500"> Feb 1 - Apr 1 </small>
                                 <div class="small d-flex mt-1">
@@ -1031,10 +1032,10 @@
         const socialStatusConfig = {
             type: 'bar',
             data: {
-                labels: {{ social_class.labels|safe }},
+                labels: {{ stats.social_class.labels|safe }},
                 datasets: [{
                     label: '# of People',
-                    data: {{ social_class.values|safe }},
+                    data: {{ stats.social_class.values|safe }},
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -1083,10 +1084,10 @@
         const civilStatusConfig = {
             type: 'bar',
             data: {
-                labels: {{ civil_status.labels|safe }},
+                labels: {{ stats.civil_status.labels|safe }},
                 datasets: [{
                     label: '# of People',
-                    data: {{ civil_status.values|safe }},
+                    data: {{ stats.civil_status.values|safe }},
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -1135,10 +1136,10 @@
         const ageGroupConfig = {
             type: 'doughnut',
             data: {
-                labels: {{ age_group.labels|safe }},
+                labels: {{ stats.age_group.labels|safe }},
                 datasets: [{
                     label: '# of People',
-                    data: {{ age_group.values|safe }},
+                    data: {{ stats.age_group.values|safe }},
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
