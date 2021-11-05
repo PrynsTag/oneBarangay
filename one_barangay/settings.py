@@ -60,7 +60,6 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 
 # Application definition
 INSTALLED_APPS = [
-    # "webpack_loader",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "one_barangay",
