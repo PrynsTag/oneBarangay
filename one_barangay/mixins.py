@@ -5,7 +5,7 @@ class ContextPageMixin:
     """Custom Mixin for title and subtitle of a page."""
 
     def get_context_data(self, **kwargs):
-        """Mixin to get intialize title and sub_title to a webpage.
+        """Mixin to get initialize title and sub_title to a webpage.
 
         Args:
           **kwargs: Additional keyword arguments
@@ -17,5 +17,6 @@ class ContextPageMixin:
 
         context["title"] = self.title
         context["sub_title"] = self.sub_title
+        context["segment"] = self.segment
 
         return context
