@@ -1,20 +1,31 @@
 """Create your user_profile views here."""
 from django.contrib import messages
 from django.http import HttpResponse
+from django.urls import reverse_lazy
 from django.views.generic import FormView
 
 from authentication.models import AuthModel
 from one_barangay.local_settings import logger
+from one_barangay.mixins import ContextPageMixin, FormInvalidMixin
 from user_profile.forms import UserProfileForm
 
 
-class UserProfileFormView(FormView):
+class UserProfileFormView(ContextPageMixin, FormInvalidMixin, FormView):
     """Form view for user_profile."""
 
     template_name = "user_profile/user_profile.html"
+    segment = "user_profile"
+    title = "User Profile"
+    sub_title = "Manage your data on this page."
     form_class = UserProfileForm
-    error_css_class = "invalid-feedback"
-    required_css_class = "required"
+    success_url = reverse_lazy("auth:logout")
+    error_message = "Form not updated! Please fix the error presented in the form."
+
+    def get_form_kwargs(self):
+        """Pass request session to form."""
+        kwargs = super().get_form_kwargs()
+        kwargs["request"] = self.request
+        return kwargs
 
     def form_valid(self, form, **kwargs) -> HttpResponse:
         """Call when UserProfileForm is valid.
@@ -52,35 +63,3 @@ class UserProfileFormView(FormView):
                 logger.info("[UserProfileFormView.form_valid] Form NOT updated!")
 
         return super().form_valid(form)
-
-    def form_invalid(self, form, **kwargs) -> HttpResponse:
-        """Call when UserProfileForm is invalid.
-
-        Args:
-          form: The submitted UserProfileForm form.
-          **kwargs: Keyword arguments.
-
-        Returns:
-          Render UserProfileForm with errors.
-        """
-        messages.error(self.request, "Form not updated!")
-        logger.error("Form not updated!")
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs) -> dict:
-        """Get context data to user_profile.
-
-        Get the segment, form and title to display view.
-
-        Args:
-          **kwargs: Keyword arguments.
-
-        Returns:
-          The dictionary data needed by user_profile.
-        """
-        context = {
-            "segment": "user_profile",
-            "form": UserProfileForm(request=self.request),
-            "title": "User Profile",
-        }
-        return context
