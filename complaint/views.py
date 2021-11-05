@@ -26,6 +26,7 @@ from complaint.forms import (
     ComplaintDummyForm,
 )
 from one_barangay.local_settings import logger
+from one_barangay.mixins import FormInvalidMixin
 from one_barangay.settings import firebase_app
 
 
@@ -120,7 +121,9 @@ class ComplaintHomeView(FormView):
                 db = firestore.client(app=firebase_app)
                 dummy_list = self.dummy_complaint(form.cleaned_data["dummy_count"])
                 for dummy in dummy_list:
-                    db.collection("complaints").document(dummy["complaint_id"]).set(dummy)
+                    db.collection("complaints").document(dummy["complaint_id"]).set(
+                        dummy, merge=True
+                    )
             return self.form_valid(form=form)
         else:
             return self.form_invalid(**{form_name: form})
@@ -206,12 +209,13 @@ class ComplaintHomeView(FormView):
         return dummy_data
 
 
-class ComplaintCreateView(FormView):
+class ComplaintCreateView(FormInvalidMixin, FormView):
     """Form view for creating complaint."""
 
     template_name = "complaint/create.html"
     form_class = ComplaintCreateForm
     success_url = reverse_lazy("complaint:create")
+    error_message = "Complaint not sent! Please fix the " "errors displayed in the form!"
 
     def get_form_kwargs(self):
         """Pass request session to form."""
@@ -240,13 +244,13 @@ class ComplaintCreateView(FormView):
         doc_ref = db.collection("complaints").document()
 
         form.cleaned_data["complaint_id"] = doc_ref.id
-        doc_ref.set(form.cleaned_data)
+        doc_ref.set(form.cleaned_data, merge=True)
         (
             db.collection("users")
             .document(form.cleaned_data["uid"])
             .collection("complaints")
             .document(doc_ref.id)
-            .set(form.cleaned_data)
+            .set(form.cleaned_data, merge=True)
         )
 
         messages.success(
@@ -257,24 +261,6 @@ class ComplaintCreateView(FormView):
         )
 
         return super().form_valid(form)
-
-    def form_invalid(self, form):
-        """Call when ComplaintCreateForm is INVALID.
-
-        Args:
-          form: The submitted ComplaintCreateForm.
-
-        Returns:
-          The invalid ComplaintCreateForm submitted.
-        """
-        for field in form.errors:
-            form[field].field.widget.attrs["class"] += " is-invalid"
-
-        messages.error(
-            self.request, "Complaint not sent! Please fix the errors displayed in the form!"
-        )
-
-        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs) -> dict:
         """Get context data to complaint create view.
@@ -293,12 +279,13 @@ class ComplaintCreateView(FormView):
         return context
 
 
-class ComplaintDetailView(FormView):
+class ComplaintDetailView(FormInvalidMixin, FormView):
     """Form view for viewing complaint detail."""
 
     template_name = "complaint/detail.html"
     form_class = ComplaintDetailForm
     success_url = reverse_lazy("complaint:home")
+    error_message = "Complaint has not been saved!"
 
     def get_form_kwargs(self):
         """Pass complaint data to ComplaintDetailForm."""
@@ -385,21 +372,6 @@ class ComplaintDetailView(FormView):
             logger.info("[ComplaintDetailView.form_valid] No fields to updated!")
 
         return super().form_valid(form)
-
-    def form_invalid(self, form):
-        """Call when ComplaintCreateForm is INVALID.
-
-        Args:
-          form: The submitted ComplaintCreateForm.
-
-        Returns:
-          The invalid ComplaintCreateForm submitted.
-        """
-        for field in form.errors:
-            form[field].field.widget.attrs["class"] += " is-invalid"
-        messages.error(self.request, "Complaint has not been saved!")
-
-        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs) -> dict:
         """Get context data to complaint create view.
