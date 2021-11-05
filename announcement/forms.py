@@ -1,11 +1,12 @@
 """Create your announcement forms here."""
 from datetime import datetime
 
-from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.utils.text import slugify
+
+from one_barangay.widgets import CkeditorWidget
 
 
 class AnnouncementBaseForm(forms.Form):
@@ -20,7 +21,7 @@ class AnnouncementBaseForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "readonly": True,
-                "class": "form-control",
+                "class": "form-control text-black",
             }
         ),
     )
@@ -30,7 +31,7 @@ class AnnouncementBaseForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "readonly": True,
-                "class": "form-control",
+                "class": "form-control text-black",
             }
         ),
     )
@@ -40,7 +41,7 @@ class AnnouncementBaseForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "readonly": True,
-                "class": "form-control",
+                "class": "form-control text-black",
             }
         ),
     )
@@ -49,14 +50,14 @@ class AnnouncementBaseForm(forms.Form):
         max_length=150,
         min_length=5,
         label_suffix="",
-        widget=forms.TextInput(attrs={"class": "form-control"}),
+        widget=forms.TextInput(attrs={"class": "form-control text-black"}),
     )
 
     thumbnail = forms.ImageField(
         required=False, widget=forms.ClearableFileInput(attrs={"class": "form-control"})
     )
 
-    body = forms.CharField(widget=CKEditorWidget())
+    body = forms.CharField(widget=CkeditorWidget)
 
     OPTIONS = (
         ("covid-19", "COVID-19"),
@@ -74,7 +75,7 @@ class AnnouncementCreateForm(AnnouncementBaseForm):
     created = forms.DateTimeField(
         label="created",
         label_suffix="",
-        widget=forms.DateTimeInput(attrs={"readonly": True, "class": "form-control"}),
+        widget=forms.DateTimeInput(attrs={"readonly": True, "class": "form-control text-black"}),
     )
 
     def __init__(self, *args, request, **kwargs):
@@ -143,7 +144,7 @@ class AnnouncementEditForm(AnnouncementCreateForm):
     updated = forms.DateTimeField(
         label="updated",
         label_suffix="",
-        widget=forms.DateTimeInput(attrs={"readonly": True, "class": "form-control"}),
+        widget=forms.DateTimeInput(attrs={"readonly": True, "class": "form-control text-black"}),
     )
 
     def __init__(self, *args, announcement, **kwargs):

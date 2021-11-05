@@ -8,13 +8,17 @@ from django.views.generic import FormView, TemplateView
 from firebase_admin import firestore
 
 from announcement.forms import AnnouncementCreateForm, AnnouncementEditForm
+from one_barangay.mixins import ContextPageMixin, FormInvalidMixin
 from one_barangay.settings import firebase_app
 
 
-class AnnouncementHomeView(TemplateView):
+class AnnouncementHomeView(ContextPageMixin, TemplateView):
     """Template view for announcement home."""
 
     template_name = "announcement/home.html"
+    segment = "announcement"
+    title = "Announcement"
+    sub_title = "View announcements / events created in oneBarangay."
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """Get all announcement from firestore.
@@ -35,22 +39,6 @@ class AnnouncementHomeView(TemplateView):
         context["announcements"] = announcements
 
         return self.render_to_response(context)
-
-    def get_context_data(self, **kwargs) -> dict:
-        """Get context data to announcement create view.
-
-        Args:
-          **kwargs: Keyword arguments.
-
-        Returns:
-          The dictionary data needed by announcement create view.
-        """
-        context = super().get_context_data()
-        context["segment"] = "announcement"
-        context["title"] = "Announcement"
-        context["sub_title"] = "View announcements / events created by oneBarangay."
-
-        return context
 
 
 class AnnouncementCreateView(FormView):
@@ -77,7 +65,7 @@ class AnnouncementCreateView(FormView):
         """
         db = firestore.client(app=firebase_app)
         db.collection("announcements").document(form.cleaned_data["announcement_id"]).set(
-            form.cleaned_data
+            form.cleaned_data, merge=True
         )
         messages.success(self.request, "Post has been saved! Do you want to create another post?")
 
@@ -108,17 +96,19 @@ class AnnouncementCreateView(FormView):
         context = super().get_context_data()
         context["segment"] = "announcement"
         context["title"] = "Add Announcement"
+        context["sub_title"] = "Create announcement / events that everyone can see."
         context["hidden_fields"] = ["created", "author", "uid", "photo_url"]
 
         return context
 
 
-class AnnouncementEditView(FormView):
+class AnnouncementEditView(FormInvalidMixin, FormView):
     """Form view for creating announcement."""
 
     form_class = AnnouncementEditForm
     template_name = "announcement/create.html"
     success_url = reverse_lazy("announcement:create")
+    error_message = "Post has not been edited! Please fix the errors in the form."
 
     def __init__(self):
         """Initialize AnnouncementEditView attributes."""
@@ -163,19 +153,6 @@ class AnnouncementEditView(FormView):
 
         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        """Call when AnnouncementCreateForm is INVALID.
-
-        Args:
-          form: The submitted AnnouncementEditForm.
-
-        Returns:
-          The invalid form submitted.
-        """
-        messages.error(self.request, "Post has not been edited!")
-
-        return super().form_invalid(form)
-
     def get_context_data(self, **kwargs) -> dict:
         """Get context data to announcement edit view.
 
@@ -188,6 +165,7 @@ class AnnouncementEditView(FormView):
         context = super().get_context_data()
         context["segment"] = "announcement"
         context["title"] = "Edit Announcement"
+        context["sub_title"] = "Modify your existing announcement."
         context["hidden_fields"] = ["created", "author", "uid", "photo_url", "updated"]
 
         return context
@@ -216,10 +194,13 @@ class AnnouncementDeleteView:
         return HttpResponseRedirect(reverse_lazy("announcement:home"))
 
 
-class AnnouncementDetailView(TemplateView):
+class AnnouncementDetailView(ContextPageMixin, TemplateView):
     """Class for viewing a single announcement."""
 
     template_name = "announcement/view.html"
+    title = "View Announcement"
+    sub_title = "View each the announcement in oneBarangay in detail."
+    segment = "announcement"
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """Get a single announcement from firestore.
@@ -244,18 +225,3 @@ class AnnouncementDetailView(TemplateView):
         context["post"] = post
 
         return self.render_to_response(context)
-
-    def get_context_data(self, **kwargs) -> dict:
-        """Get context data to announcement detail view.
-
-        Args:
-          **kwargs: Keyword arguments.
-
-        Returns:
-          The dictionary data needed by announcement detail view.
-        """
-        context = super().get_context_data()
-        context["segment"] = "announcement"
-        context["title"] = "View Announcement"
-
-        return context

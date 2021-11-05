@@ -2,22 +2,13 @@
 {% block title %}{{ title }}{% endblock %}
 {% load static %}
 
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}
-
-{% endblock stylesheets %}
+<!-- Page Title & Subtitle -->
+{% block page_title %}{{ title }}{% endblock page_title %}
+{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
 
 {% block content %}
-    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
-    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
-    <style>
-        label.required:after {
-            content:" *";
-            color:red;
-        }
-    </style>
     <div class="container w-50 py-5">
-        <form action="" method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% if form.non_field_errors %}
                 <div class="alert alert-danger" role="alert">
@@ -54,41 +45,7 @@
     </div>
 
 {% endblock content %}
-
 {% block scripts %}
-    <script>
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-success',
-                cancelButton: 'btn btn-danger me-2'
-            },
-            buttonsStyling: false
-        })
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                    swalWithBootstrapButtons.fire({
-                        title: "Success",
-                        icon: "success",
-                        text: '{{ message }}',
-                        confirmButtonText: 'Yes',
-                        cancelButtonText: 'Go Back',
-                        showCancelButton: true,
-                        reverseButtons: true
-                    }).then((result) => {
-                        if (result.isDismissed) {
-                            window.location.href = "/barangay-admin/announcement"
-                        }
-                    })
-                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                    swalWithBootstrapButtons.fire({
-                        title: "Error!",
-                        icon: "error",
-                        text: "{{ message }}",
-                        confirmButtonText: 'OK'
-                    })
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    </script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
 {% endblock scripts %}
