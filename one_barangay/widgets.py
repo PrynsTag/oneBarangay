@@ -1,4 +1,5 @@
 """Custom media widgets."""
+from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.templatetags.static import static
 
@@ -34,3 +35,12 @@ class DropzoneWidget(forms.ClearableFileInput):
             static("/assets/vendor/dropzonejs/dist/dropzone.min.js"),
             static("/ocr/js/upload_file.js"),
         )
+
+
+class CkeditorWidget(CKEditorWidget):
+    """Rich text field editor."""
+
+    class Media:
+        """Media files for Ckeditor widget."""
+
+        js = (static("ckeditor/ckeditor-init.js"), static("ckeditor/ckeditor/ckeditor.js"))
