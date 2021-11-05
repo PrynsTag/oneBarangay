@@ -16,18 +16,20 @@ from firebase_admin.auth import EmailAlreadyExistsError, UidAlreadyExistsError, 
 from google.api_core.exceptions import NotFound
 
 from one_barangay.local_settings import logger
+from one_barangay.mixins import FormInvalidMixin
 from one_barangay.settings import firebase_app
 
 # TODO: send email delete account.
 from user_management.forms import UserManagementCreateForm
 
 
-class UserManagementHomeView(FormView):
+class UserManagementHomeView(FormInvalidMixin, FormView):
     """Form for adding user."""
 
     template_name = "user_management/home.html"
     form_class = UserManagementCreateForm
     success_url = reverse_lazy("user_management:home")
+    error_message = "User creation not successful! Please fix the errors displayed in the form!"
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """Get single complaint from firestore.
@@ -132,7 +134,7 @@ class UserManagementHomeView(FormView):
 
             # Store Firebase Auth data to Firestore Users Collection
             db = firestore.client(app=firebase_app)
-            db.collection("users").document(user.uid).set(auth_data)
+            db.collection("users").document(user.uid).set(auth_data, merge=True)
 
             # Generate password reset link.
             reset_link = auth.generate_password_reset_link(
@@ -171,25 +173,6 @@ class UserManagementHomeView(FormView):
 
         return super().form_valid(form)
 
-    def form_invalid(self, form, **kwargs) -> HttpResponse:
-        """Return lock account form with errors.
-
-        Args:
-          form: The submitted UserManagementCreateForm form.
-          **kwargs: Keyword arguments.
-
-        Returns:
-          Redirect to user_management index with form errors.
-        """
-        for field in form.errors:
-            form[field].field.widget.attrs["class"] += " is-invalid"
-
-        messages.error(
-            self.request,
-            "User creation not successful! Please fix the errors displayed in the form!",
-        )
-        return super().form_invalid(form)
-
     def get_context_data(self, **kwargs) -> dict:
         """Get context data to user_management.
 
@@ -217,8 +200,10 @@ class UserManagementHomeView(FormView):
         return context
 
 
-class UserManagementEditView(UserManagementHomeView):
+class UserManagementEditView(UserManagementHomeView, FormInvalidMixin):
     """Form for editing a user."""
+
+    error_message = "Modifying not successful! Please fix the errors displayed in the form!"
 
     def form_valid(self, form, **kwargs) -> HttpResponse:
         """Call when UserManagementCreateForm is valid.
@@ -265,25 +250,6 @@ class UserManagementEditView(UserManagementHomeView):
             messages.error(self.request, "User %s doesn't exists!", form.cleaned_data["email"])
 
         return HttpResponseRedirect(self.get_success_url())
-
-    def form_invalid(self, form, **kwargs) -> HttpResponse:
-        """Call when UserManagementCreateForm is invalid.
-
-        Args:
-          form: The UserManagementCreateForm submitted.
-          **kwargs: Keyword arguments.
-
-        Returns:
-          Redirect to user_management index with errors.
-        """
-        for field in form.errors:
-            form[field].field.widget.attrs["class"] += " is-invalid"
-
-        messages.error(
-            self.request,
-            "Modifying not successful! Please fix the errors displayed in the form!",
-        )
-        return self.render_to_response(self.get_context_data(form=form))
 
 
 def delete(request, uid) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
