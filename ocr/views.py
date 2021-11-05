@@ -1,11 +1,14 @@
 """Routing Request to Views of OCR Pages."""
 import asyncio
 import os
-from datetime import date, datetime
+import random
+from datetime import date, datetime, timedelta
 from typing import Union
 from urllib.parse import urlparse
 
 import pytz
+from dateutil import parser
+from dateutil.parser import ParserError
 from django.contrib import messages
 from django.core.cache import cache
 from django.core.files.storage import default_storage
@@ -64,7 +67,6 @@ class OcrFileUploadView(ContextPageMixin, FormView):
         files = [request.FILES[file] for file in request.FILES]
 
         file_data = []
-        request.session["files"] = []
         if form.is_valid():
             for file in files:
                 filename = default_storage.generate_filename(file.name)
@@ -77,7 +79,11 @@ class OcrFileUploadView(ContextPageMixin, FormView):
                     thumbnail_url = static("/assets/img/default-pdf-image.jpg")
 
                 file_data.append((filename, thumbnail_url))
-            request.session["files"] += file_data
+
+            if request.session.get("files"):
+                request.session["files"] += file_data
+            else:
+                request.session["files"] = file_data
 
             return self.form_valid(form)
         else:
@@ -200,7 +206,7 @@ class OcrSaveView(FormView):
         monthly_income = request.POST.getlist("monthly_income")
         remarks = request.POST.getlist("remarks")
 
-        family_member_data = {}
+        family_data = []
         for data in zip(
             last_name,
             fist_name,
@@ -214,21 +220,23 @@ class OcrSaveView(FormView):
             monthly_income,
             remarks,
         ):
-            family_member_data[data[1]] = {
-                "last_name": data[0],
-                "first_name": data[1],
-                "middle_name": data[2],
-                "ext": data[3],
-                "birth_place": data[4],
-                "birth_date": data[5],
-                "sex": data[6],
-                "civil_status": data[7],
-                "citizenship": data[8],
-                "monthly_income": data[9],
-                "remarks": data[10],
-            }
+            family_data.append(
+                {
+                    "last_name": data[0],
+                    "first_name": data[1],
+                    "middle_name": data[2],
+                    "ext": data[3],
+                    "birth_place": data[4],
+                    "birth_date": data[5],
+                    "sex": data[6],
+                    "civil_status": data[7],
+                    "citizenship": data[8],
+                    "monthly_income": data[9],
+                    "remarks": data[10],
+                }
+            )
 
-        family_data = {
+        house_data = {
             "house_num": house_num,
             "created_at": created_at,
             "address": address,
@@ -237,14 +245,14 @@ class OcrSaveView(FormView):
 
         try:
             db = firestore.client(app=firebase_app)
-            db.collection("rbi").document(house_num).set(family_data, merge=True)
-            (
-                db.collection("rbi")
-                .document(house_num)
-                .collection("family")
-                .document(house_num)
-                .set(family_member_data, merge=True)
-            )
+            doc_rbi = db.collection("rbi").document(house_num)
+            doc_rbi.set(house_data, merge=True)
+
+            for family in family_data:
+                doc_family = doc_rbi.collection("family").document()
+                family["member_id"] = doc_family.id
+                doc_family.set(family, merge=True)
+
             remove(self.request.session, request.POST["filename"])
 
             logger.info("RBI Document saved!")
@@ -402,7 +410,12 @@ class OcrDetailView(TemplateView):
             family_member = member.to_dict()
 
             # Calculate Age
-            birth_date_dt = datetime.strptime(family_member["birth_date"], "%B %d, %Y")
+            try:
+                birth_date_dt = parser.parse(family_member["birth_date"])
+            # FIXME: Add server validation in ocr.
+            except ParserError:
+                birth_date_dt = datetime.now() - timedelta(days=random.randrange(365, 9999))
+
             today = date.today()
             age = (
                 today.year
