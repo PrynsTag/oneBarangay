@@ -9,6 +9,11 @@
             content:" *";
             color:red;
         }
+
+        a.disabled {
+            pointer-events: none;
+            cursor: default;
+        }
     </style>
     <main>
         <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
@@ -147,12 +152,12 @@
                                                 <img width="25" height="25"
                                                     src="{% static "assets/img/icons/google-icon.svg" %}" alt="">
                                             </a>
-                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2"
+                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2 disabled"
                                                 aria-label="microsoft button" title="microsoft button">
                                                 <img width="20" height="20"
                                                     src="{% static "assets/img/icons/microsoft-icon.svg" %}" alt="">
                                             </a>
-                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500"
+                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 disabled"
                                                 aria-label="yahoo button" title="yahoo button">
                                                 <img width="20" height="20"
                                                     src="{% static "assets/img/icons/yahoo-icon.svg" %}" alt="">
@@ -160,17 +165,17 @@
                                         </div>
                                         <div class="row justify-content-md-center">
                                             <a href="#" type="button" id="fbLogin"
-                                                class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2"
+                                                class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2 disabled"
                                                 aria-label="facebook button" title="facebook button">
                                                 <img width="25" height="25"
                                                     src="{% static "assets/img/icons/facebook-icon.svg" %}" alt="">
                                             </a>
-                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2"
+                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2 disabled"
                                                 aria-label="twitter button" title="twitter button">
                                                 <img width="25" height="25"
                                                     src="{% static "assets/img/icons/twitter-icon.svg" %}" alt="">
                                             </a>
-                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500"
+                                            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 disabled"
                                                 aria-label="github button" title="github button">
                                                 <img width="25" height="25"
                                                     src="{% static "assets/img/icons/apple-icon.svg" %}" alt="">
