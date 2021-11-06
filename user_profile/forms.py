@@ -127,7 +127,7 @@ class UserProfileForm(forms.Form):
         """Initialize UserProfileForm attributes."""
         # TODO: Add age given birth_date.
         super().__init__(*args, **kwargs)
-        if request is not None:
+        if request.session.get("user"):
             first_name = request.session["user"].get("first_name")
             if first_name:
                 self.fields["first_name"].initial = request.session["user"].get("first_name")

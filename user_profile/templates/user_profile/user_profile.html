@@ -352,7 +352,11 @@
                         <div class="profile-cover rounded-top"
                             data-background="{% static "/assets/img/profile-cover.jpg" %}"></div>
                         <div class="card-body pb-5">
-                            <img src="{{ request.session.user.photo_url }}" class="avatar-xl rounded-circle mx-auto mt-n7 mb-4" alt="User Image">
+                            {% if request.session.user %}
+                                <img src="{{ request.session.user.photo_url }}" class="avatar-xl rounded-circle mx-auto mt-n7 mb-4" alt="User Image">
+                            {% else %}
+                                <img src="{% static "/assets/img/icons/default_user.svg" %}" class="avatar-xl rounded-circle mx-auto mt-n7 mb-4" alt="User Image">
+                            {% endif %}
                             <h4 class="h3">{{ request.session.user.first_name }} {{ request.session.user.last_name }}</h4>
                             <h5 class="fw-normal">{{ request.session.user.role|capfirst }}</h5>
                             <p class="text-gray mb-4">{{ request.session.user.email }}</p>
@@ -373,7 +377,11 @@
                         <div class="d-flex align-items-center">
                             <div class="me-3">
                                 <!-- Avatar -->
-                                <img class="rounded avatar-xl" src="{{ request.session.user.photo_url }}" alt="change avatar">
+                                {% if request.session.user %}
+                                    <img class="rounded avatar-xl" src="{{ request.session.user.photo_url }}" alt="change avatar">
+                                {% else %}
+                                    <img class="rounded avatar-xl" src="{% static "/assets/img/icons/default_user.svg" %}" alt="change avatar">
+                                {% endif %}
                             </div>
                             <div class="file-field">
                                 <div class="d-flex justify-content-xl-center ms-xl-3">
