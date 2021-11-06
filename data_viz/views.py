@@ -53,7 +53,7 @@ class DataVizView(ContextPageMixin, TemplateView):
         df["creation_date"] = pd.to_datetime(df["creation_date"], utc=True)
         df["birth_date"] = pd.to_datetime(df["birth_date"], errors="coerce", format="%B %d, %Y")
         df["date_accomplished"] = pd.to_datetime(
-            df["date_accomplished"], errors="coerce", format="%Y-%m-%d"
+            df["date_accomplished"], errors="coerce", format="%Y-%m-%d", utc=True
         )
 
         # ### Convert Monthly Income to Int
