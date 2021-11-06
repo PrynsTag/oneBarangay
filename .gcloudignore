@@ -39,15 +39,12 @@ simple_cors_server.py
 sider.yml
 rbi_data.json
 pyproject.toml
-package-lock.json
 package.json
 mypy.ini
 local-requirements.txt
 cors.json
-.stylelintrc.yaml
 .restyled.yaml
 .pylintrc
-.eslintignore
 .eslintrc.json
 **/migrations
 
