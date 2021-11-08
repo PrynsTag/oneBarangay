@@ -1,4 +1,5 @@
 """OCR Forms."""
+from datetime import datetime
 
 from django import forms
 
@@ -75,7 +76,7 @@ class OcrEditForm(forms.Form):
     house_num = forms.CharField(
         label="House Number",
         label_suffix="",
-        widget=forms.HiddenInput(),
+        widget=forms.HiddenInput(attrs={"class": "form-control"}),
     )
     address = forms.CharField(
         label_suffix="",
@@ -107,39 +108,56 @@ class OcrEditForm(forms.Form):
                 self.fields[field].initial = rbi.get(field)
 
 
-class OcrResultForm(forms.Form):
-    """Result form for OCR result."""
+class OcrHouseForm(forms.Form):
+    """House information form."""
 
     error_css_class = "is-invalid"
     required_css_class = "required"
 
+    creation_date = forms.DateTimeField(
+        label="",
+        label_suffix="",
+        widget=forms.HiddenInput(attrs={"class": "form-control"}),
+    )
     region = forms.CharField(
         label="Region",
         label_suffix="",
-        disabled=True,
-        initial="NCR",
-        widget=forms.TextInput(attrs={"class": "form-control text-black"}),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control text-black",
+                "readonly": True,
+            }
+        ),
     )
     province = forms.CharField(
         label="Province",
         label_suffix="",
-        disabled=True,
-        initial="3rd District",
-        widget=forms.TextInput(attrs={"class": "form-control text-black"}),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control text-black",
+                "readonly": True,
+            }
+        ),
     )
     city = forms.CharField(
         label="City",
         label_suffix="",
-        disabled=True,
-        initial="Valenzuela City",
-        widget=forms.TextInput(attrs={"class": "form-control text-black"}),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control text-black",
+                "readonly": True,
+            }
+        ),
     )
     barangay = forms.CharField(
         label="Barangay",
         label_suffix="",
-        disabled=True,
-        initial="Malanday",
-        widget=forms.TextInput(attrs={"class": "form-control text-black"}),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control text-black",
+                "readonly": True,
+            }
+        ),
     )
     house_num = forms.CharField(
         label="House #",
@@ -154,10 +172,43 @@ class OcrResultForm(forms.Form):
     date_filled = forms.DateField(
         label="Date Filled",
         label_suffix="",
+        input_formats=[
+            "%Y-%m-%d",
+            "%m/%d/%Y",
+            "%m/%d/%y",
+            "%b %d %Y",
+            "%b %d, %Y",
+            "%d %b %Y",
+            "%d %b, %Y",
+            "%B %d %Y",
+            "%B %d, %Y",
+            "%d %B %Y",
+            "%d %B, %Y",
+        ],
         widget=DatePickerWidget(
-            attrs={"class": "form-control text-black", "autocomplete": "off"}
+            attrs={
+                "class": "form-control text-black date-picker",
+                "autocomplete": "off",
+            }
         ),
     )
+
+    def __init__(self, *args, **kwargs):
+        """Initialize OcrHouseForm fields."""
+        super().__init__(*args, **kwargs)
+        self.fields["creation_date"].initial = datetime.now()
+        self.fields["region"].initial = "NCR"
+        self.fields["province"].initial = "3rd District"
+        self.fields["city"].initial = "Valenzuela"
+        self.fields["barangay"].initial = "Malanday"
+
+
+class OcrFamilyForm(forms.Form):
+    """Family information form."""
+
+    error_css_class = "is-invalid"
+    required_css_class = "required"
+
     last_name = forms.CharField(
         label="Last Name",
         label_suffix="",
@@ -173,21 +224,35 @@ class OcrResultForm(forms.Form):
         label_suffix="",
         widget=forms.TextInput(attrs={"class": "form-control text-black"}),
     )
-    extension = forms.CharField(
+    ext = forms.CharField(
         label="Ext",
         label_suffix="",
+        required=False,
         widget=forms.TextInput(attrs={"class": "form-control text-black"}),
     )
     place_of_birth = forms.CharField(
-        label="Place of Birth",
+        label="Birth Place",
         label_suffix="",
         widget=forms.TextInput(attrs={"class": "form-control text-black"}),
     )
-    birth_date = forms.DateField(
-        label="Date of Birth",
+    date_of_birth = forms.DateField(
+        label="Birth Date",
         label_suffix="",
+        input_formats=[
+            "%Y-%m-%d",
+            "%m/%d/%Y",
+            "%m/%d/%y",
+            "%b %d %Y",
+            "%b %d, %Y",
+            "%d %b %Y",
+            "%d %b, %Y",
+            "%B %d %Y",
+            "%B %d, %Y",
+            "%d %B %Y",
+            "%d %B, %Y",
+        ],
         widget=DatePickerWidget(
-            attrs={"class": "form-control text-black", "autocomplete": "off"}
+            attrs={"class": "form-control text-black date-picker", "autocomplete": "off"}
         ),
     )
     gender = forms.ChoiceField(
@@ -219,35 +284,17 @@ class OcrResultForm(forms.Form):
     monthly_income = forms.IntegerField(
         label_suffix="",
         min_value=0,
-        widget=forms.NumberInput(attrs={"class": "form-control"}),
+        widget=forms.NumberInput(attrs={"class": "form-control text-black"}),
     )
     remarks = forms.CharField(
         label_suffix="",
+        required=False,
         widget=forms.TextInput(attrs={"class": "form-control text-black"}),
     )
 
-    def __init__(self, *args, header=None, ocr_result=None, **kwargs):
-        """Initialize OcrEditForm form field value."""
+    def __init__(self, *args, **kwargs):
+        """Initialize OcrFamilyForm fields."""
         super().__init__(*args, **kwargs)
-
-        if not [var for var in (header, ocr_result) if var is None]:
-            self.fields["region"].initial = "NCR"
-            self.fields["province"].initial = "3rd District"
-            self.fields["city"].initial = "Valenzuela City"
-            self.fields["barangay"].initial = "Malanday"
-
-            self.fields["house_num"].initial = header["household_no."]["text"]
-            self.fields["address"].initial = header["address"]["text"]
-            self.fields["date_filled"].initial = header["date"]["text"]
-
-            self.fields["last_name"].initial = ocr_result["last_name_apelyido"]["text"]
-            self.fields["first_name"].initial = ocr_result["first_name_pangalan"]["text"]
-            self.fields["middle_name"].initial = ocr_result["middle_name"]["text"]
-            self.fields["ext"].initial = ocr_result["ext"]["text"]
-            self.fields["place_of_birth"].initial = ocr_result["place_of_birth"]["text"]
-            self.fields["birth_date"].initial = ocr_result["date_of_birth"]["text"]
-            self.fields["gender"].initial = ocr_result["sex_m_or_f"]["text"]
-            self.fields["civil_status"].initial = ocr_result["civil_status"]["text"]
-            self.fields["citizenship"].initial = ocr_result["citizenship"]["text"]
-            self.fields["monthly_income"].initial = ocr_result["monthly_income"]["text"]
-            self.fields["remarks"].initial = ocr_result["remarks"]["text"]
+        for field in self.fields:
+            if self.fields[field].required:
+                self.fields[field].widget.attrs["required"] = True
