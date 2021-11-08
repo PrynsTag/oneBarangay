@@ -14,6 +14,7 @@ from pathlib import Path
 
 import sentry_sdk
 from dotenv import load_dotenv
+from firebase_admin import firestore
 from google.cloud import secretmanager
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -42,6 +43,7 @@ else:
     raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
 
 firebase_app = firestore_auth("settings")
+firestore_db = firestore.client(app=firebase_app)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
