@@ -1,17 +1,19 @@
 """Routing Request to Views of OCR Pages."""
 import asyncio
+import copy
 import os
 import random
+import re
 from datetime import date, datetime, timedelta
 from typing import Union
 from urllib.parse import urlparse
 
-import pytz
 from dateutil import parser
 from dateutil.parser import ParserError
 from django.contrib import messages
 from django.core.cache import cache
 from django.core.files.storage import default_storage
+from django.forms import formset_factory
 from django.http import (
     HttpResponse,
     HttpResponsePermanentRedirect,
@@ -24,13 +26,14 @@ from django.urls import reverse_lazy
 from django.utils.datastructures import MultiValueDict
 from django.views.generic import FormView, TemplateView
 from firebase_admin import firestore
-from google.api_core.exceptions import InvalidArgument, NotFound
+from google.api_core.exceptions import NotFound
 
 from ocr.form_recognizer import form_recognizer_runner
-from ocr.forms import OcrEditForm, OcrResultForm, OcrUploadForm
+from ocr.forms import OcrEditForm, OcrFamilyForm, OcrHouseForm, OcrUploadForm
 from one_barangay.local_settings import logger
 from one_barangay.mixins import ContextPageMixin, FormInvalidMixin
-from one_barangay.settings import firebase_app
+from one_barangay.settings import firebase_app, firestore_db
+from one_barangay.templatetags.custom_template_tags import get_formset_field_name
 
 
 class OcrFileUploadView(ContextPageMixin, FormView):
@@ -125,11 +128,29 @@ class OcrResultView(ContextPageMixin, FormView):
     """View for scan result of ocr."""
 
     template_name = "ocr/scan_result.html"
-    form_class = OcrResultForm
+    form_class = OcrFamilyForm
     success_url = reverse_lazy("ocr:upload")
     title = "OCR Result"
     sub_title = "Page for ocr result."
     segment = "ocr"
+    error_message = "You got it wrong!"
+
+    def get_context_data(self, **kwargs):
+        """Insert the form into the context dict."""
+        context = super().get_context_data(**kwargs)
+
+        # For displaying RBI in HTML.
+        context["document_type"] = os.path.splitext(kwargs["filename"])[1]
+        context["document_url"] = default_storage.url(kwargs["filename"])
+        context["document_name"] = kwargs["filename"]
+        context["client_id"] = os.getenv("ADOBE_CLIENT_ID")
+
+        context["first_row"] = ["last_name", "first_name", "middle_name", "ext"]
+        context["second_row"] = ["place_of_birth", "date_of_birth", "gender", "civil_status"]
+        context["third_row"] = ["citizenship", "monthly_income", "remarks"]
+        context["house_data_field"] = ["house_num", "address", "date_filled"]
+
+        return context
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """GET request to display OCR scan result.
@@ -142,126 +163,242 @@ class OcrResultView(ContextPageMixin, FormView):
         Returns:
           The context data with OCR result.
         """
-        form_kwargs = self.get_form_kwargs()
         context = self.get_context_data(**kwargs)
 
         if os.getenv("GAE_ENV", "").startswith("standard"):
-            ocr = asyncio.run(form_recognizer_runner(kwargs["filename"]))
+            ocr_result = asyncio.run(form_recognizer_runner(kwargs["filename"]))
         else:
             # For Local Testing
-            ocr = cache.get("ocr")
-            if ocr is None:
-                ocr = asyncio.run(form_recognizer_runner(kwargs["filename"]))
-                cache.set("ocr", ocr, timeout=None)
+            ocr_result = cache.get("ocr")
+            if ocr_result is None:
+                ocr_result = asyncio.run(form_recognizer_runner(kwargs["filename"]))
+                cache.set("ocr", ocr_result, timeout=None)
                 logger.warning("OCR result is not cached!")
 
             else:
                 logger.info("OCR result is cached!")
 
-        context["ocr_header"] = ocr[0]
-        context["ocr_text"] = ocr[1]
+        family_initial = []
+        family_confidence = []
+        house_initial = {}
+        house_confidence = {}
 
-        form_kwargs["header"] = ocr[0]
-        form_kwargs["ocr_result"] = ocr[1]
+        for family_data in ocr_result[1]:
+            monthly_income = family_data["monthly_income"]["text"]
+            date_of_birth = re.sub(r"\s", "", family_data["date_of_birth"]["text"])
+            family_initial.append(
+                {
+                    "last_name": family_data["last_name_apelyido"]["text"],
+                    "first_name": family_data["first_name_pangalan"]["text"],
+                    "middle_name": family_data["middle_name"]["text"],
+                    "ext": family_data["ext"]["text"],
+                    "date_of_birth": parser.parse(date_of_birth).strftime("%B %d, %Y"),
+                    "place_of_birth": family_data["place_of_birth"]["text"],
+                    "gender": family_data["sex_m_or_f"]["text"],
+                    "civil_status": family_data["civil_status"]["text"],
+                    "citizenship": family_data["citizenship"]["text"],
+                    "monthly_income": int(re.sub(r"\D", "", monthly_income)),
+                    "remarks": family_data["remarks"]["text"],
+                }
+            )
+            family_confidence.append(
+                {
+                    "last_name": family_data["last_name_apelyido"]["confidence"],
+                    "first_name": family_data["first_name_pangalan"]["confidence"],
+                    "middle_name": family_data["middle_name"]["confidence"],
+                    "ext": family_data["ext"]["confidence"],
+                    "place_of_birth": family_data["place_of_birth"]["confidence"],
+                    "date_of_birth": family_data["date_of_birth"]["confidence"],
+                    "gender": family_data["sex_m_or_f"]["confidence"],
+                    "civil_status": family_data["civil_status"]["confidence"],
+                    "citizenship": family_data["citizenship"]["confidence"],
+                    "monthly_income": family_data["monthly_income"]["confidence"],
+                    "remarks": family_data["remarks"]["confidence"],
+                }
+            )
+        house_initial["address"] = ocr_result[0]["address"]["text"]
+        house_initial["date_filled"] = ocr_result[0]["date"]["text"]
+        house_initial["house_num"] = ocr_result[0]["household_no."]["text"]
 
-        # For displaying RBI in HTML.
-        context["document_type"] = os.path.splitext(kwargs["filename"])[1]
-        context["document_url"] = default_storage.url(kwargs["filename"])
-        context["document_name"] = kwargs["filename"]
-        context["client_id"] = os.getenv("ADOBE_CLIENT_ID")
+        house_confidence["address"] = ocr_result[0]["address"]["confidence"]
+        house_confidence["date_filled"] = ocr_result[0]["date"]["confidence"]
+        house_confidence["house_num"] = ocr_result[0]["household_no."]["confidence"]
+
+        formset = formset_factory(OcrFamilyForm, extra=0)
+        family_form = formset(initial=family_initial)
+
+        house_form = OcrHouseForm(initial=house_initial)
+
+        for field in house_form:
+            field_name = field.html_name
+            if field_name in ["address", "date_filled", "house_num"]:
+                field_confidence = (
+                    round(float(house_confidence.get(field_name)) * 100, 2)
+                    if house_confidence.get(field_name)
+                    else 0.0
+                )
+                if field_confidence <= 66.0:
+                    field.field.widget.attrs["class"] += " is-invalid text-danger"
+                else:
+                    field.field.widget.attrs["class"] += " is-valid text-success"
+
+                field.help_text = str(field_confidence)
+
+        for form, confidence in zip(family_form, family_confidence):
+            for field in form:
+                field_name = get_formset_field_name(field.html_name)
+                field_confidence = (
+                    round(float(confidence.get(field_name)) * 100, 2)
+                    if confidence.get(field_name)
+                    else 0.0
+                )
+                if field_confidence <= 66.0:
+                    field.field.widget.attrs["class"] += " is-invalid text-danger"
+                else:
+                    field.field.widget.attrs["class"] += " is-valid text-success"
+
+                field.help_text = str(field_confidence)
+
+        if "family_form" not in context:
+            context["family_form"] = family_form
+        if "house_form" not in context:
+            context["house_form"] = house_form
 
         return self.render_to_response(context)
 
-
-# TODO: Add regex checking in input fields.
-class OcrSaveView(FormView):
-    """View for file upload."""
-
-    template_name = "ocr/scan_result.html"
-
     def post(self, request, *args, **kwargs):
-        """Get context data and run form recognizer.
+        """POST request to handle RBI submission.
 
         Args:
-          **kwargs: Additional keyword argument (Filename).
-          request:
-          *args:
+          request: The URL request.
+          **args: Additional arguments.
+          **kwargs: Additional keyword arguments.
 
         Returns:
-          : scan_result.html with context of detected text from table image.
+          The invalid or valid family and house form.
         """
-        house_num = request.POST.get("house_num")
-        created_at = datetime.now(tz=pytz.timezone("Asia/Manila")).isoformat()
-        address = request.POST.get("address")
-        date_accomplished = request.POST.get("date")
-        last_name = request.POST.getlist("last_name")
-        fist_name = request.POST.getlist("fist_name")
-        middle_name = request.POST.getlist("middle_name")
-        ext = request.POST.getlist("ext")
-        birth_place = request.POST.getlist("birth_place")
-        birth_date = request.POST.getlist("birth_date")
-        sex = request.POST.getlist("sex")
-        civil_status = request.POST.getlist("civil_status")
-        citizenship = request.POST.getlist("citizenship")
-        monthly_income = request.POST.getlist("monthly_income")
-        remarks = request.POST.getlist("remarks")
-
-        family_data = []
-        for data in zip(
-            last_name,
-            fist_name,
-            middle_name,
-            ext,
-            birth_place,
-            birth_date,
-            sex,
-            civil_status,
-            citizenship,
-            monthly_income,
-            remarks,
-        ):
-            family_data.append(
-                {
-                    "last_name": data[0],
-                    "first_name": data[1],
-                    "middle_name": data[2],
-                    "ext": data[3],
-                    "birth_place": data[4],
-                    "birth_date": data[5],
-                    "sex": data[6],
-                    "civil_status": data[7],
-                    "citizenship": data[8],
-                    "monthly_income": data[9],
-                    "remarks": data[10],
-                }
-            )
-
+        family_data = copy.deepcopy(request.POST.dict())
+        filename = kwargs["filename"]
         house_data = {
-            "house_num": house_num,
-            "created_at": created_at,
-            "address": address,
-            "date_accomplished": date_accomplished,
+            "region": family_data.pop("region"),
+            "province": family_data.pop("province"),
+            "city": family_data.pop("city"),
+            "barangay": family_data.pop("barangay"),
+            "house_num": family_data.pop("house_num"),
+            "address": family_data.pop("address"),
+            "date_filled": family_data.pop("date_filled"),
+            "creation_date": family_data.pop("creation_date"),
         }
+        house_form = OcrHouseForm(house_data)
+        family_formset = formset_factory(OcrFamilyForm, extra=0)
+        family_form = family_formset(request.POST)
 
-        try:
-            db = firestore.client(app=firebase_app)
-            doc_rbi = db.collection("rbi").document(house_num)
-            doc_rbi.set(house_data, merge=True)
+        if family_form.is_valid() and house_form.is_valid():
+            remove(request.session, filename)
+            default_storage.delete(filename)
+            return self.form_valid(family_form, house_form)
+        else:
+            return self.form_invalid(family_form, house_form)
 
-            for family in family_data:
-                doc_family = doc_rbi.collection("family").document()
-                family["member_id"] = doc_family.id
-                doc_family.set(family, merge=True)
+    def form_valid(self, family_form, house_form):
+        """Call when OcrFamilyForm and OcrHouseForm is VALID.
 
-            remove(self.request.session, request.POST["filename"])
+        Save the valid form in firestore.
+        Args:
+          family_form: The submitted OcrFamilyForm.
+          house_form: The submitted OcrHouseForm.
 
-            logger.info("RBI Document saved!")
-            messages.add_message(request, messages.SUCCESS, "RBI Document is saved!")
-        except InvalidArgument as e:
-            logger.exception("RBI document not saved! %s", e)
-            messages.add_message(request, messages.ERROR, "RBI document not saved!")
+        Returns:
+          The valid OcrFamilyForm and OcrHouseForm submitted.
+        """
+        # TODO: Add street address.
+        house_data = house_form.cleaned_data
 
-        return redirect("ocr:upload")
+        date_filled = house_data["date_filled"]
+        house_data["date_filled"] = datetime(
+            date_filled.year,
+            date_filled.month,
+            date_filled.day,
+        )
+
+        # Add house data to rbi collection
+        rbi_ref = firestore_db.collection("rbi").document(house_data["house_num"])
+        rbi_ref.set(house_data, merge=True)
+
+        family_col = rbi_ref.collection("family")
+        family_list_docs = list(family_col.stream())
+
+        # Check if family sub-collection exists
+        if family_list_docs:
+            for form in family_form:
+                family_doc = family_col.document()
+                family_data = form.cleaned_data
+
+                date_of_birth = family_data["date_of_birth"]
+                family_data["date_of_birth"] = datetime(
+                    date_of_birth.year,
+                    date_of_birth.month,
+                    date_of_birth.day,
+                )
+
+                first_name_query = family_col.where(
+                    "first_name", "==", family_data["first_name"]
+                ).get()[0]
+                birth_date_query = family_col.where(
+                    "date_of_birth", "==", family_data["date_of_birth"]
+                ).get()[0]
+
+                # Add family data to family sub-collection
+                if first_name_query.exists and birth_date_query.exists:
+                    family_col.document(first_name_query.id).update(family_data)
+                else:
+                    family_data["member_id"] = family_doc.id
+                    family_doc.set(family_data)
+
+        else:
+            for form in family_form:
+                family_doc = family_col.document()
+                family_data = form.cleaned_data
+
+                date_of_birth = family_data["date_of_birth"]
+                family_data["date_of_birth"] = datetime(
+                    date_of_birth.year,
+                    date_of_birth.month,
+                    date_of_birth.day,
+                )
+
+                family_data["member_id"] = family_doc.id
+                family_doc.set(family_data)
+
+        messages.success(self.request, "RBI Document Saved!")
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, family_form, house_form):
+        """Call when OcrFamilyForm and OcrHouseForm is INVALID.
+
+        Display errors in the form.
+        Args:
+          family_form: The submitted OcrFamilyForm.
+          house_form: The submitted OcrHouseForm.
+
+        Returns:
+          The invalid OcrFamilyForm and OcrHouseForm submitted.
+        """
+        for form in family_form:
+            for field in form.errors:
+                form[field].field.widget.attrs["class"] += " is-invalid"
+
+        for field in house_form.errors:
+            house_form[field].field.widget.attrs["class"] += " is-invalid"
+
+        messages.error(self.request, "RBI form invalid! Please fix the errors in the form!")
+        return self.render_to_response(
+            self.get_context_data(
+                family_form=family_form,
+                house_form=house_form,
+                filename=self.kwargs["filename"],
+            )
+        )
 
 
 class OcrHomeView(TemplateView):
@@ -273,6 +410,7 @@ class OcrHomeView(TemplateView):
         """GET request to display rbi collection to ocr home.
 
         Args:
+          request: The URL request.
           **args: Additional arguments.
           **kwargs: Additional keyword arguments.
 

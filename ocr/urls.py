@@ -43,9 +43,4 @@ urlpatterns = [
         views.OcrResultView.as_view(),
         name="scan_result",
     ),
-    path(
-        "save_result",
-        views.OcrSaveView.as_view(),
-        name="save_result",
-    ),
 ]

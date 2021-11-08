@@ -1,7 +1,17 @@
 {% extends "layouts/base.html" %}
 {% block title %}{{ title }}{% endblock %}
 {% load static %}
+{% load custom_template_tags %}
 
+{% block stylesheets %}
+    {{ family_form.media.css }}
+    <style>
+        label.required:after {
+            content: " *";
+            color: red;
+        }
+    </style>
+{% endblock %}
 <!-- Page Title & Subtitle -->
 {% block page_title %}{{ title }}{% endblock page_title %}
 {% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
@@ -18,185 +28,159 @@
             </div>
         </div>
         <div class="row flex-fill mh-0">
-            <form class="col vh-100 overflow-scroll" id="save_result" action="{% url "ocr:save_result" %}" method="POST" enctype="multipart/form-data">
+            <form class="col vh-100 overflow-scroll" id="save_result" method="POST">
                 {% csrf_token %}
-                <input type="hidden" class="form-control" name="filename" value="{{ document_name }}"/>
+                {{ house_form.creation_date }}
                 <div class="row">
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-3">
-                                <div class="mb-3">
-                                    <label for="region" class="form-label">Region</label>
-                                    <input type="text" class="form-control" id="region" value="NCR" disabled/>
+                    {% for field in house_form.visible_fields %}
+                        {% with field_name=field.html_name %}
+                            <div
+                                {% if field_name == "address" %}
+                                    class="col-6"
+                                {% else %}
+                                    class="col-3"
+                                {% endif %}
+                            >
+                                <div
+                                    class="mb-3
+                                    {% if "is-valid" in field.field.widget.attrs.class and field_name in house_data_field %}
+                                        text-success
+                                    {% endif %}"
+                                >
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                    {% else %}
+                                        <small
+                                            id="{{ field.id_for_label }}"
+                                            class="form-text
+                                            {% if "is-valid" in field.field.widget.attrs.class %}
+                                                valid-feedback text-success
+                                            {% else %}
+                                                invalid-feedback text-danger
+                                            {% endif %}"
+                                        >
+                                            Confidence Level: {{ field.help_text }}%
+                                        </small>
+                                    {% endif %}
                                 </div>
                             </div>
-                            <div class="col-3">
-                                <div class="mb-3">
-                                    <label for="province" class="form-label">Province</label>
-                                    <input type="text" class="form-control" id="province" value="3rd District"
-                                        disabled/>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="mb-3">
-                                    <label for="city" class="form-label">City</label>
-                                    <input type="text" class="form-control" id="city" value="Valenzuela City" disabled/>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="mb-3">
-                                    <label for="barangay" class="form-label">Barangay</label>
-                                    <input type="text" class="form-control" id="barangay" value="Malanday" disabled/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-3">
-                                <div class="mb-3">
-                                    <label for="houseNo" class="form-label">House #</label>
-                                    <input type="text" class="form-control is-valid" id="houseNo" name="house_num"
-                                        value="{{ ocr_header.house_hold_no.text }}">
-                                    <div class="valid-feedback">Confidence
-                                        Level: {{ ocr_header.house_hold_no.confidence }}</div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="mb-3">
-                                    <label for="address" class="form-label">Address</label>
-                                    <input type="text" class="form-control is-valid" id="address" name="address"
-                                        value="{{ ocr_header.address.text }}"/>
-                                    <div class="valid-feedback">Confidence
-                                        Level: {{ ocr_header.address.confidence }}</div>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="mb-3">
-                                    <label for="date" class="form-label">Date</label>
-                                    <input type="text" class="form-control is-valid" id="date" name="date"
-                                        value="{{ ocr_header.date.text }}"/>
-                                    <div class="valid-feedback">Confidence Level: {{ ocr_header.date.confidence }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% for fam_member in ocr_text %}
-                        {% if forloop.first %}
-                            <h3 class="text-dark mb-5 mt-5">Family Head</h3>
-                        {% else %}
-                            <h3 class="text-dark mb-5 mt-5">Family Member {{ forloop.counter0 }}</h3>
-                        {% endif %}
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-3">
-                                    <div class="mb-3">
-                                        <label for="lastname" class="form-label">Last Name</label>
-                                        <input type="text" class="form-control is-valid" id="lastname" name="last_name"
-                                            value="{{ fam_member.last_name_apelyido.text }}"/>
-                                        <div class="valid-feedback">Confidence
-                                            Level: {{ fam_member.last_name_apelyido.confidence }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="mb-3">
-                                        <label for="firstname" class="form-label">First Name</label>
-                                        <input type="text" class="form-control is-valid" id="firstname" name="fist_name"
-                                            value="{{ fam_member.first_name_pangalan.text }}"/>
-                                        <div class="valid-feedback">Confidence
-                                            Level: {{ fam_member.first_name_pangalan.confidence }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="mb-3">
-                                        <label for="middlename" class="form-label">Middle Name</label>
-                                        <input type="text" class="form-control is-valid" id="middlename"
-                                            name="middle_name" value="{{ fam_member.middle_name.text }}"/>
-                                        <div class="valid-feedback">Confidence
-                                            Level: {{ fam_member.middle_name.confidence }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-2">
-                                    <div class="mb-3">
-                                        <label for="ext" class="form-label">Extension</label>
-                                        <input type="text" class="form-control is-valid" id="ext" name="ext"
-                                            value="{{ fam_member.ext.text }}"/>
-                                        <div class="valid-feedback">Confidence
-                                            Level: {{ fam_member.ext.confidence }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-3">
-                                    <div class="mb-3">
-                                        <label for="placeOfBirth" class="form-label">Place of Birth</label>
-                                        <input type="text" class="form-control is-valid" id="placeOfBirth"
-                                            name="birth_place" value="{{ fam_member.place_of_birth.text }}"/>
-                                        <div class="valid-feedback">Confidence
-                                            Level: {{ fam_member.place_of_birth.confidence }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="mb-3">
-                                        <label for="dateOfBirth" class="form-label">Date of Birth</label>
-                                        <input type="text" class="form-control is-valid" id="dateOfBirth"
-                                            name="birth_date" value="{{ fam_member.date_of_birth.text }}"/>
-                                        <div class="valid-feedback">Confidence
-                                            Level: {{ fam_member.date_of_birth.confidence }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <label for="sex" class="form-label">Sex</label>
-                                    <input type="text" class="form-control is-valid" id="sex" name="sex"
-                                        value="{{ fam_member.sex_m_or_f.text }}"/>
-                                    <div class="valid-feedback">Confidence
-                                        Level: {{ fam_member.sex_m_or_f.confidence }}</div>
-                                </div>
-                                <div class="col-3">
-                                    <label for="civilStatus" class="form-label">Civil Status</label>
-                                    <input type="text" class="form-control is-valid" id="civilStatus"
-                                        name="civil_status" value="{{ fam_member.civil_status.text }}"/>
-                                    <div class="valid-feedback">Confidence
-                                        Level: {{ fam_member.civil_status.confidence }}</div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-4">
-                                    <div class="mb-3">
-                                        <label for="citizenship" class="form-label">Citizenship</label>
-                                        <input type="text" class="form-control is-valid" id="citizenship"
-                                            name="citizenship" value="{{ fam_member.citizenship.text }}"/>
-                                        <div class="valid-feedback">Confidence
-                                            Level: {{ fam_member.citizenship.confidence }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="mb-3">
-                                        <label for="monthlyIncome" class="form-label">Monthly Income</label>
-                                        <input type="text" class="form-control is-valid" id="monthlyIncome"
-                                            name="monthly_income" value="{{ fam_member.monthly_income.text }}"/>
-                                        <div class="valid-feedback">Confidence
-                                            Level: {{ fam_member.monthly_income.confidence }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="mb-3">
-                                        <label for="remarks" class="form-label">Remarks</label>
-                                        <input type="text" class="form-control is-valid" id="remarks" name="remarks"
-                                            value="{{ fam_member.remarks.text }}"/>
-                                        <div class="valid-feedback">Confidence
-                                            Level: {{ fam_member.remarks.confidence }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {% endwith %}
                     {% endfor %}
                 </div>
-                <button form="save_result" class="btn btn-primary my-4" id="submit" type="submit"
-                    onclick="return submitForm(this.form)">Save
-                </button>
+                {{ family_form.management_form }}
+                {% for form in family_form %}
+                    {% if forloop.first %}
+                        <h3 class="text-dark my-3">Family Head</h3>
+                    {% else %}
+                        <h3 class="text-dark my-3">Family Member {{ forloop.counter0 }}</h3>
+                    {% endif %}
+
+                    <div class="row">
+                        {% for field in form %}
+                            {% with field_name=field.html_name|get_formset_field_name  %}
+                                {% if field_name in first_row %}
+                                    <div class="col-3">
+                                        <div
+                                            class="mb-3
+                                            {% if "is-valid" in field.field.widget.attrs.class %}
+                                                text-success
+                                            {% endif %}"
+                                        >
+                                            {{ field.label_tag }}
+                                            {{ field }}
+                                            {% if field.errors %}
+                                                <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                            {% else %}
+                                                <small
+                                                    id="{{ field.id_for_label }}"
+                                                    class="form-text
+                                                    {% if "is-valid" in field.field.widget.attrs.class %}
+                                                        valid-feedback text-success
+                                                    {% else %}
+                                                        invalid-feedback text-danger
+                                                    {% endif %}"
+                                                >
+                                                    Confidence Level: {{ field.help_text }}%
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                    <div class="row">
+                        {% for field in form %}
+                            {% with field_name=field.html_name|get_formset_field_name %}
+                                {% if field_name in second_row %}
+                                    <div class="col">
+                                        <div
+                                            class="mb-3
+                                            {% if "is-valid" in field.field.widget.attrs.class %}
+                                                text-success
+                                            {% endif %}"
+                                        >
+                                            {{ field.label_tag }}
+                                            {{ field }}
+                                            {% if field.errors %}
+                                                <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                            {% else %}
+                                                <small
+                                                    id="{{ field.id_for_label }}"
+                                                    class="form-text
+                                                    {% if "is-valid" in field.field.widget.attrs.class %}
+                                                        valid-feedback text-success
+                                                    {% else %}
+                                                        invalid-feedback text-danger
+                                                    {% endif %}"
+                                                >
+                                                    Confidence Level: {{ field.help_text }}%
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                    <div class="row">
+                        {% for field in form %}
+                            {% with field_name=field.html_name|get_formset_field_name %}
+                                {% if field_name in third_row %}
+                                    <div class="col-4">
+                                        <div
+                                            class="mb-3
+                                            {% if "is-valid" in field.field.widget.attrs.class %}
+                                                text-success
+                                            {% endif %}"
+                                        >
+                                            {{ field.label_tag }}
+                                            {{ field }}
+                                            {% if field.errors %}
+                                                <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                            {% else %}
+                                                <small
+                                                    id="{{ field.id_for_label }}"
+                                                    class="form-text
+                                                    {% if "is-valid" in field.field.widget.attrs.class %}
+                                                        valid-feedback text-success
+                                                    {% else %}
+                                                        invalid-feedback text-danger
+                                                    {% endif %}"
+                                                >
+                                                    Confidence Level: {{ field.help_text }}%
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <button form="save_result" class="btn btn-primary my-4" id="submit" type="submit">Save</button>
             </form>
             <div class="col">
                 {% if document_type == ".pdf" %}
@@ -209,6 +193,13 @@
     </div>
 {% endblock content %}
 {% block scripts %}
+    {{ family_form.media.js }}
+    <script>
+        $('.date-picker').datetimepicker({
+            format: 'F d, Y',
+            timepicker: false
+        });
+    </script>
     {% if document_type == ".pdf" %}
         <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
         <script type="text/javascript">
