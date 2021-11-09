@@ -148,7 +148,7 @@ class OcrResultView(ContextPageMixin, FormView):
         context["first_row"] = ["last_name", "first_name", "middle_name", "ext"]
         context["second_row"] = ["place_of_birth", "date_of_birth", "gender", "civil_status"]
         context["third_row"] = ["citizenship", "monthly_income", "remarks"]
-        context["house_data_field"] = ["house_num", "address", "date_filled"]
+        context["house_data_field"] = ["house_num", "address", "date_accomplished"]
 
         return context
 
@@ -217,11 +217,11 @@ class OcrResultView(ContextPageMixin, FormView):
                 }
             )
         house_initial["address"] = ocr_result[0]["address"]["text"]
-        house_initial["date_filled"] = ocr_result[0]["date"]["text"]
+        house_initial["date_accomplished"] = ocr_result[0]["date"]["text"]
         house_initial["house_num"] = ocr_result[0]["household_no."]["text"]
 
         house_confidence["address"] = ocr_result[0]["address"]["confidence"]
-        house_confidence["date_filled"] = ocr_result[0]["date"]["confidence"]
+        house_confidence["date_accomplished"] = ocr_result[0]["date"]["confidence"]
         house_confidence["house_num"] = ocr_result[0]["household_no."]["confidence"]
 
         formset = formset_factory(OcrFamilyForm, extra=0)
@@ -231,7 +231,7 @@ class OcrResultView(ContextPageMixin, FormView):
 
         for field in house_form:
             field_name = field.html_name
-            if field_name in ["address", "date_filled", "house_num"]:
+            if field_name in ["address", "date_accomplished", "house_num"]:
                 field_confidence = (
                     round(float(house_confidence.get(field_name)) * 100, 2)
                     if house_confidence.get(field_name)
@@ -286,7 +286,7 @@ class OcrResultView(ContextPageMixin, FormView):
             "barangay": family_data.pop("barangay"),
             "house_num": family_data.pop("house_num"),
             "address": family_data.pop("address"),
-            "date_filled": family_data.pop("date_filled"),
+            "date_accomplished": family_data.pop("date_accomplished"),
             "creation_date": family_data.pop("creation_date"),
         }
         house_form = OcrHouseForm(house_data)
@@ -314,11 +314,11 @@ class OcrResultView(ContextPageMixin, FormView):
         # TODO: Add street address.
         house_data = house_form.cleaned_data
 
-        date_filled = house_data["date_filled"]
-        house_data["date_filled"] = datetime(
-            date_filled.year,
-            date_filled.month,
-            date_filled.day,
+        date_accomplished = house_data["date_accomplished"]
+        house_data["date_accomplished"] = datetime(
+            date_accomplished.year,
+            date_accomplished.month,
+            date_accomplished.day,
         )
 
         # Add house data to rbi collection
@@ -334,6 +334,7 @@ class OcrResultView(ContextPageMixin, FormView):
                 family_doc = family_col.document()
                 family_data = form.cleaned_data
 
+                # Convert date to datetime.
                 date_of_birth = family_data["date_of_birth"]
                 family_data["date_of_birth"] = datetime(
                     date_of_birth.year,

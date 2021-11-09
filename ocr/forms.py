@@ -169,7 +169,7 @@ class OcrHouseForm(forms.Form):
         label_suffix="",
         widget=forms.TextInput(attrs={"class": "form-control text-black"}),
     )
-    date_filled = forms.DateField(
+    date_accomplished = forms.DateField(
         label="Date Filled",
         label_suffix="",
         input_formats=[
