@@ -345,12 +345,12 @@ class OcrResultView(ContextPageMixin, FormView):
                 first_name_query = family_col.where(
                     "first_name", "==", family_data["first_name"]
                 ).get()[0]
-                birth_date_query = family_col.where(
-                    "date_of_birth", "==", family_data["date_of_birth"]
+                middle_name_query = family_col.where(
+                    "middle_name", "==", family_data["middle_name"]
                 ).get()[0]
 
                 # Add family data to family sub-collection
-                if first_name_query.exists and birth_date_query.exists:
+                if first_name_query.exists and middle_name_query.exists:
                     family_col.document(first_name_query.id).update(family_data)
                 else:
                     family_data["member_id"] = family_doc.id
