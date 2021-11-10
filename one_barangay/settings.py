@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import io
 import os
 from pathlib import Path
+from typing import Optional
 
 import sentry_sdk
 from dotenv import load_dotenv
@@ -64,6 +65,8 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "api",
     "one_barangay",
     "app",
     "authentication",
@@ -78,6 +81,13 @@ INSTALLED_APPS = [
     "ckeditor",
     "ckeditor_uploader",
 ]
+
+REST_FRAMEWORK: dict[str, Optional[list]] = {
+    "UNAUTHENTICATED_USER": None,
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+
+    "DEFAULT_PERMISSION_CLASSES": [],
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
