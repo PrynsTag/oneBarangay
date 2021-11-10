@@ -131,6 +131,7 @@ repos:
           - django-storages
           - django-ckeditor
           - mypy
+          - djangorestframework
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.910-1
@@ -151,7 +152,8 @@ repos:
           azure-core,
           django-storages,
           types-python-dateutil,
-          django-ckeditor
+          django-ckeditor,
+          djangorestframework
         ]
 
   - repo: https://github.com/asottile/pyupgrade
