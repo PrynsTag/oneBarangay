@@ -190,7 +190,7 @@ class ComplaintHomeView(FormView):
 
             dummy_data.append(
                 {
-                    "uid": uid,
+                    "user_id": uid,
                     "complaint_id": complaint_id,
                     "house_num": house_num,
                     "address": address,
@@ -247,7 +247,7 @@ class ComplaintCreateView(FormInvalidMixin, FormView):
         doc_ref.set(form.cleaned_data, merge=True)
         (
             db.collection("users")
-            .document(form.cleaned_data["uid"])
+            .document(form.cleaned_data["user_id"])
             .collection("complaints")
             .document(doc_ref.id)
             .set(form.cleaned_data, merge=True)
@@ -275,7 +275,7 @@ class ComplaintCreateView(FormInvalidMixin, FormView):
         context["title"] = "Add Complaint"
         context["sub_title"] = "A form to submit a complaint."
         context["segment"] = "forms-complaint"
-        context["hidden_fields"] = ["house_num", "complaint_status", "uid"]
+        context["hidden_fields"] = ["house_num", "complaint_status", "user_id"]
 
         return context
 
@@ -350,7 +350,7 @@ class ComplaintDetailView(FormInvalidMixin, FormView):
                 # Update users collection.
                 (
                     db.collection("users")
-                    .document(form.cleaned_data["uid"])
+                    .document(form.cleaned_data["user_id"])
                     .collection("complaints")
                     .document(form.cleaned_data["complaint_id"])
                     .update(changed_fields)
@@ -386,7 +386,7 @@ class ComplaintDetailView(FormInvalidMixin, FormView):
         context = super().get_context_data()
         context["title"] = "View Complaint"
         context["sub_title"] = "View and validate residents complaints."
-        context["hidden_fields"] = ["uid", "complaint_id"]
+        context["hidden_fields"] = ["user_id", "complaint_id"]
 
         return context
 

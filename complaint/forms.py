@@ -24,7 +24,7 @@ class ComplaintBaseForm(forms.Form):
         ("Handed to Police", "Handed to Police"),
         ("Resolved", "Resolved"),
     )
-    uid = forms.CharField(
+    user_id = forms.CharField(
         label="User I.D.",
         label_suffix="",
         widget=forms.TextInput(
@@ -204,7 +204,7 @@ class ComplaintCreateForm(ComplaintBaseForm):
         super().__init__(*args, **kwargs)
 
         user = request.session["user"]
-        self.fields["uid"].initial = user.get("uid")
+        self.fields["user_id"].initial = user.get("uid")
         self.fields["email"].initial = user.get("email")
         self.fields["house_num"].initial = user.get("house_num")
         self.fields["complainant_name"].initial = user.get("display_name")
