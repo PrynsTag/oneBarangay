@@ -72,8 +72,10 @@
                         <section>{{ post.body|safe|striptags|lower|truncatewords:25 }}</section>
                         <!-- Post actions -->
                         <div class="buttons text-end pt-4">
-                            <a href="{% url "announcement:delete" post.announcement_id %}" class="btn btn-danger">Delete</a>
-                            <a href="{% url "announcement:edit" post.announcement_id %}" class="btn btn-primary">Edit</a>
+                            {% if request.session.user.role != "resident" and request.session.user.role != "secretary" %}
+                                <a href="{% url "announcement:delete" post.announcement_id %}" class="btn btn-danger">Delete</a>
+                                <a href="{% url "announcement:edit" post.announcement_id %}" class="btn btn-primary">Edit</a>
+                            {% endif %}
                             <a href="{% url "announcement:view" post.announcement_id %}" class="btn btn-info">View</a>
                         </div>
                     </div>

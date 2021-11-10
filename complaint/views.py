@@ -56,7 +56,7 @@ class ComplaintHomeView(FormView):
 
         context["title"] = "Complaint"
         context["sub_title"] = "A list of rows for complaints in the barangay."
-        context["segment"] = "complaint"
+        context["segment"] = "forms-complaint"
         context["id"] = "complaint_id"
         context["sort"] = [
             {"sortName": "id", "sortOrder": "asc"},
@@ -274,6 +274,7 @@ class ComplaintCreateView(FormInvalidMixin, FormView):
         context = super().get_context_data()
         context["title"] = "Add Complaint"
         context["sub_title"] = "A form to submit a complaint."
+        context["segment"] = "forms-complaint"
         context["hidden_fields"] = ["house_num", "complaint_status", "uid"]
 
         return context
