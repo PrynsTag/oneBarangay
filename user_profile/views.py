@@ -7,6 +7,7 @@ from django.views.generic import FormView
 from authentication.models import AuthModel
 from one_barangay.local_settings import logger
 from one_barangay.mixins import ContextPageMixin, FormInvalidMixin
+from one_barangay.settings import firestore_db
 from user_profile.forms import UserProfileForm
 
 
@@ -20,6 +21,34 @@ class UserProfileFormView(ContextPageMixin, FormInvalidMixin, FormView):
     form_class = UserProfileForm
     success_url = reverse_lazy("user_profile:home")
     error_message = "Form not updated! Please fix the error presented in the form."
+
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        """Get single complaint from firestore.
+
+        Args:
+          request: The URL request.
+          *args: Additional arguments.
+          **kwargs: Additional keyword arguments.
+
+        Returns:
+          Render HttpResponse to complaint/home.html along with context data.
+        """
+        context = self.get_context_data(**kwargs)
+        complaint = (
+            firestore_db.collection("complaints")
+            .where("user_id", "==", request.session["user"]["user_id"])
+            .get()
+        )
+        user_appointments = (
+            firestore_db.collection("user_appointments")
+            .where("user_id", "==", request.session["user"]["user_id"])
+            .get()
+        )
+
+        context["complaints"] = [doc.to_dict() for doc in complaint]
+        context["user_appointments"] = [doc.to_dict() for doc in user_appointments]
+
+        return self.render_to_response(context)
 
     def get_form_kwargs(self):
         """Pass request session to form."""

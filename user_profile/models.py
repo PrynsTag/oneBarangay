@@ -15,17 +15,17 @@ class UserModel:
         self.db = firestore.client(app=firebase_app)
         self.user_ref = self.db.collection("users")
 
-    def get_user_data(self, uid: str) -> dict:
+    def get_user_data(self, user_id: str) -> dict:
         """Get user data from firestore.
 
         Args:
-          uid: The user id to fetch.
+          user_id: The user id to fetch.
 
         Returns:
           The dictionary data of user or empty.
         """
         # try:
-        user_data = self.user_ref.document(uid).get().to_dict()
+        user_data = self.user_ref.document(user_id).get().to_dict()
         try:
             if user_data.get("updated_on"):
                 user_data["updated_on"] = user_data["updated_on"].strftime("%B %d, %Y, %H:%M:%S")
