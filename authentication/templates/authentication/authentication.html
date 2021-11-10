@@ -283,7 +283,7 @@
                             verifyEmail()
                             if (token) { sendToServer(user.uid, token, providerData, additionalInfo, "/login"); }
                         } else if (result.isConfirmed) {
-                            if (token) { sendToServer(user.uid, token, providerData, additionalInfo, "/barangay-admin/user_profile", email.value); }
+                            if (token) { sendToServer(user.uid, token, providerData, additionalInfo, "/user_profile", email.value); }
                         }
                     })
                     console.log(response)
@@ -394,7 +394,7 @@
                     }).then((result) => {
                         if ('{{ title }}' === 'Sign In' && result.isConfirmed) {
                             if (user.xa != null && user.xa !== "") {
-                                sendToServer(user.uid, user.xa, user.providerData, additionalInfo, "/barangay-admin/user_profile");
+                                sendToServer(user.uid, user.xa, user.providerData, additionalInfo, "/user_profile");
                             }
                         }
                     })
@@ -419,7 +419,7 @@
                     const providerData = user.providerData;
 
                     if (token != null && token !== "") {
-                        sendToServer(user, token, providerData, additionalInfo, "/barangay-admin/user_profile");
+                        sendToServer(user, token, providerData, additionalInfo, "/user_profile");
                     }
                     console.log(response);
                 }).catch(function (error) {

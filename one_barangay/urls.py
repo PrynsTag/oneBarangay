@@ -19,15 +19,15 @@ from django.views.decorators.cache import cache_control
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path("barangay-admin/ocr/", include("ocr.urls")),
+    path("ocr/", include("ocr.urls")),
     path("", include("app.urls")),
-    path("barangay-admin/dashboard", include("data_viz.urls")),
+    path("dashboard", include("data_viz.urls")),
     path("", include("authentication.urls")),
-    path("barangay-admin/user_management/", include("user_management.urls")),
-    path("barangay-admin/user_profile/", include("user_profile.urls")),
-    path("barangay-admin/announcement/", include("announcement.urls")),
-    path("barangay-admin/bulk-sched/", include("bulk_sched.urls")),
-    path("barangay-admin/complaint/", include("complaint.urls")),
+    path("user_management/", include("user_management.urls")),
+    path("user_profile/", include("user_profile.urls")),
+    path("announcement/", include("announcement.urls")),
+    path("bulk-sched/", include("bulk_sched.urls")),
+    path("complaint/", include("complaint.urls")),
     path("ckeditor/", include("ckeditor_uploader.urls")),
     url(
         r"^service-worker.js",
@@ -39,4 +39,5 @@ urlpatterns = [
         ),
         name="service-worker.js",
     ),
+    path("api/", include("api.urls")),
 ]

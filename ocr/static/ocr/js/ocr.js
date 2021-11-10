@@ -53,7 +53,7 @@ function customViewFormatter(data) {
       }
     });
     const houseId = row.house_num.match(aTagRegex)[0];
-    const familyTreeUrl = `/barangay-admin/ocr/detail/${houseId}`;
+    const familyTreeUrl = `/ocr/detail/${houseId}`;
     view += template
       .replaceAll('%HOUSE_NUM%', houseId)
       .replace('%FAMILY_TREE%', familyTreeUrl)

@@ -278,7 +278,7 @@
                     values: [row.complaint_id],
                 })
                 $.ajax({
-                    url: '/barangay-admin/complaint/delete',
+                    url: '/complaint/delete',
                     type: 'POST',
                     dataType: 'json',
                     data: JSON.stringify({payload: {complaint_id: getComplaintId(row)}}),
@@ -298,7 +298,7 @@
 
         function serverDelete(complaintId) {
             $.ajax({
-                url: '/barangay-admin/complaint/delete',
+                url: '/complaint/delete',
                 type: 'POST',
                 dataType: 'json',
                 data: JSON.stringify({payload: {complaint_id: complaintId}}),
