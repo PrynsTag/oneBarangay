@@ -6,6 +6,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
 
+from one_barangay.validators import validate_image
 from one_barangay.widgets import CkeditorWidget
 
 FEATURED_CHOICES = (
@@ -65,7 +66,9 @@ class AnnouncementBaseForm(forms.Form):
     )
 
     thumbnail = forms.ImageField(
-        required=False, widget=forms.ClearableFileInput(attrs={"class": "form-control"})
+        validators=[validate_image],
+        required=False,
+        widget=forms.ClearableFileInput(attrs={"class": "form-control"}),
     )
 
     body = forms.CharField(widget=CkeditorWidget)
