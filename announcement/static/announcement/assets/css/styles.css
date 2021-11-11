@@ -1,0 +1,47 @@
+.hr-theme-slash-2 {
+  display: flex;
+}
+
+.hr-line {
+  width: 100%;
+  position: relative;
+  margin: 25px;
+  border-bottom: 1px solid #f7c31f;
+  color: #f7c31f;
+}
+
+.new-hr {
+  border-bottom: 1px solid #f7c31f;
+  color: #f7c31f;
+}
+
+.old-hr {
+  border-bottom: 1px solid #f7c31f;
+  color: #f7c31f;
+}
+
+.hr-icon {
+  position: relative;
+  top: 3px;
+}
+
+.thumbnail {
+  position: relative;
+  width: auto;
+  height: 350px;
+  overflow: hidden;
+}
+
+.thumbnail img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  min-height: 100%;
+  min-width: 100%;
+  width: auto;
+  transform: translate(-50%, -50%);
+}
+
+h2.card-header {
+  font-size: 1.5rem;
+}

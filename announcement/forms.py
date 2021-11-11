@@ -1,12 +1,23 @@
 """Create your announcement forms here."""
 from datetime import datetime
 
+import pytz
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.files.storage import default_storage
 from django.utils.text import slugify
 
 from one_barangay.widgets import CkeditorWidget
+
+FEATURED_CHOICES = (
+    (True, "Featured"),
+    (False, "Not Featured"),
+)
+
+CATEGORIES_OPTIONS = (
+    ("covid-19", "COVID-19"),
+    ("political", "Political"),
+    ("environmental", "Environmental"),
+)
 
 
 class AnnouncementBaseForm(forms.Form):
@@ -15,10 +26,10 @@ class AnnouncementBaseForm(forms.Form):
     error_css_class = "is-invalid"
     required_css_class = "required"
 
-    uid = forms.CharField(
+    user_id = forms.CharField(
         label="User I.D.",
         label_suffix="",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "readonly": True,
                 "class": "form-control text-black",
@@ -28,7 +39,7 @@ class AnnouncementBaseForm(forms.Form):
     author = forms.CharField(
         label="Author",
         label_suffix="",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "readonly": True,
                 "class": "form-control text-black",
@@ -38,7 +49,7 @@ class AnnouncementBaseForm(forms.Form):
     photo_url = forms.URLField(
         label="Profile Picture",
         label_suffix="",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "readonly": True,
                 "class": "form-control text-black",
@@ -59,23 +70,24 @@ class AnnouncementBaseForm(forms.Form):
 
     body = forms.CharField(widget=CkeditorWidget)
 
-    OPTIONS = (
-        ("covid-19", "COVID-19"),
-        ("political", "Political"),
-        ("environmental", "Environmental"),
-    )
     categories = forms.MultipleChoiceField(
-        widget=forms.SelectMultiple(attrs={"class": "form-select"}), choices=OPTIONS
+        widget=forms.SelectMultiple(attrs={"class": "form-select"}), choices=CATEGORIES_OPTIONS
+    )
+
+    featured = forms.ChoiceField(
+        label_suffix="",
+        initial=False,
+        widget=forms.RadioSelect(attrs={"class": "form-checkbox list-unstyled"}),
+        choices=FEATURED_CHOICES,
     )
 
 
 class AnnouncementCreateForm(AnnouncementBaseForm):
     """Create form for announcement."""
 
-    created = forms.DateTimeField(
-        label="created",
+    creation_date = forms.DateTimeField(
         label_suffix="",
-        widget=forms.DateTimeInput(attrs={"readonly": True, "class": "form-control text-black"}),
+        widget=forms.HiddenInput(attrs={"readonly": True, "class": "form-control text-black"}),
     )
 
     def __init__(self, *args, request, **kwargs):
@@ -87,10 +99,10 @@ class AnnouncementCreateForm(AnnouncementBaseForm):
             name = user_session.get("display_name")
 
             self.fields["author"].initial = name if name else user_session.get("first_name")
-            self.fields["uid"].initial = user_session.get("uid")
+            self.fields["user_id"].initial = user_session.get("user_id")
             self.fields["photo_url"].initial = user_session.get("photo_url")
 
-        self.fields["created"].initial = datetime.now()
+        self.fields["creation_date"].initial = datetime.now(tz=pytz.timezone("Asia/Manila"))
 
     def clean(self):
         """Customize cleaning for form fields."""
@@ -126,14 +138,12 @@ class AnnouncementCreateForm(AnnouncementBaseForm):
     def clean_thumbnail(self):
         """Clean thumbnail form field."""
         thumbnail = self.cleaned_data.get("thumbnail")
-        announcement_id = self.cleaned_data.get("announcement_id")
 
-        if thumbnail:
+        if thumbnail is None:
+            raise ValidationError("This field is required!")
+        else:
             if not thumbnail.content_type.startswith("image"):
                 raise ValidationError("File is not image.")
-
-            default_storage.save(announcement_id, thumbnail)
-            thumbnail = default_storage.url(announcement_id)
 
         return thumbnail
 
@@ -144,8 +154,9 @@ class AnnouncementEditForm(AnnouncementCreateForm):
     updated = forms.DateTimeField(
         label="updated",
         label_suffix="",
-        widget=forms.DateTimeInput(attrs={"readonly": True, "class": "form-control text-black"}),
+        widget=forms.HiddenInput(attrs={"readonly": True, "class": "form-control text-black"}),
     )
+    thumbnail_name = forms.CharField(widget=forms.HiddenInput())
 
     def __init__(self, *args, announcement, **kwargs):
         """Initialize AnnouncementEditForm attributes."""
@@ -153,6 +164,8 @@ class AnnouncementEditForm(AnnouncementCreateForm):
 
         self.fields["title"].initial = announcement["title"]
         self.fields["body"].initial = announcement["body"]
-        self.fields["created"].initial = announcement["created"]
+        self.fields["creation_date"].initial = announcement["creation_date"]
         self.fields["categories"].initial = announcement["categories"]
+        self.fields["featured"].initial = announcement["featured"]
+        self.fields["thumbnail_name"].initial = announcement["thumbnail_name"]
         self.fields["updated"].initial = datetime.now()

@@ -34,14 +34,31 @@ class AnnouncementHomeView(ContextPageMixin, TemplateView):
         context = self.get_context_data(**kwargs)
         db = firestore.client(app=firebase_app)
 
-        docs = db.collection("announcements").order_by("created", direction="DESCENDING").stream()
-        announcements = [doc.to_dict() for doc in docs]
-        context["announcements"] = announcements
+        featured_docs = (
+            db.collection("announcements")
+            .where("featured", "==", True)
+            .order_by("creation_date", direction="DESCENDING")
+            .stream()
+        )
+        featured_announcements = [doc.to_dict() for doc in featured_docs]
+
+        not_featured_docs = db.collection("announcements").where("featured", "==", False).stream()
+        not_featured_announcements = [doc.to_dict() for doc in not_featured_docs]
+        new_announcements = []
+        old_announcements = []
+        for post in not_featured_announcements:
+            if (post["creation_date"].hour - 168) >= 0:
+                old_announcements.append(post)
+            else:
+                new_announcements.append(post)
+
+        context["featured_announcements"] = featured_announcements
+        context["new_announcements"] = new_announcements
+        context["old_announcements"] = old_announcements
 
         return self.render_to_response(context)
 
 
-# TODO: Go back to home after finished creating
 class AnnouncementCreateView(FormView):
     """Form view for creating announcement."""
 
@@ -65,10 +82,20 @@ class AnnouncementCreateView(FormView):
           The valid AnnouncementCreateForm submitted.
         """
         db = firestore.client(app=firebase_app)
+        form.cleaned_data["featured"] = form.cleaned_data["featured"] == "True"
+
+        # Upload Thumbnail
+        thumbnail_name = default_storage.get_valid_name(form.cleaned_data["thumbnail"].name)
+        default_storage.save(thumbnail_name, form.cleaned_data["thumbnail"])
+
+        form.cleaned_data["thumbnail_name"] = thumbnail_name
+        form.cleaned_data["thumbnail"] = default_storage.url(thumbnail_name)
+
         db.collection("announcements").document(form.cleaned_data["announcement_id"]).set(
             form.cleaned_data, merge=True
         )
-        messages.success(self.request, "Post has been saved! Do you want to create another post?")
+        # TODO: Go back to home after finished creating
+        messages.success(self.request, "Post has been saved!")
 
         return super().form_valid(form)
 
@@ -130,7 +157,7 @@ class AnnouncementEditView(FormInvalidMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        """Call when AnnouncementCreateForm is VALID.
+        """Call when AnnouncementEditForm is VALID.
 
         Args:
           form: The submitted AnnouncementEditForm.
@@ -140,13 +167,26 @@ class AnnouncementEditView(FormInvalidMixin, FormView):
         """
         changed_fields = {}
         announcement_id = self.kwargs["announcement_id"]
-        # TODO: default_storage.generate_filename
         if form.has_changed():
             # Accumulate all data of changed fields.
             for field in form.changed_data:
                 # Delete the previous thumbnail
                 if field == "thumbnail":
-                    default_storage.delete(announcement_id)
+                    # Delete Previous Thumbnail
+                    default_storage.delete(form.cleaned_data["thumbnail_name"])
+
+                    # Upload Thumbnail
+                    thumbnail_name = default_storage.generate_filename(
+                        form.cleaned_data["thumbnail"].name
+                    )
+                    default_storage.save(thumbnail_name, form.cleaned_data["thumbnail"])
+
+                    form.cleaned_data["thumbnail_name"] = thumbnail_name
+                    changed_fields["thumbnail_name"] = form.cleaned_data["thumbnail_name"]
+
+                    form.cleaned_data["thumbnail"] = default_storage.url(thumbnail_name)
+                if field == "featured":
+                    form.cleaned_data[field] = form.cleaned_data[field] == "True"
 
                 changed_fields[field] = form.cleaned_data[field]
 
@@ -174,29 +214,28 @@ class AnnouncementEditView(FormInvalidMixin, FormView):
         return context
 
 
-# TODO: Add confirmation for deleting.
 # TODO: Notify for success or fail of deleting
-class AnnouncementDeleteView:
-    """Class for deleting announcement."""
+# TODO: Display warning for deleting
+def delete(request, announcement_id, thumbnail_name, *args, **kwargs) -> HttpResponseRedirect:
+    """Delete announcement.
 
-    def delete(self, announcement_id, *args, **kwargs) -> HttpResponseRedirect:
-        """Delete announcement.
+    Args:
+      request: The URL request.
+      announcement_id: The unique id of the announcement.
+      thumbnail_name: The name of the thumbnail to delete.
+      *args: Additional arguments.
+      **kwargs: Additional Keyword arguments.
 
-        Args:
-          announcement_id: The unique id of the announcement.
-          *args: Additional arguments.
-          **kwargs: Additional Keyword arguments.
+    Returns:
+      HttpResponseRedirect to announcement home.
+    """
+    db = firestore.client(app=firebase_app)
+    default_storage.delete(thumbnail_name)
+    db.collection("announcements").document(announcement_id).delete()
 
-        Returns:
-          HttpResponseRedirect to announcement home.
-        """
-        db = firestore.client(app=firebase_app)
-        db.collection("announcements").document(announcement_id).delete()
-        default_storage.delete(announcement_id)
-        # TODO: Fix this to display success
-        # messages.success(request, "successfully deleted post!")
+    messages.success(request, "successfully deleted post!")
 
-        return HttpResponseRedirect(reverse_lazy("announcement:home"))
+    return HttpResponseRedirect(reverse_lazy("announcement:home"))
 
 
 class AnnouncementDetailView(ContextPageMixin, TemplateView):

@@ -22,8 +22,8 @@ urlpatterns = [
         name="edit",
     ),
     path(
-        "delete/<slug:announcement_id>/",
-        views.AnnouncementDeleteView.delete,
+        "delete/<slug:announcement_id>/<str:thumbnail_name>",
+        views.delete,
         name="delete",
     ),
     path(

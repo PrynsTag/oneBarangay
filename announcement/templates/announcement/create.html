@@ -10,6 +10,8 @@
     <div class="container w-50 py-5">
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
+            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+
             {% if form.non_field_errors %}
                 <div class="alert alert-danger" role="alert">
                     {% for error in form.non_field_errors %}
@@ -17,26 +19,23 @@
                     {% endfor %}
                 </div>
             {% endif %}
-            {% for field in form %}
-                {% if field.html_name not in hidden_fields %}
-                    <div class="row mb-3">
-                        <label class="p-1 col-sm-2 col-form-label {% if field.field.required %}required{% endif %}" for="{{ field.auto_id }}">
-                            {{ field.label }}
-                        </label>
-                        <div class="col-sm-10">
-                            {{ field }}
-                            {% if field.errors %}
-                                {% for error in field.errors %}
-                                    <div class="badge bg-danger text-wrap w-auto text-end text-uppercase">
-                                        {{ error|striptags }}
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
+
+            {% for field in form.visible_fields %}
+                <div class="row mb-3">
+                    <label class="p-1 col-sm-2 col-form-label {% if field.field.required %}required{% endif %}" for="{{ field.auto_id }}">
+                        {{ field.label }}
+                    </label>
+                    <div class="col-sm-10">
+                        {{ field }}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <div class="badge bg-danger text-wrap w-auto text-end text-uppercase">
+                                    {{ error|striptags }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
-                {% else %}
-                    {{ field.as_hidden }}
-                {% endif %}
+                </div>
             {% endfor %}
             <div class="text-end">
                 <button type="submit" class="btn btn-secondary col-sm-2" data-loading-text="Sending">Post</button>
@@ -48,4 +47,31 @@
 {% block scripts %}
     <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
     <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    swalWithBootstrapButtons.fire({
+                        title: "Success",
+                        icon: "success",
+                        text: '{{ message }}',
+                        confirmButtonText: 'Yes!',
+                        cancelButtonText: 'No.',
+                        showCancelButton: true,
+                    }).then((result) => {
+                        if (!result.isConfirmed) {
+                            window.location.href = "{% url "announcement:home" %}"
+                        }
+                    });
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    swalWithBootstrapButtons.fire({
+                        title: "Error!",
+                        icon: "error",
+                        text: "{{ message }}",
+                        confirmButtonText: 'OK'
+                    })
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
 {% endblock scripts %}
