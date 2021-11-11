@@ -69,18 +69,6 @@ repos:
           "flake8-django"
         ]
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.9.3
-    hooks:
-      - id: isort
-        name: isort (python)
-      - id: isort
-        name: isort (cython)
-        types: [ cython ]
-      - id: isort
-        name: isort (pyi)
-        types: [ pyi ]
-
   - repo: https://github.com/rtts/djhtml
     rev: v1.4.9
     hooks:
