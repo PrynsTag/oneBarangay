@@ -82,6 +82,10 @@
         <link href="{% static "/assets/vendor/fontawesome/css/fontawesome.css" %}" rel="stylesheet" type="text/css">
         <link href="{% static "/assets/vendor/fontawesome/css/brands.css" %}" rel="stylesheet" type="text/css">
         <link href="{% static "/assets/vendor/fontawesome/css/solid.css" %}" rel="stylesheet" type="text/css">
+
+        <!-- Custom Stylesheets -->
+        <link href="{% static "/assets/css/styles.css" %}" rel="stylesheet" type="text/css">
+        {% block stylesheets %}{% endblock stylesheets %}
     </head>
     <body>
         {% block content %}{% endblock content %}
