@@ -3,7 +3,7 @@ const modalForm = document.getElementById('modal-form');
 const $modalTitle = $('h5.modal-title');
 const $modalSubmitBtn = $('#modal-submit-button');
 
-const $uid = $('input[name=uid]');
+const $uid = $('input[name=user_id]');
 const $name = $('input[name=display_name]');
 const $email = $('input[name=email]');
 const $role = $('select[name=role]');

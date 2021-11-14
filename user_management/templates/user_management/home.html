@@ -21,7 +21,7 @@
                     <div class="modal-body" id="modal-body">
                         <form enctype="multipart/form-data" method="post" id="modal-form">
                             {% csrf_token %}
-                            {{ form.uid }}
+                            {{ form.user_id }}
 
                             <div class="row">
                                 <!-- Form -->
@@ -166,7 +166,7 @@
             <tr>
                 <td></td>
                 <td class="fw-bold d-flex align-items-center">{{ user.creation_date|default:"None Provided" }}</td>
-                <td>{{ user.uid|default:"None Provided" }}</td>
+                <td>{{ user.user_id|default:"None Provided" }}</td>
                 <td>{{ user.display_name|default:"None Provided" }}</td>
                 <td>{{ user.first_name|default:"None Provided" }}</td>
                 <td>{{ user.middle_name|default:"None Provided" }}</td>
@@ -273,8 +273,8 @@
     {{ block.super }}
     <script type="text/javascript">
         const userManagementHome = '{% url "user_management:home" %}'
-        const userManagementEdit = '{% url "user_management:edit" uid=0 %}'
-        const userManagementDelete = '{% url "user_management:delete" uid=0 %}'
+        const userManagementEdit = '{% url "user_management:edit" user_id=0 %}'
+        const userManagementDelete = '{% url "user_management:delete" user_id=0 %}'
         const userManagementReset = '{% url "user_management:reset" email=0 %}'
         const userManageDefaultImg = '{% static "/assets/img/default-user-management-image.jpg" %}'
     </script>

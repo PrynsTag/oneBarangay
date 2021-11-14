@@ -12,12 +12,12 @@ urlpatterns = [
         name="home",
     ),
     path(
-        "edit/<str:uid>",
+        "edit/<str:user_id>",
         views.UserManagementEditView.as_view(),
         name="edit",
     ),
     path(
-        "delete/<str:uid>",
+        "delete/<str:user_id>",
         views.delete,
         name="delete",
     ),

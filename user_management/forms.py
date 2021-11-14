@@ -9,7 +9,7 @@ class UserManagementCreateForm(forms.Form):
     error_css_class = "is-invalid"
     required_css_class = "required"
 
-    uid = forms.CharField(
+    user_id = forms.CharField(
         required=False,
         label="User I.D.",
         label_suffix="",

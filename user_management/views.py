@@ -45,7 +45,7 @@ class UserManagementHomeView(FormInvalidMixin, FormView):
         context = self.get_context_data(**kwargs)
 
         db = firestore.client(app=firebase_app)
-        docs = db.collection("users").where("uid", ">", "").stream()
+        docs = db.collection("users").where("user_id", ">", "").stream()
 
         users = []
         for doc in docs:
@@ -117,7 +117,7 @@ class UserManagementHomeView(FormInvalidMixin, FormView):
                 first_name, last_name = None, None
 
             auth_data = {
-                "uid": user.uid,
+                "user_id": user.uid,
                 "display_name": user.display_name,
                 "first_name": first_name,
                 "last_name": last_name,
@@ -165,10 +165,10 @@ class UserManagementHomeView(FormInvalidMixin, FormView):
                 f"User with email {form.cleaned_data['email']} already exists!",
             )
         except UidAlreadyExistsError:
-            logger.exception("User with uid %s already exists!", form.cleaned_data["uid"])
+            logger.exception("User with uid %s already exists!", form.cleaned_data["user_id"])
             messages.error(
                 self.request,
-                f"User with uid {form.cleaned_data['uid']} already exists!",
+                f"User with uid {form.cleaned_data['user_id']} already exists!",
             )
 
         return super().form_valid(form)
@@ -216,7 +216,7 @@ class UserManagementEditView(UserManagementHomeView, FormInvalidMixin):
         Returns:
           Redirect to user_management index.
         """
-        logger.info("Modifying user: %s", form.cleaned_data["uid"])
+        logger.info("Modifying user: %s", form.cleaned_data["user_id"])
 
         # Get only truthy form fields
         changed_fields = {k: v for k, v in form.cleaned_data.items() if v}
@@ -227,16 +227,16 @@ class UserManagementEditView(UserManagementHomeView, FormInvalidMixin):
         if changed_fields.get("role"):
             auth_data["custom_claims"] = {changed_fields["role"]: True}
             del auth_data["role"]
-        if changed_fields.get("uid"):
-            del auth_data["uid"]
+        if changed_fields.get("user_id"):
+            del auth_data["user_id"]
 
         try:
             # Modify Firebase Auth
-            auth.update_user(form.cleaned_data["uid"], **auth_data, app=firebase_app)
+            auth.update_user(form.cleaned_data["user_id"], **auth_data, app=firebase_app)
             # Modify Firestore User Collection
             db = firestore.client(app=firebase_app)
             changed_fields["updated_on"] = firestore.SERVER_TIMESTAMP
-            db.collection("users").document(form.cleaned_data["uid"]).update(changed_fields)
+            db.collection("users").document(form.cleaned_data["user_id"]).update(changed_fields)
 
             logger.info(
                 "Successfully updated user: %s",
@@ -253,12 +253,12 @@ class UserManagementEditView(UserManagementHomeView, FormInvalidMixin):
         return HttpResponseRedirect(self.get_success_url())
 
 
-def delete(request, uid) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
+def delete(request, user_id) -> Union[HttpResponseRedirect, HttpResponsePermanentRedirect]:
     """Delete user account.
 
     Args:
       request: The URL request.
-      uid: The unique I.D. of the user to delete.
+      user_id: The unique I.D. of the user to delete.
 
     Returns:
       Redirect to user_management home.
@@ -266,16 +266,16 @@ def delete(request, uid) -> Union[HttpResponseRedirect, HttpResponsePermanentRed
     db = firestore.client(app=firebase_app)
     try:
         # Delete from Firebase Auth
-        auth.delete_user(uid, app=firebase_app)
+        auth.delete_user(user_id, app=firebase_app)
         # Delete from Firestore
-        db.collection("users").document(uid).delete()
+        db.collection("users").document(user_id).delete()
 
-        logger.info("Successfully deleted user: %s", uid)
+        logger.info("Successfully deleted user: %s", user_id)
         # TODO: Display Flash message in template.
-        messages.success(request, f"Successfully deleted user: %{uid}")
+        messages.success(request, f"Successfully deleted user: %{user_id}")
     except UserNotFoundError:
-        logger.exception("User %s Not Found!", uid)
-        messages.error(request, f"User ${uid} Not Found!")
+        logger.exception("User %s Not Found!", user_id)
+        messages.error(request, f"User ${user_id} Not Found!")
 
     return redirect("user_management:home")
 
