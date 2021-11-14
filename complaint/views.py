@@ -97,6 +97,8 @@ class ComplaintHomeView(FormView):
           on success: Call form_valid with form as argument.
           on fail: Call form_invalid along with the invalid form.
         """
+        # TODO: Add to appointments if date is set.
+        # TODO: Add subject in form.
         if "contact_form" in request.POST:
             class_form = self.get_form_class()
             form_name = "contact_form"
@@ -117,6 +119,7 @@ class ComplaintHomeView(FormView):
                     from_email=os.getenv("ADMIN_EMAIL"),
                     recipient_list=[email],
                 )
+                messages.success(request, "Complainant has been emailed successfully!")
             else:
                 db = firestore.client(app=firebase_app)
                 dummy_list = self.dummy_complaint(form.cleaned_data["dummy_count"])
