@@ -220,21 +220,59 @@ class User:
             "photo_url": user_record.photo_url,
         }
 
-    def save_user_to_db(self, auth_data):
+    def save_user_to_db(self, auth_data, house_data, family_data, family_member):
         """Save User to firestore collection.
 
         Args:
           auth_data: The authentication and personal information.
-
+          house_data: The house information of user from RBI.
+          family_data: The family information of user from RBI.
+          family_member: The member information of user in RBI.
         Returns:
           None.
         """
         auth_data.pop("password")
+        auth_information = {
+            "contact_number": auth_data["contact_number"],
+            "disabled": auth_data["disabled"],
+            "email": auth_data["email"],
+            "email_verified": auth_data["email_verified"],
+            "photo_url": auth_data["photo_url"],
+            "role": auth_data["role"],
+            "user_id": auth_data["user_id"],
+        }
+        house_information = {
+            "address": house_data["address"],
+            "street": house_data["street"],
+            "family_name": house_data["family_name"],
+        }
+        member_information = {
+            "citizenship": family_member["citizenship"],
+            "civil_status": family_member["civil_status"],
+            "date_of_birth": family_member["date_of_birth"],
+            "birth_place": family_member["birth_place"],
+            "monthly_income": family_member["monthly_income"],
+            "middle_name": family_member["middle_name"],
+            "first_name": family_member["first_name"],
+            "last_name": family_member["last_name"],
+            "age": family_member["age"],
+        }
+        user_data = auth_information | house_information | member_information
 
-        db = firestore.client(app=firebase_app)
-        doc_user = db.collection("users")
+        # Save user data to `users` collection
+        doc_user = firestore_db.collection("users").document(auth_data["user_id"])
+        doc_user.set(user_data)
 
-        doc_user.document(auth_data["user_id"]).set(auth_data)
+        # TODO: https://stackoverflow.com/questions/35187165/python-how-to-subtract-2-dictionaries
+        # Save family_data to `family` sub-collection to `user` collection
+        # doc_family = doc_user.collection("family").document(auth_data["user_id"])
+        for _, member in family_data.items():
+            doc_ref = doc_user.collection("family").document()
+            doc_ref.set(member | {"member_id": doc_ref.id})
+
+        # Save auth data to `account` sub-collection to `user` collection
+        doc_account = doc_user.collection("account").document()
+        doc_account.set(auth_data)
 
     def write_to_csv(self, email, password, role):
         """Write information to csv.
@@ -505,7 +543,7 @@ def main():
                     user = User(family_member["first_name"], family_member["last_name"])
                     user_data = user.create_user()
                     auth_data = user.save_user_to_auth(user_data)
-                    user.save_user_to_db(auth_data)
+                    user.save_user_to_db(auth_data, house_data, family_data, family_member)
                     user.write_to_csv(
                         auth_data["email"], user_data["password"], auth_data["role"]
                     )
@@ -611,8 +649,10 @@ def delete_all_data():
     users_docs = user_ref.stream()
     for user in users_docs:
         announcements_user_docs = user_ref.document(user.id).collection("announcements").stream()
-        appointments_user_docs = user_ref.document(user.id).collection("appointment").stream()
+        appointments_user_docs = user_ref.document(user.id).collection("appointments").stream()
         complaints_user_docs = user_ref.document(user.id).collection("complaints").stream()
+        family_user_docs = user_ref.document(user.id).collection("family").stream()
+        account_user_docs = user_ref.document(user.id).collection("account").stream()
 
         for announcement in announcements_user_docs:
             announcement.reference.delete()
@@ -622,6 +662,12 @@ def delete_all_data():
 
         for complaint in complaints_user_docs:
             complaint.reference.delete()
+
+        for family in family_user_docs:
+            family.reference.delete()
+
+        for account in account_user_docs:
+            account.reference.delete()
 
         print("------------------ Users --------------------")  # noqa: T001
         print("Deleting user " + user.id)  # noqa: T001
