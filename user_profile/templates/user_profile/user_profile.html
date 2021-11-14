@@ -4,6 +4,7 @@
 {% load custom_template_tags %}
 
 {% block stylesheets %}
+    {{ form.media.css }}
     <link href="https://unpkg.com/bootstrap-table@1.19.0/dist/bootstrap-table.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.19.0/dist/bootstrap-table.min.js"></script>
@@ -176,7 +177,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-6 mb-3">
                             <!-- TODO: Fix required symbol -->
-                            {{ form.birth_date.label_tag }} <div class="d-inline-flex" style="color: red">*</div>
+                            {{ form.date_of_birth.label_tag }} <div class="d-inline-flex" style="color: red">*</div>
                             <div class="input-group">
                                 <span class="input-group-text">
                                     <svg class="icon icon-xs" fill="currentColor" viewBox="0 0 20 20"
@@ -187,8 +188,8 @@
                                         </path>
                                     </svg>
                                 </span>
-                                {{ form.birth_date }}
-                                <div class="invalid-feedback">{{ form.birth_date.errors|striptags }}</div>
+                                {{ form.date_of_birth }}
+                                <div class="invalid-feedback">{{ form.date_of_birth.errors|striptags }}</div>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -503,6 +504,15 @@
     </div>
 {% endblock table %}
 {% block scripts %}
+    {{ form.media.js }}
+    <script>
+        $(function () {
+            $('#id_date_of_birth').datetimepicker({
+                format: 'l, M, d Y',
+                timepicker: false,
+            });
+        });
+    </script>
     <script>
         const editBtn = document.getElementById('edit-button');
         const saveProfileBtn = document.getElementById('submit-button')

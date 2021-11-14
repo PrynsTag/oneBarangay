@@ -3,6 +3,8 @@ from dateutil import parser
 from django import forms
 from django.core.validators import RegexValidator
 
+from one_barangay.widgets import DatePickerWidget
+
 
 class UserProfileForm(forms.Form):
     """User Profile form."""
@@ -45,21 +47,27 @@ class UserProfileForm(forms.Form):
         ),
     )
 
-    birth_date = forms.DateField(
+    date_of_birth = forms.DateField(
         label="Birth Date",
         label_suffix="",
-        input_formats=["%B %d, %Y", "%Y-%m-%d", "%m/%d/%Y", "%b %d, %Y", "%m-%d-%Y", "%m/%d/%y"],
-        widget=forms.DateInput(
-            attrs={
-                "placeholder": "ex. (01/20/2020)",
-                "readonly": True,
-                "class": "form-control text-black",
-                "data-datepicker": "",
-            }
-        ),
+        input_formats=[
+            "%Y-%m-%d",
+            "%m/%d/%Y",
+            "%m/%d/%y",
+            "%b %d %Y",
+            "%b %d, %Y",
+            "%d %b %Y",
+            "%d %b, %Y",
+            "%B %d %Y",
+            "%B %d, %Y",
+            "%d %B %Y",
+            "%d %B, %Y",
+            "%A, %b, %d %Y",
+        ],
+        widget=DatePickerWidget(attrs={"class": "form-control text-black date-picker", "autocomplete": "off", "readonly": True}),
     )
 
-    # birth_date = forms.CharField(
+    # date_of_birth = forms.CharField(
     #     label="Birth Date",
     #     label_suffix="",
     #     widget=forms.TextInput(
@@ -125,7 +133,7 @@ class UserProfileForm(forms.Form):
 
     def __init__(self, *args, request=None, **kwargs):
         """Initialize UserProfileForm attributes."""
-        # TODO: Add age given birth_date.
+        # TODO: Add age given date_of_birth.
         super().__init__(*args, **kwargs)
         if request.session.get("user"):
             first_name = request.session["user"].get("first_name")
@@ -141,12 +149,12 @@ class UserProfileForm(forms.Form):
                 self.fields["last_name"].initial = None
             self.fields["first_name"].initial = request.session["user"].get("first_name")
             self.fields["last_name"].initial = request.session["user"].get("last_name")
-            self.fields["birth_date"].initial = (
-                parser.parse(request.session["user"].get("birth_date")).strftime("%m/%d/%Y")
-                if request.session["user"].get("birth_date")
+            self.fields["date_of_birth"].initial = (
+                parser.parse(request.session["user"].get("date_of_birth")).strftime("%A, %b, %d %Y")
+                if request.session["user"].get("date_of_birth")
                 else None
             )
             self.fields["email"].initial = request.session["user"].get("email")
             self.fields["gender"].initial = request.session["user"].get("sex")
-            self.fields["phone_number"].initial = request.session["user"].get("phone_number")
+            self.fields["phone_number"].initial = request.session["user"].get("contact_number")
             self.fields["address"].initial = request.session["user"].get("address")
