@@ -188,7 +188,7 @@
                                 {% if title == "Sign In" %}
                                     <span class="fw-normal">
                                         Not registered?
-                                        <a href="{% url "auth:sign_up" %}" class="fw-bold">Create account</a>
+                                        <a href="{% url "auth:register" %}" class="fw-bold">Create account</a>
                                     </span>
                                 {% elif title == "Sign Up" %}
                                     <span class="fw-normal">
@@ -208,14 +208,12 @@
 {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript">
+        const userProfileLink = '{% url "user_profile:home" %}'
+        const loginLink = '{% url "auth:sign_in" %}'
+        const setupLink = '{% url "auth:setup" user_id=0 %}'
+    </script>
     <script>
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-success',
-                cancelButton: 'btn btn-danger me-2'
-            },
-            buttonsStyling: false
-        })
         {% if messages %}
             {% for message in messages %}
                 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
@@ -223,12 +221,11 @@
                         title: "Success",
                         icon: "success",
                         text: '{{ message }}',
-                        confirmButtonText: 'OK'
                     })
                 {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
                     swalWithBootstrapButtons.fire({
-                        icon: "error",
-                        title: "{{ message }}",
+                        icon: 'error',
+                        title: '{{ message }}',
                         confirmButtonText: 'OK'
                     })
                 {% endif %}
@@ -239,6 +236,7 @@
     <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-analytics.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/7.19.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-firestore.js"></script>
     <script>
         // Initialize Firebase
         const firebaseConfig = {
@@ -250,6 +248,7 @@
             appId: "1:151952863728:web:7660ee42c28cd0b391ad35"
         };
         firebase.initializeApp(firebaseConfig);
+        const firestore_db = firebase.firestore();
 
         const email = document.getElementById("id_email")
         const password = document.getElementById("id_password")
@@ -279,14 +278,24 @@
                         confirmButtonText: swalBtnMsg,
                     }).then((result) => {
                         // TODO: sendToServer in login not signup
-                        if (result.isConfirmed && authBtn.innerText === "Sign Up") {
-                            verifyEmail()
-                            if (token) { sendToServer(user.uid, token, providerData, additionalInfo, "/login"); }
-                        } else if (result.isConfirmed) {
-                            if (token) { sendToServer(user.uid, token, providerData, additionalInfo, "/user_profile", email.value); }
+                        if (result.isConfirmed && token) {
+                            if (authBtn.innerText === "Sign Up") {
+                                {#verifyEmail()#}
+                                sendToServer(user.uid, token, providerData, additionalInfo, loginLink, authBtn.innerText,);
+                            } else if (authBtn.innerText === "Sign In") {
+                                firestore_db.collection('users').where("user_id", "==", user.uid).get().then((querySnapshot) => {
+                                    querySnapshot.forEach((doc) => {
+                                        let userData = doc.data()
+                                        console.log(authBtn.innerText)
+                                        if (userData['new_user']) {
+                                            window.location.href = setupLink.replace(/0/, user.uid?.toString());
+                                        }
+                                    });
+                                })
+                                sendToServer(user.uid, token, providerData, additionalInfo, userProfileLink, authBtn.innerText, email.value);
+                            }
                         }
                     })
-                    console.log(response)
                 }).catch(function (error) {
                     authBtn.disabled = false
                     swalWithBootstrapButtons.fire(
@@ -333,9 +342,12 @@
             return cookieValue;
         }
 
-        function sendToServer(uid, token, providerData, additionalInfo, redirectTo, email=null) {
+        function sendToServer(uid, token, providerData, additionalInfo, redirectTo, action, email=null) {
             let firstName;
             let lastName;
+            let url;
+            let method = 'POST';
+
             if (additionalInfo.providerId !== "password") {
                 firstName = additionalInfo.profile.given_name
                 lastName = additionalInfo.profile.family_name
@@ -343,13 +355,20 @@
                 firstName = null
                 lastName = null
             }
+
+            if (action === "Sign In") {
+                url = '{% url "auth:firebase_login" %}'
+            } else {
+                url = '{% url "auth:firebase_register" %}'
+            }
+
             $.ajax({
-                url: '{% url "auth:firebase_login" %}',
-                type: 'POST',
+                url: url,
+                type: method,
                 dataType: 'json',
                 data: JSON.stringify({
                     payload: {
-                        uid: uid,
+                        user_id: uid,
                         token: token,
                         first_name: firstName,
                         last_name: lastName,
@@ -362,19 +381,18 @@
                     'X-CSRFToken': getCookie('csrftoken'),
                     'Content-Type': 'text/html',
                 },
-            }).always((jqXHR, textStatus, errorThrown) => {
-                if (jqXHR.status === 200 || jqXHR.status === 304) {
-                    window.location.href = redirectTo
+                success: (response) => {
+                    showSuccess(response['message'])
+                    setTimeout(() => {
+                        window.location.href = redirectTo
+                    }, 2500);
+                },
+                error: (jqXHR, textStatus, errorThrown) => {
+                    showError(errorThrown);
                 }
-                else {
-                    swalWithBootstrapButtons.fire(
-                        'Error!',
-                        `Something went wrong.<br>[${jqXHR.status}]${textStatus} - ${errorThrown}`,
-                        'error',
-                    );
-                }
-            });
+            })
         }
+
         //===========================End Saving Details in My Server=======================
         ///=================Login With google===========================
         if ('{{ title }}' !== 'Forgot Password') {

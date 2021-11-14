@@ -1,0 +1,188 @@
+{% extends "layouts/base-fullscreen.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {{ form.media.css }}
+{% endblock stylesheets %}
+
+{% block content %}
+    <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
+        <div class="container">
+            <div class="row justify-content-center form-bg-image img-fluid w-100" data-background-lg="{% static "/assets/img/illustrations/signin.svg" %}">
+                <div class="col-12 d-flex align-items-center justify-content-center">
+                    <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 fmxw-500">
+                        <div class="text-center text-md-center mb-4 mt-md-0">
+                            <h1 class="mb-0 h3">
+                                oneBarangay - {{ title }}
+                            </h1>
+                            <br/>
+                            <p>Let's Setup Your Account!</p>
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {% for error in form.non_field_errors %}
+                                        <p class="text-center">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <form method="post" id="setup-form">
+                            {% csrf_token %}
+                            {% for field in form.hidden_fields %}
+                                {% if field.html_name in hidden_fields %}
+                                    {{ field }}
+                                {% endif %}
+                            {% endfor %}
+
+                            <div class="row mb-4">
+                                {% for field in form.visible_fields %}
+                                    {% if field.html_name in first_row %}
+                                        <div class="form-group col">
+                                            {{ field.label_tag }}
+                                            {{ field }}
+                                            <small class="form-text text-muted d-block">{{ field.help_text }}</small>
+                                            {% if form.event.errors %}
+                                                {% if field.errors %}
+                                                    <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            {% for field in form.visible_fields %}
+                                <div class="form-group mb-4">
+                                    {% if field.html_name not in row_fields %}
+                                        {{ field.label_tag }}
+                                        {{ field }}
+                                        <small class="form-text text-muted d-block">{{ field.help_text }}</small>
+                                        {% if field.errors %}
+                                            <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+
+                            <!-- Address -->
+                            <div class="form-group mb-4">
+                                <label for="id-google-address" class="required">Address</label>
+                                <input class="form-control text-black" type="text" placeholder="*Begin typing address" id="id-google-address" name="google_address" required>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="form-group mb-4">
+                                <label class="col-form-label text-nowrap hidden-el {% if form.address.field.required %}required{% endif %}" for="{{ form.address.auto_id }}" hidden>
+                                    {{ form.address.label }}
+                                </label>
+                                {{ form.address }}
+                            </div>
+
+                            <div class="row hidden_el">
+                                {% for field in form.hidden_fields %}
+                                    {% if field.html_name in first_address %}
+                                        <div class="form-group col">
+                                            <label class="col-form-label text-nowrap hidden-el {% if field.field.required %}required{% endif %}" for="{{ field.auto_id }}" hidden>
+                                                {{ field.label }}
+                                            </label>
+                                            {{ field }}
+                                            <small class="form-text text-muted d-block">{{ field.help_text }}</small>
+                                            {% if form.event.errors %}
+                                                {% if field.errors %}
+                                                    <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <div class="row mb-4">
+                                {% for field in form.hidden_fields %}
+                                    {% if field.html_name in second_address %}
+                                        <div class="form-group col hidden_el">
+                                            <label class="col-form-label text-nowrap hidden-el {% if field.field.required %}required{% endif %}" for="{{ field.auto_id }}" hidden>
+                                                {{ field.label }}
+                                            </label>
+                                            {{ field }}
+                                            <small class="form-text text-muted d-block">{{ field.help_text }}</small>
+                                            {% if form.event.errors %}
+                                                {% if field.errors %}
+                                                    <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <!-- End of Address -->
+
+                            <div class="row mb-4">
+                                {% for field in form.visible_fields %}
+                                    {% if field.html_name in second_row %}
+                                        <div class="form-group col">
+                                            {{ field.label_tag }}
+                                            {{ field }}
+                                            <small class="form-text text-muted d-block">{{ field.help_text }}</small>
+                                            {% if form.event.errors %}
+                                                {% if field.errors %}
+                                                    <div class="badge m-0 bg-danger text-uppercase">{{ field.errors|striptags }}</div>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </form>
+                        <div class="text-center mt-4">
+                            <!-- FIXME: Reset button not working -->
+                            <button type="reset" form="setup-form" id="reset-btn" class="btn btn-secondary" hidden>Reset</button>
+                            <button type="submit" form="setup-form" id="submit-btn" class="btn btn-primary" hidden>Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}
+
+{% block scripts %}
+    {{ form.media.js }}
+    <script type="text/javascript">
+        const google_api_key = "{{google_api_key|safe}}";
+    </script>
+    <script src="{% static "/assets/js/google_places.js" %}"></script>
+    <script>
+        $('#id_date_of_birth').datetimepicker({
+            format: 'F d, Y',
+            timepicker: false
+        });
+    </script>
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    Swal.fire({
+                        title: 'Success',
+                        icon: 'success',
+                        text: '{{ message }}',
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    Swal.fire({
+                        title: 'Error!',
+                        icon: 'error',
+                        text: '{{ message }}',
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                    Swal.fire({
+                        title: 'NOTE!',
+                        icon: 'info',
+                        text: '{{ message }}',
+                    })
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock scripts %}

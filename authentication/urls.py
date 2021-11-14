@@ -7,17 +7,37 @@ app_name = "auth"
 
 urlpatterns = [
     path(
-        "login",
-        views.AuthenticationFormView.as_view(extra_context={"title": "Sign In"}),
-        name="sign_in",
+        "firebase_login",
+        views.login,
+        name="firebase_login",
+    ),
+    path(
+        "firebase_register",
+        views.register,
+        name="firebase_register",
     ),
     path(
         "register",
         views.AuthenticationFormView.as_view(
             extra_context={"title": "Sign Up"},
         ),
-        name="sign_up",
+        name="register",
     ),
+    path(
+        "login",
+        views.AuthenticationFormView.as_view(
+            extra_context={"title": "Sign In"},
+        ),
+        name="sign_in",
+    ),
+    path(
+        "setup/<str:user_id>",
+        views.AccountSetupFormView.as_view(
+            extra_context={"title": "Account Setup"},
+        ),
+        name="setup",
+    ),
+    path("logout", views.logout, name="logout"),
     path(
         "forgot-password",
         views.ForgotPasswordFormView.as_view(
@@ -32,10 +52,4 @@ urlpatterns = [
         ),
         name="lock_account",
     ),
-    path(
-        "firebase_login",
-        views.login,
-        name="firebase_login",
-    ),
-    path("logout", views.logout, name="logout"),
 ]
