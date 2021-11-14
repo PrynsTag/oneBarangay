@@ -352,3 +352,11 @@ GS_DEFAULT_ACL = "publicRead"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# GOOGLE API KEYS
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+RECAPTCHA_SITE_KEY = os.getenv("GOOGLE_RECAPTCHA_SITE_KEY")
+RECAPTCHA_SECRET_KEY = os.getenv("GOOGLE_RECAPTCHA_SECRET_KEY")
+
+BASE_COUNTRY = "PH"
+

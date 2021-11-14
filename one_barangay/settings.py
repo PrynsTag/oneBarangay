@@ -325,6 +325,13 @@ GS_DEFAULT_ACL = "publicRead"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# GOOGLE API KEYS
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+RECAPTCHA_SITE_KEY = os.getenv("GOOGLE_RECAPTCHA_SITE_KEY")
+RECAPTCHA_SECRET_KEY = os.getenv("GOOGLE_RECAPTCHA_SECRET_KEY")
+
+BASE_COUNTRY = "PH"
+
 # Sentry SDK
 sentry_sdk.init(  # Proper Sentry Declaration pylint: disable=abstract-class-instantiated
     dsn=os.getenv("SENTRY_DSN"),
