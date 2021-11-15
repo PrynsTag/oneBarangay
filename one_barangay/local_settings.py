@@ -78,7 +78,6 @@ INSTALLED_APPS = [
 REST_FRAMEWORK: dict[str, Optional[list]] = {
     "UNAUTHENTICATED_USER": None,
     "DEFAULT_AUTHENTICATION_CLASSES": [],
-
     "DEFAULT_PERMISSION_CLASSES": [],
 }
 
@@ -327,9 +326,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Static app dirs automatically finds it by AppDirectoriesFinder
 # https://docs.djangoproject.com/en/3.1/ref/settings/#staticfiles-finders
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "frontend", "build"),
-]
 
 GS_PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 GS_MEDIA_BUCKET_NAME = os.getenv("GS_MEDIA_BUCKET_NAME")
@@ -361,4 +357,3 @@ RECAPTCHA_SITE_KEY = os.getenv("GOOGLE_RECAPTCHA_SITE_KEY")
 RECAPTCHA_SECRET_KEY = os.getenv("GOOGLE_RECAPTCHA_SECRET_KEY")
 
 BASE_COUNTRY = "PH"
-
