@@ -39,5 +39,15 @@ urlpatterns = [
         ),
         name="service-worker.js",
     ),
+    url(
+        r"^firebase-messaging-sw.js",
+        cache_control(max_age=2592000)(
+            TemplateView.as_view(
+                template_name="firebase-messaging-sw.js",
+                content_type="application/javascript",
+            )
+        ),
+        name="firebase-messaging-sw.js",
+    ),
     path("api/", include("api.urls")),
 ]

@@ -65,6 +65,7 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
     "rest_framework",
     "api",
     "one_barangay",
@@ -268,6 +269,7 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.messages.context_processors.messages",
+                "one_barangay.context_processors.get_notification",
             ],
         },
     },

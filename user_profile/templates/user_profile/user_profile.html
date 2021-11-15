@@ -321,7 +321,10 @@
                         </div>
                         <div>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="web-notification">
+                                <input class="form-check-input" type="checkbox" id="web-notification"
+                                    {% if request.session.user.web_notification %}
+                                        checked
+                                    {% endif %}>
                                 <label class="form-check-label" for="web-notification"></label>
                             </div>
                         </div>
@@ -333,11 +336,15 @@
                         </div>
                         <div>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="mobile-notification">
+                                <input class="form-check-input" type="checkbox" id="mobile-notification"
+                                    {% if request.session.user.mobile_notification %}
+                                        checked
+                                    {% endif %}>
                                 <label class="form-check-label" for="mobile-notification"></label>
                             </div>
                         </div>
                     </li>
+                    <!--
                     <li class="list-group-item d-flex align-items-center justify-content-between px-0 border-bottom">
                         <div>
                             <h3 class="h6 mb-1">Account Activity</h3>
@@ -350,6 +357,7 @@
                             </div>
                         </div>
                     </li>
+                    -->
                 </ul>
             </div>
         </div>
@@ -511,6 +519,30 @@
                 format: 'l, M, d Y',
                 timepicker: false,
             });
+        });
+    </script>
+    <script>
+        const $webNotification = $('#web-notification')
+        const $mobileNotification = $('#mobile-notification')
+
+        $webNotification.on('change', () => {
+            if ($webNotification.is(':checked')) {
+                $webNotification.prop("checked", true);
+                subscribeUser('web_notification')
+            } else {
+                $webNotification.prop("checked", false);
+                unSubscribeUser('web_notification')
+            }
+        });
+
+        $mobileNotification.on('change', () => {
+            if ($mobileNotification.is(':checked')) {
+                $mobileNotification.prop("checked", true);
+                subscribeUser('mobile_notification')
+            } else {
+                $mobileNotification.prop("checked", false);
+                unSubscribeUser('mobile_notification')
+            }
         });
     </script>
     <script>
