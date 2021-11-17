@@ -199,11 +199,15 @@ class ComplaintCreateForm(ComplaintBaseForm):
         super().__init__(*args, **kwargs)
 
         user = request.session["user"]
-        self.fields["user_id"].initial = user.get("uid")
+        self.fields["user_id"].initial = user.get("user_id")
         self.fields["email"].initial = user.get("email")
         if user.get("display_name"):
-        self.fields["complainant_name"].initial = user.get("display_name")
-        self.fields["contact_number"].initial = user.get("phone_number")
+            self.fields["complainant_name"].initial = user.get("display_name")
+        else:
+            self.fields[
+                "complainant_name"
+            ].initial = f"{user.get('first_name', '')} {user.get('last_name', '')}"
+        self.fields["contact_number"].initial = user.get("contact_number")
         self.fields["address"].initial = user.get("address")
         self.fields["complaint_status"].initial = "For Review"
         self.fields["date"].initial = datetime.now().strftime("%A, %B %d %Y, %I:%M %p")
