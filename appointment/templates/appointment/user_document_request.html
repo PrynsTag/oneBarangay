@@ -1,0 +1,220 @@
+{% extends "layouts/base.html" %}
+
+{#{% load poll_extras %}#}
+
+{% load static %}
+
+{% block title %}
+    Barangay Admin - Verify User
+{% endblock %}
+
+{% block stylesheets %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static "/appointment/assets/css/document_request.css" %}">
+    <link rel="stylesheet" href="{% static "/appointment/assets/css/user_document_request.css" %}">
+
+    <!-- Image Viewer -->
+    <!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"
+        integrity="sha512-+EoPw+Fiwh6eSeRK7zwIKG2MA8i3rV/DGa3tdttQGgWyatG/SkncT53KHQaS5Jh9MNOT3dmFL0FjTY08And/Cw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <!-- Magnific Popup core JS file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"
+        integrity="sha512-IsNh5E3eYy3tr/JiX2Yx4vsCujtkhwl7SLqgnwLNgf04Hrt9BT9SXlLlZlWx+OK4ndzAoALhsMNcCmkggjZB1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">Verify User Request</h1>
+            <p class="mb-0">Check user request</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row gutters">
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+                <div class="card h-75">
+                    <div class="card-body">
+                        <div class="account-settings">
+                            <div class="user-profile">
+                                <div class="user-avatar">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Maxwell Admin">
+                                </div>
+                                <h5 class="user-name">{{ document_data.first_name }} {{ document_data.last_name }}</h5>
+                                <h6 class="user-email">{{ document_data.account_type }}</h6>
+                                <button type="button" class="btn btn-outline-primary btn-sm my-2">View Profile</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row gutters">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="container p-0">
+                                    <div class="row">
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+                                            <h6 class="mb-2 text-primary">Document Request Info</h6></div>
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6 d-flex justify-content-end">
+                                            {% if document_data.user_verified %}
+                                                <span>User Verification: Done</span>
+                                            {% else %}
+                                                <span>User Verification: Not yet</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group">
+                                    <label for="fullName">Document Request(s)</label>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                {% for document in document_data.document %}
+                                                    <div class="notice">
+                                                        <strong>Request</strong> {{ document.document_name }}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group">
+                                    <label for="purpose">Purpose</label>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <textarea class="form-control" rows="3" disabled
+                                                    readonly>{{ document_data.appointment_purpose }}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row gutters">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <h6 class="mt-3 mb-2 text-primary">For Verification</h6>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group">
+                                    <label for="Image">Image</label>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-4">
+                                                <div class="wrimagecard wrimagecard-topimage">
+                                                    <a id="image-viewer"
+                                                        href="https://grit.ph/wp-content/uploads/2020/05/sss-umid-emv-card-1-1030x659.png">
+                                                        <div class="wrimagecard-topimage_header">
+                                                            <i class="fas fa-image " style="font-size: 2rem"></i>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row gutters">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="text-right">
+                                    <button type="button" id="submit" name="submit" class="btn btn-secondary">Cancel
+                                    </button>
+                                    <a href="{% url "appointment:user_verification_dt" document_data.document_id %}" class="btn btn-primary">Verify User</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+
+        {% if document_data.user_verified %}
+            Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: "User Verified",
+                showCancelButton: true,
+                showConfirmButton: true,
+                timer: 3000
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire('Request Approved', '', 'success').then(((result => {
+                        if (result.isConfirmed) {
+                            {#window.location = "{% url "appointment:document_issue" document_data.document_id %}"#}
+                        }
+                    })))
+                } else if (result.isDenied()) {
+                    Swal.fire("Request Cancelled", '', 'error')
+                }
+            });
+        {% endif %}
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#example').DataTable({
+                "paging": true,
+                "ordering": false,
+                "info": true
+            });
+
+            $(".btn-select").click(function () {
+                console.log("here");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want to select this user!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'User Selected!',
+                            'The user has been selected.',
+                            'success'
+                        ).then((result) => {
+                            let document_request_id = "{{ document_request_id }}";
+                            let user_id = $(this).data("user_uid");
+                            let location_url = '{% url "appointment:document_request_verified" %}';
+                            window.location.href = location_url + document_request_id + "/" + user_id;
+                        })
+                    }
+                })
+            });
+
+            $('#image-viewer').magnificPopup({
+                type: 'image'
+            });
+        });
+    </script>
+{% endblock %}

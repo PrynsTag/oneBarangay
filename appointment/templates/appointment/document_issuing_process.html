@@ -1,0 +1,32 @@
+{% extends "layouts/base.html" %}
+
+{% load static %}
+
+{% block title %}
+    Barangay Admin - Document Issuing Process
+{% endblock %}
+
+{% block stylesheets %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link href="{% static "appointment/assets/css/document_issuing_process.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">Document Info.</h1>
+            <p class="mb-0">Display document information</p>
+        </div>
+    </div>
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit">
+    </form>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

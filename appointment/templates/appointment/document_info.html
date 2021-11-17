@@ -1,0 +1,58 @@
+{% extends "layouts/base.html" %}
+
+{% load static %}
+
+{% block title %}
+    Barangay Admin - Document Info
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{% static "appointment/assets/css/.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">Document Info</h1>
+            <p class="mb-0">Input Document Info</p>
+        </div>
+    </div>
+
+    <form action="" method="POST">
+        {{ form }}
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function toDataURL(url, callback) {
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function () {
+                    var reader = new FileReader();
+                    reader.onloadend = function () {
+                        callback(reader.result);
+                    }
+                    reader.readAsDataURL(xhr.response);
+                };
+                xhr.open('GET', url);
+                xhr.responseType = 'blob';
+                xhr.send();
+            }
+
+            toDataURL("{{ document_settings.file_url }}", function (dataURL) {
+                var doc = new jsPDF("{{ data.orientation }}", "mm", "{{ data.paper_size }}");
+                doc.addImage(dataURL, 0, 0, {{ paper_width }}, {{ paper_length }});
+
+                {% for data in document_data %}
+                    doc.setFont("{{ data.font }}");
+                    doc.setFontType("{{ data.font_type }}");
+                    doc.setFontSize({{ data.font_size }});
+                    doc.text("{{ data.value }}", {{ data.offset_x }}, {{ data.offset_y }}, "{{ data.align }}");
+                {% endfor %}
+
+                PDFObject.embed(doc.output("datauristring"), "#example1");
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "layouts/base.html" %}
+
+{% load static %}
+
+{% block title %}
+    Barangay Admin - Document Requests
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{% static "appointment/assets/css/user_issuing_list.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">Document Info.</h1>
+            <p class="mb-0">Display document information</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row gutters">
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="account-settings">
+                            <div class="user-profile">
+                                <div class="user-avatar">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Maxwell Admin">
+                                </div>
+                                <h5 class="user-name">{{ user_document_data.first_name }} {{ user_document_data.last_name }}</h5>
+                                <h6 class="user-email">{{ user_document_data.account_type }}</h6>
+                                <button type="button" class="btn btn-outline-primary btn-sm my-2">View Profile</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {#            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">#}
+            {#                <div class="card h-100">#}
+            {#                    <div class="card-body">#}
+            {#                        <div class="account-settings">#}
+            {#                            <div class="user-profile">#}
+            {#                                <div class="user-avatar">#}
+            {#                                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Maxwell Admin">#}
+            {#                                </div>#}
+            {#                                <h5 class="user-name">{{ user_document_data.first_name }} {{ user_document_data.last_name }}</h5>#}
+            {#                                <h6 class="user-email">{{ user_document_data.email }}</h6>#}
+            {#                            </div>#}
+            {#                            <div class="about">#}
+            {#                                <h5>About</h5>#}
+            {#                                <p>I'm Yuki. Full Stack Designer I enjoy creating user-centric, delightful and human#}
+            {#                                    experiences.</p>#}
+            {#                            </div>#}
+            {#                        </div>#}
+            {#                    </div>#}
+            {#                </div>#}
+            {#            </div>#}
+            <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row gutters">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <h6 class="mb-2 text-primary">Document List</h6>
+                            </div>
+                            <div class="col-xl-6 col-lga-6 col-md-6 col-sm-6 col-12 w-100">
+                                <div class="container">
+                                    {% for document in user_document_data.document %}
+                                        {% if document.ready_issue %}
+                                            <a href="{% url "appointment:document_issuing_success" user_document_data.document_id document.slugify %}">
+                                                <div class="notice notice-success">
+                                                    <strong>Success</strong> {{ document.document_name }}
+                                                </div>
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url "appointment:document_issuing_process" user_document_data.document_id document.slugify %}">
+                                                <div class="notice notice-info">
+                                                    <strong>In Process</strong> {{ document.document_name }}
+                                                </div>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {#                        <div class="row gutters">#}
+                        {#                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">#}
+                        {#                                <h6 class="mt-3 mb-2 text-primary">Address</h6>#}
+                        {#                            </div>#}
+                        {#                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">#}
+                        {#                                <div class="form-group">#}
+                        {#                                    <label for="Street">Street</label>#}
+                        {#                                    <input type="name" class="form-control" id="Street" placeholder="Enter Street">#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+                        {#                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">#}
+                        {#                                <div class="form-group">#}
+                        {#                                    <label for="ciTy">City</label>#}
+                        {#                                    <input type="name" class="form-control" id="ciTy" placeholder="Enter City">#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+                        {#                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">#}
+                        {#                                <div class="form-group">#}
+                        {#                                    <label for="sTate">State</label>#}
+                        {#                                    <input type="text" class="form-control" id="sTate" placeholder="Enter State">#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+                        {#                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">#}
+                        {#                                <div class="form-group">#}
+                        {#                                    <label for="zIp">Zip Code</label>#}
+                        {#                                    <input type="text" class="form-control" id="zIp" placeholder="Zip Code">#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+                        {#                        </div>#}
+                        <div class="row gutters">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-4">
+                                <div class="text-right d-flex justify-content-center">
+                                    <button type="button" id="submit" name="submit" class="btn btn-secondary mx-3">
+                                        Cancel
+                                    </button>
+                                    <button type="button" id="submit" name="submit" class="btn btn-primary">Done
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
