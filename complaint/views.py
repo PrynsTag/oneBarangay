@@ -153,64 +153,6 @@ class ComplaintHomeView(FormView):
         )
         return self.render_to_response(self.get_context_data(**kwargs))
 
-    def dummy_complaint(self, count):
-        """Create dummy complaint.
-
-        Args:
-          count: The number of dummy to generate.
-
-        Returns:
-          A dictionary of single dummy complaint.
-        """
-        dummy_data = []
-        crypto_gen = SystemRandom()
-        fake = Faker(["fil_PH"])
-        for _ in range(int(count)):
-            complaint_id = str(crypto_gen.randint(0, 1000))
-            house_num = crypto_gen.randrange(100000, 999999)
-            address = fake.address()
-            email = fake.email()
-            contact_number = fake.mobile_number().replace("-", "")
-            formatted_contact_number = (
-                contact_number.replace("0", "+63", 1)
-                if contact_number.startswith("0")
-                else contact_number
-            )
-            complainant_name = fake.name()
-            date = datetime.now(tz=pytz.timezone("Asia/Manila"))
-            complaint_type = crypto_gen.choice(
-                [
-                    "Gossip Problem",
-                    "Lending Problem",
-                    "Obstruction",
-                    "Public Disturbance",
-                ]
-            )
-            complaint_status = crypto_gen.choice(["Ongoing", "Handed to Police", "Resolved"])
-            comment = fake.paragraphs(nb=5)[0]
-            image_url = static("/assets/img/default-complaint-image.png")
-            uid = str(uuid.uuid4())
-
-            dummy_data.append(
-                {
-                    "user_id": uid,
-                    "complaint_id": complaint_id,
-                    "house_num": house_num,
-                    "address": address,
-                    "contact_number": formatted_contact_number,
-                    "complainant_name": complainant_name,
-                    "date": date,
-                    "email": email,
-                    "complaint_type": complaint_type,
-                    "complaint_status": complaint_status,
-                    "comment": comment,
-                    "image_url": image_url,
-                    "image": os.path.basename(image_url),
-                }
-            )
-
-        return dummy_data
-
 
 class ComplaintCreateView(FormInvalidMixin, FormView):
     """Form view for creating complaint."""
