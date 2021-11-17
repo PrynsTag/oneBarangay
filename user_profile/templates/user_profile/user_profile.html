@@ -449,7 +449,7 @@
                         <thead>
                             <tr>
                                 <th data-field="complaint_id" data-sortable="true">COMPLAINT I.D</th>
-                                <th data-field="house_num" data-sortable="true">HOUSE #</th>
+                                <!-- <th data-field="house_num" data-sortable="true">HOUSE #</th> -->
                                 <th data-field="complainant_name" data-sortable="true">COMPLAINANT NAME</th>
                                 <th data-field="email" data-sortable="true">EMAIL</th>
                                 <th data-field="contact_number" data-sortable="true">CONTACT NUMBER</th>
@@ -463,7 +463,7 @@
                             {% for complaint in complaints %}
                                 <tr>
                                     <td class="fw-bold d-flex align-items-center">{{ complaint.complaint_id|truncatechars:5 }}</td>
-                                    <td>{{ complaint.house_num }}</td>
+                                    <!-- <td>{{ complaint.house_num }}</td> -->
                                     <td>{{ complaint.complainant_name }}</td>
                                     <td>{{ complaint.email }}</td>
                                     <td>{{ complaint.contact_number }}</td>
