@@ -146,7 +146,7 @@ class OcrResultView(ContextPageMixin, FormView):
         context["client_id"] = os.getenv("ADOBE_CLIENT_ID")
 
         context["first_row"] = ["last_name", "first_name", "middle_name", "ext"]
-        context["second_row"] = ["place_of_birth", "date_of_birth", "gender", "civil_status"]
+        context["second_row"] = ["place_of_birth", "date_of_birth", "sex", "civil_status"]
         context["third_row"] = ["citizenship", "monthly_income", "remarks"]
         context["house_data_field"] = ["house_num", "address", "date_accomplished"]
 
@@ -186,6 +186,17 @@ class OcrResultView(ContextPageMixin, FormView):
         for family_data in ocr_result[1]:
             monthly_income = family_data["monthly_income"]["text"]
             date_of_birth = re.sub(r"\s", "", family_data["date_of_birth"]["text"])
+
+            sex = family_data.get("sex_m_or_f", {"text": "M"}).get("text")
+            if sex:
+                sex = sex.capitalize()
+                if sex == "M" or sex == "Male":
+                    sex = "Male"
+                elif sex == "F" or sex == "Female":
+                    sex = "Female"
+            else:
+                sex = "Others"
+
             family_initial.append(
                 {
                     "last_name": family_data["last_name_apelyido"]["text"],
@@ -194,7 +205,7 @@ class OcrResultView(ContextPageMixin, FormView):
                     "ext": family_data["ext"]["text"],
                     "date_of_birth": parser.parse(date_of_birth).strftime("%B %d, %Y"),
                     "place_of_birth": family_data["place_of_birth"]["text"],
-                    "gender": family_data["sex_m_or_f"]["text"],
+                    "sex": sex,
                     "civil_status": family_data["civil_status"]["text"],
                     "citizenship": family_data["citizenship"]["text"],
                     "monthly_income": int(re.sub(r"\D", "", monthly_income)),
@@ -209,7 +220,7 @@ class OcrResultView(ContextPageMixin, FormView):
                     "ext": family_data["ext"]["confidence"],
                     "place_of_birth": family_data["place_of_birth"]["confidence"],
                     "date_of_birth": family_data["date_of_birth"]["confidence"],
-                    "gender": family_data["sex_m_or_f"]["confidence"],
+                    "sex": family_data["sex_m_or_f"]["confidence"],
                     "civil_status": family_data["civil_status"]["confidence"],
                     "citizenship": family_data["citizenship"]["confidence"],
                     "monthly_income": family_data["monthly_income"]["confidence"],

@@ -35,7 +35,7 @@ STREET_CHOICES = (
 
 GENDER_CHOICES = (
     ("Male", "Male"),
-    ("Femaile", "Female"),
+    ("Female", "Female"),
     ("Others", "Others"),
 )
 
@@ -255,7 +255,7 @@ class OcrFamilyForm(forms.Form):
             attrs={"class": "form-control text-black date-picker", "autocomplete": "off"}
         ),
     )
-    gender = forms.ChoiceField(
+    sex = forms.ChoiceField(
         label="Gender",
         label_suffix="",
         widget=forms.Select(
