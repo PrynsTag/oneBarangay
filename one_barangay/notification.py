@@ -46,18 +46,21 @@ class Notification:
         registration_list = list(filter(None, registration_id))
         return registration_list[0] if len(registration_list) == 1 else registration_list
 
-    def send_notification(self, title: str, body: str, platform: str):
+    def send_notification(
+        self, title: str, body: str, user_id: str = None, platform: str = "all"
+    ):
         """Send notification.
 
         Args:
           title: str: The title of the notification.
           body: str: The message of the notification.
+          user_id: str: The unique id of the user to be notified.
           platform: str: The type of platform the notification is.
 
         Returns:
           None.
         """
-        registration_token = self.get_registration_token(platform)
+        registration_token = self.get_registration_token(platform, user_id)
         message_data = {
             "title": title,
             "body": body,
