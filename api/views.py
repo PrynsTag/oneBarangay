@@ -71,7 +71,9 @@ class DataVizApiView(APIView):
         df = pd.DataFrame(data["rows"])
 
         # ### Convert Dates to Datetime
-        df["birth_date"] = pd.to_datetime(df["date_of_birth"], errors="coerce", format="%B %d, %Y")
+        df["birth_date"] = pd.to_datetime(
+            df["date_of_birth"], errors="coerce", format="%B %d, %Y"
+        )
         df["date_accomplished"] = pd.to_datetime(
             df["date_accomplished"], errors="coerce", format="%Y-%m-%d", utc=True
         )
