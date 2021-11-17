@@ -71,7 +71,7 @@
             <th data-field="date_accomplished" data-halign="center" data-align="center" data-sortable="true" data-footer-formatter="totalNameFormatter">DATE ACCOMPLISHED</th>
             <th data-field="house_num" data-halign="center" data-align="center" data-sortable="true">HOUSE #</th>
             <th data-field="address" data-halign="center" data-align="center" data-sortable="true">ADDRESS</th>
-            <th data-field="street" data-halign="center" data-align="center" data-sortable="true">STREET</th>
+            <!--<th data-field="street" data-halign="center" data-align="center" data-sortable="true">STREET</th>-->
             <th data-field="family_name" data-halign="center" data-align="center" data-sortable="true">FAMILY NAME</th>
         </tr>
     </thead>
@@ -87,7 +87,7 @@
                     </a>
                 </td>
                 <td>{{ house.address|default:"None Provided" }}</td>
-                <td>{{ house.street|default:"None Provided" }}</td>
+                <!--<td>{{ house.street|default:"None Provided" }}</td>-->
                 <td>{{ house.family_name|default:"None Provided" }}</td>
             </tr>
         {% endfor %}
@@ -107,11 +107,13 @@
                                 <p class="fs-6">%ADDRESS%</p>
                             </div>
                             <div class="row">
+                               <!--
                                 <div class="col col-md-auto">
                                     <div class="fw-extrabold w-auto">Street</div>
                                     <p>%STREET%</p>
                                 </div>
-                                <div class="col px-0">
+                               -->
+                                <div class="col">
                                     <div class="fw-extrabold text-nowrap">House Number</div>
                                     <p>%HOUSE_NUM%</p>
                                 </div>
