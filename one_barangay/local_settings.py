@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     "complaint",
     "ckeditor",
     "ckeditor_uploader",
+    "appointment",
+    "services",
 ]
 
 MIDDLEWARE = [
