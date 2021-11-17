@@ -34,19 +34,20 @@ class UserProfileFormView(ContextPageMixin, FormInvalidMixin, FormView):
           Render HttpResponse to complaint/home.html along with context data.
         """
         context = self.get_context_data(**kwargs)
-        complaint = (
-            firestore_db.collection("complaints")
-            .where("user_id", "==", request.session["user"]["user_id"])
-            .get()
-        )
-        user_appointments = (
-            firestore_db.collection("user_appointments")
-            .where("user_id", "==", request.session["user"]["user_id"])
-            .get()
-        )
+        if request.session.get("user"):
+            complaint = (
+                firestore_db.collection("complaints")
+                .where("user_id", "==", request.session["user"]["user_id"])
+                .get()
+            )
+            user_appointments = (
+                firestore_db.collection("user_appointments")
+                .where("user_id", "==", request.session["user"]["user_id"])
+                .get()
+            )
 
-        context["complaints"] = [doc.to_dict() for doc in complaint]
-        context["user_appointments"] = [doc.to_dict() for doc in user_appointments]
+            context["complaints"] = [doc.to_dict() for doc in complaint]
+            context["user_appointments"] = [doc.to_dict() for doc in user_appointments]
 
         return self.render_to_response(context)
 
