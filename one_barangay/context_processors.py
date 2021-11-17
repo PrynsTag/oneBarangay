@@ -11,13 +11,16 @@ def get_notification(request):
     Returns:
       A list the users notification.
     """
-    notification_data = (
-        firestore_db.collection("users")
-        .document(request.session["user"]["user_id"])
-        .collection("notification")
-        .order_by("time", direction="DESCENDING")
-        .stream()
-    )
+    if request.session.get("user"):
+        notification_data = (
+            firestore_db.collection("users")
+            .document(request.session["user"]["user_id"])
+            .collection("notification")
+            .order_by("time", direction="DESCENDING")
+            .stream()
+        )
+    else:
+        notification_data = []
     return {
         "notification_list": [notification.to_dict() for notification in list(notification_data)]
     }
