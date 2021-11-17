@@ -22,7 +22,7 @@ class Notification:
           None.
         """
         if user_id:
-            user_data = firestore_db.collection("users").document(user_id).to_dict()
+            user_data = firestore_db.collection("users").document(user_id).get().to_dict()
             if platform != "all":
                 registration_id = user_data.get(f"{platform}_notification")
             else:
