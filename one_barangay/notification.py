@@ -40,8 +40,8 @@ class Notification:
                 if platform != "all":
                     registration_id.append(user_data.get(f"{platform}_notification"))
                 else:
-                    registration_id.append(user_data["web_notification"])
-                    registration_id.append(user_data["mobile_notification"])
+                    registration_id.append(user_data.get("web_notification"))
+                    registration_id.append(user_data.get("mobile_notification"))
 
         registration_list = list(filter(None, registration_id))
         return registration_list[0] if len(registration_list) == 1 else registration_list
