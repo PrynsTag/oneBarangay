@@ -1,17 +1,61 @@
-<!DOCTYPE html>
-
 {% extends "layouts/base.html" %}
+
+{% load static %}
 
 {% block title %}
     Barangay Admin - Services
 {% endblock %}
 
-{% block content %}
-    <h1>Services</h1>
+{% block stylesheets %}
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <link href="{% static "services/services_card.css" %}" rel="stylesheet">
+{% endblock %}
 
-    <ul>
-        <li><a href="{% url "appointment:view-appointment" %}">Appointment</a></li>
-        <li><a href="{% url "complaint:index" %}">Complaints</a></li>
-        <li><a href="{% url "bulksched:index" %}">Bulk Schedule</a></li>
-    </ul>
+{% block content %}
+    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">Services</h1>
+            <p class="mb-0">List of Barangay Services</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <a href="{% url "appointment:document_request" %}">
+                    <div class="card-counter primary">
+                        <i class="fas fa-file-alt"></i>
+                        <span class="count-numbers">{{ request_count }}</span>
+                        <span class="count-name">Document Requests</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="#"></a>
+                <div class="card-counter danger">
+                    <i class="fas fa-calendar-check"></i>
+                    <span class="count-numbers">100</span>
+                    <span class="count-name">Appointment Query</span>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-counter success">
+                    <i class="fas fa-bullhorn"></i>
+                    <span class="count-numbers">6875</span>
+                    <span class="count-name">Complaints</span>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-counter info">
+                    <i class="fas fa-mail-bulk"></i>
+                    <span class="count-numbers">35</span>
+                    <span class="count-name">Bulk Schedule</span>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
