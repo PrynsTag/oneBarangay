@@ -12,6 +12,7 @@ from firebase_admin import firestore
 
 from announcement.forms import AnnouncementCreateForm, AnnouncementEditForm
 from one_barangay.mixins import ContextPageMixin, FormInvalidMixin
+from one_barangay.notification import Notification
 from one_barangay.settings import firebase_app
 
 
@@ -104,6 +105,11 @@ class AnnouncementCreateView(FormView):
         )
         # TODO: Go back to home after finished creating
         messages.success(self.request, "Post has been saved!")
+        notification = Notification()
+        notification.send_notification(
+            form.cleaned_data["title"],
+            safe(striptags(truncatewords(form.cleaned_data["body"], 25))),
+        )
 
         return super().form_valid(form)
 
