@@ -41,7 +41,9 @@ class OcrApiView(APIView):
             else:
                 logger.info("OCR result is cached!")
 
-        return JsonResponse(ocr_result, safe=False)
+        return JsonResponse(
+            {"house_data": [ocr_result[0]], "family_data": ocr_result[1]}, safe=False
+        )
 
 
 class DataVizApiView(APIView):
