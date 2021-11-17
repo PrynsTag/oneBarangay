@@ -3,6 +3,9 @@
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.http import HttpResponse, HttpResponseRedirect
+from django.template.defaultfilters import safe
+from django.template.defaultfilters import striptags
+from django.template.defaultfilters import truncatewords
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 from firebase_admin import firestore
@@ -42,7 +45,12 @@ class AnnouncementHomeView(ContextPageMixin, TemplateView):
         )
         featured_announcements = [doc.to_dict() for doc in featured_docs]
 
-        not_featured_docs = db.collection("announcements").where("featured", "==", False).stream()
+        not_featured_docs = (
+            db.collection("announcements")
+            .where("featured", "==", False)
+            .order_by("creation_date", direction="DESCENDING")
+            .stream()
+        )
         not_featured_announcements = [doc.to_dict() for doc in not_featured_docs]
         new_announcements = []
         old_announcements = []
