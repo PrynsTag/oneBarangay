@@ -33,11 +33,6 @@ class ComplaintBaseForm(forms.Form):
             }
         ),
     )
-    house_num = forms.CharField(
-        label="House Number",
-        label_suffix="",
-        widget=forms.TextInput(attrs={"class": "form-control text-black"}),
-    )
     complainant_name = forms.CharField(
         label="Complainant Name",
         label_suffix="",
@@ -206,7 +201,7 @@ class ComplaintCreateForm(ComplaintBaseForm):
         user = request.session["user"]
         self.fields["user_id"].initial = user.get("uid")
         self.fields["email"].initial = user.get("email")
-        self.fields["house_num"].initial = user.get("house_num")
+        if user.get("display_name"):
         self.fields["complainant_name"].initial = user.get("display_name")
         self.fields["contact_number"].initial = user.get("phone_number")
         self.fields["address"].initial = user.get("address")
@@ -230,15 +225,6 @@ class ComplaintCreateForm(ComplaintBaseForm):
             return self.fields["uid"].initial
         else:
             return self.fields["uid"].initial
-
-    def clean_house_num(self):
-        """Clean house_num form field manually."""
-        house_num = self.cleaned_data.get("house_num")
-
-        if house_num != self.fields["house_num"].initial:
-            return self.fields["house_num"].initial
-        else:
-            return self.fields["house_num"].initial
 
     def clean_complaint_status(self):
         """Clean clean_complaint_status form field manually."""
