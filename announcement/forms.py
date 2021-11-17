@@ -67,7 +67,6 @@ class AnnouncementBaseForm(forms.Form):
 
     thumbnail = forms.ImageField(
         validators=[validate_image],
-        required=False,
         widget=forms.ClearableFileInput(attrs={"class": "form-control"}),
     )
 
