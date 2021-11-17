@@ -561,9 +561,11 @@ class OcrDetailView(TemplateView):
 
             # Calculate Age
             try:
-                birth_date_dt = parser.parse(family_member["birth_date"])
+                birth_date_dt = parser.parse(family_member["date_of_birth"])
             # FIXME: Add server validation in ocr.
             except ParserError:
+                birth_date_dt = datetime.now() - timedelta(days=random.randrange(365, 9999))
+            except TypeError:
                 birth_date_dt = datetime.now() - timedelta(days=random.randrange(365, 9999))
 
             today = date.today()
