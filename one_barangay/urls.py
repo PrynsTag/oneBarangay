@@ -39,4 +39,6 @@ urlpatterns = [
         ),
         name="service-worker.js",
     ),
+    path("barangay-admin/appointment/", include("appointment.urls")),
+    path("barangay-admin/services/", include("services.urls")),
 ]
