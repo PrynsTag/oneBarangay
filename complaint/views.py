@@ -27,6 +27,7 @@ from complaint.forms import (
 )
 from one_barangay.local_settings import logger
 from one_barangay.mixins import FormInvalidMixin
+from one_barangay.notification import Notification
 from one_barangay.settings import firebase_app
 
 
@@ -284,6 +285,13 @@ class ComplaintDetailView(FormInvalidMixin, FormView):
                     changed_fields[field] = form.cleaned_data[field]
 
         if changed_fields:
+            if "complaint_status" in changed_fields:
+                notification = Notification()
+                notification.send_notification(
+                    "Your complaint has been processed.",
+                    f"Your complaint has changed status to {changed_fields['complaint_status']}",
+                    form.cleaned_data["user_id"]
+                )
             db = firestore.client(app=firebase_app)
             # Update complaints collection.
             (
