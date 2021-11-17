@@ -290,7 +290,7 @@ class ComplaintDetailView(FormInvalidMixin, FormView):
                 notification.send_notification(
                     "Your complaint has been processed.",
                     f"Your complaint has changed status to {changed_fields['complaint_status']}",
-                    form.cleaned_data["user_id"]
+                    form.cleaned_data["user_id"],
                 )
             db = firestore.client(app=firebase_app)
             # Update complaints collection.
