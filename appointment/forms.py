@@ -1,7 +1,6 @@
 """Appointment forms."""
-import datetime
-
 from django import forms
+from django.forms import fields
 
 
 class AppointmentVerifyUser(forms.Form):
@@ -15,17 +14,17 @@ class AppointmentVerifyUser(forms.Form):
 class BarangayCertificate(forms.Form):
     """Class for Barangay Certificate."""
 
-    date = forms.DateField(label="Date", initial=datetime.date.today())
-    full_name = forms.CharField(label="Fullname", max_length=100, min_length=2, required=True)
+    date = fields.DateField(widget=forms.widgets.DateInput(attrs={"type": "date"}))
+    fullname = forms.CharField(label="Fullname", max_length=100, min_length=2, required=True)
     address = forms.CharField(label="Address", max_length=200, required=True)
     year = forms.CharField(
         label="Enter year of residency", max_length=4, min_length=4, required=True
     )
-    issued_for = forms.CharField(label="Issued for", required=True)
+    issued = forms.CharField(label="Issued for", required=True)
     conforme = forms.CharField(label="Conforme", required=True)
-    ctc_no = forms.CharField(label="CTC No.", required=True)
+    ctc = forms.CharField(label="CTC No.", max_length=15, required=True)
     region = forms.CharField(label="Region", required=True)
-    or_no = forms.CharField(label="OR No.", required=True)
+    orno = forms.CharField(label="OR No.", required=True)
     amount = forms.DecimalField(label="Amount", decimal_places=2, required=True)
-    valid_until = forms.DateField(label="Valid Until", required=True)
-    prepared_by = forms.CharField(label="Prepared by", required=True)
+    valid = fields.DateField(widget=forms.widgets.DateInput(attrs={"type": "date"}))
+    prepared = forms.CharField(label="Prepared by", required=True)
