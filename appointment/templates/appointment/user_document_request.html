@@ -154,30 +154,6 @@
 
 {% block scripts %}
     <script type="text/javascript">
-
-        {% if document_data.user_verified %}
-            Swal.fire({
-                icon: "success",
-                title: "Success!",
-                text: "User Verified",
-                showCancelButton: true,
-                showConfirmButton: true,
-                timer: 3000
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire('Request Approved', '', 'success').then(((result => {
-                        if (result.isConfirmed) {
-                            {#window.location = "{% url "appointment:document_issue" document_data.document_id %}"#}
-                        }
-                    })))
-                } else if (result.isDenied()) {
-                    Swal.fire("Request Cancelled", '', 'error')
-                }
-            });
-        {% endif %}
-    </script>
-
-    <script type="text/javascript">
         $(document).ready(function () {
             $('#example').DataTable({
                 "paging": true,
