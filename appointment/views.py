@@ -1,11 +1,15 @@
 """Create your Appointment views here."""
 import datetime
+
+# Firebase
+import decimal
 import json
 import logging
 
-# Firebase
+import papersize
 from dateutil.relativedelta import relativedelta
 
+# from django.core.files.storage import default_storage
 # from django.core.files.storage import default_storage
 from django.http import Http404, JsonResponse
 from django.shortcuts import HttpResponseRedirect, render
@@ -81,20 +85,32 @@ def user_document_verification(request, document_request_id):
         db.collection("document_request").document(document_request_id).get()
     ).to_dict()
 
-    document_list = []
+    if user_document_data["user_verified"]:
+        return HttpResponseRedirect(
+            reverse(
+                "appointment:user_issuing_list",
+                kwargs={
+                    "document_request_id": user_document_data["document_id"],
+                    "user_id": user_document_data["user_uid"],
+                },
+            )
+        )
 
-    for document in user_document_data["document"]:
-        document_list.append(document["document_name"])
+    else:
+        document_list = []
 
-    user_document_data["document_list"] = document_list
+        for document in user_document_data["document"]:
+            document_list.append(document["document_name"])
 
-    # user_info = db.collection("users").document(user_document_data["user_uid"])
+        user_document_data["document_list"] = document_list
 
-    return render(
-        request,
-        "appointment/user_document_request.html",
-        {"document_data": user_document_data},
-    )
+        # user_info = db.collection("users").document(user_document_data["user_uid"])
+
+        return render(
+            request,
+            "appointment/user_document_request.html",
+            {"document_data": user_document_data},
+        )
 
 
 def user_document_cancel(request, document_request_id):
@@ -231,9 +247,10 @@ def user_selection_data(request, document_request_id):
 
         fb_user_data_list = [data.to_dict() for data in fb_user_data]
 
-        # db.collection("document_request").document(document_request_id).update(
-        #     {"user_verified": True}
-        # )
+        # Change status from request to process
+        db.collection("document_request").document(document_request_id).update(
+            {"user_verified": True, "status": "process"}
+        )
 
         return JsonResponse(
             {
@@ -304,10 +321,23 @@ def user_issuing_list(request, document_request_id, user_id):
 
     user_data = (db.collection("users").document(user_id).get()).to_dict()
 
+    document_list_status = True
+
+    for document_data in user_document_data["document"]:
+        if not document_data["ready_issue"]:
+            document_list_status = False
+            break
+        else:
+            continue
+
     return render(
         request,
         "appointment/user_issuing_list.html",
-        {"user_document_data": user_document_data, "user_data": user_data},
+        {
+            "user_document_data": user_document_data,
+            "user_data": user_data,
+            "document_list_status": document_list_status,
+        },
     )
 
 
@@ -339,12 +369,12 @@ def document_issuing_success(request, document_id, document_slugify):
     )
 
 
-def document_issuing_process(request, document_id, document_slugify):
+def document_issuing_process(request, document_request_id, document_slugify):
     """Input information in document.
 
     Args:
       request: URL request
-      document_id: document ID in firebase
+      document_request_id: document ID in firebase
       document_slugify: document name in slugify
 
     Returns:
@@ -354,44 +384,178 @@ def document_issuing_process(request, document_id, document_slugify):
         db.collection("admin_settings")
         .document("document")
         .collection(document_slugify)
-        .document("test-barangay-certificate")
+        .where("active", "==", True)
         .get()
-    ).to_dict()
+    )
+
+    document_settings_data = [data.to_dict() for data in document_settings]
+
+    if len(document_settings_data) != 1:
+        raise Http404("Multiple active documents.")
+
+    document_settings_data = document_settings_data[0]
 
     if document_settings is None:
         raise Http404("Page not found.")
 
     else:
-
-        user_data = (db.collection("document_request").document(document_id).get()).to_dict()
+        user_document_data = (
+            db.collection("document_request").document(document_request_id).get()
+        ).to_dict()
 
         if document_slugify == "barangay-certificate":
-            document_validity = datetime.date.today() + relativedelta(months=+3)
-            first_name = user_data["first_name"]
-            middle_name = user_data["middle_name"]
-            last_name = user_data["last_name"]
-            initial_dict = {
-                "date": datetime.date.today(),
-                "full_name": f"{first_name} {middle_name} {last_name}",
-                "address": user_data["address"],
-                "year": datetime.date.today().year,
-                "issued_for": user_data["appointment_purpose"],
-                "valid_until": document_validity,
-            }
+            for document_data in user_document_data["document"]:
+                if document_data["slugify"] == document_slugify:
+                    if document_data["ready_issue"]:
+                        form = BarangayCertificate(
+                            request.POST or None, initial=document_data["document_data"]
+                        )
 
-            form = BarangayCertificate(request.POST or None, initial=initial_dict)
+                        combine_document_list = []
 
-            return render(
-                request,
-                "appointment/document_issuing_process.html",
-                {"form": form},
-            )
+                        for settings_data in document_settings_data["document_format"]:
+                            data = document_data["document_data"].get(settings_data["name"])
+                            settings_data["value"] = data
+                            combine_document_list.append(settings_data)
 
+                        paper_size = papersize.parse_papersize(
+                            document_settings_data["paper_size"], "mm"
+                        )
+
+                        return render(
+                            request,
+                            "appointment/document_issuing_process.html",
+                            {
+                                "form": form,
+                                "user_document_data": user_document_data,
+                                "document_slugify": document_slugify,
+                                "document_info_data": combine_document_list,
+                                "document_settings": document_settings_data,
+                                "paper_width": float(paper_size[0]),
+                                "paper_length": float(paper_size[1]),
+                                "ready_issue": True,
+                            },
+                        )
+                    else:
+                        document_validity = datetime.date.today() + relativedelta(months=+3)
+                        first_name = user_document_data["first_name"]
+                        middle_name = user_document_data["middle_name"]
+                        last_name = user_document_data["last_name"]
+                        initial_dict = {
+                            "date": datetime.date.today(),
+                            "fullname": f"{first_name} {middle_name} {last_name}",
+                            "address": user_document_data["address"],
+                            "valid": document_validity,
+                        }
+
+                        form = BarangayCertificate(request.POST or None, initial=initial_dict)
+
+                        return render(
+                            request,
+                            "appointment/document_issuing_process.html",
+                            {
+                                "form": form,
+                                "user_document_data": user_document_data,
+                                "document_slugify": document_slugify,
+                                "ready_issue": False,
+                            },
+                        )
+                else:
+                    continue
     return render(
         request,
         "appointment/document_issuing_process.html",
-        {"document_settings": document_settings},
+        {
+            "document_settings": document_settings_data,
+            "user_document_data": user_document_data,
+            "document_slugify": document_slugify,
+            "ready_issue": False,
+        },
     )
+
+
+def document_process_change_status(request, document_request_id):
+    """Change document status from process to get.
+
+    Args:
+      request: URL request
+      document_request_id: Document ID
+
+    Returns:
+        Update document status in firebase from process to get.
+    """
+    firestoreQuery.update_appointment_status(
+        document_id=document_request_id, collection_name="document_request"
+    )
+
+    return HttpResponseRedirect(reverse("appointment:document_request"))
+
+
+def document_input_info(request, document_request_id, document_slugify):
+    """Get form value after user submits the document request info.
+
+    Args:
+      request: URL request
+      document_request_id: Document ID
+      document_slugify: document name in slugify
+
+    Returns:
+        Update document request info in database.
+    """
+    document_request_ref = db.collection("document_request")
+    user_docu_data = (document_request_ref.document(document_request_id).get()).to_dict()
+    docu_settings_data = (
+        db.collection("admin_settings")
+        .document("document")
+        .collection(document_slugify)
+        .where("active", "==", True)
+        .get()
+    )
+    docu_settings_data_list = [data.to_dict() for data in docu_settings_data]
+
+    if len(docu_settings_data_list) == 0 or len(docu_settings_data_list) > 1:
+        raise Http404("Document error.")
+
+    else:
+        if document_slugify == "barangay-certificate":
+            form = BarangayCertificate(request.POST or None)
+            form_data = {}
+
+            if form.is_valid():
+                for data in docu_settings_data[0].get("document_format"):
+                    if isinstance(form.cleaned_data.get(data["name"]), decimal.Decimal):
+                        form_data[data["name"]] = float(form.cleaned_data.get(data["name"]))
+                    elif isinstance(form.cleaned_data.get(data["name"]), datetime.date):
+                        input_date = form.cleaned_data.get(data["name"])
+                        form_data[data["name"]] = datetime.datetime(
+                            year=input_date.year, month=input_date.month, day=input_date.day
+                        )
+                    else:
+                        form_data[data["name"]] = form.cleaned_data.get(data["name"])
+
+                update_docu_data = []
+
+                for docu_data in user_docu_data["document"]:
+                    if docu_data["slugify"] == document_slugify:
+                        docu_data["document_data"] = form_data
+                        docu_data["ready_issue"] = True
+                        update_docu_data.append(docu_data)
+                    else:
+                        update_docu_data.append(docu_data)
+
+                db.collection("document_request").document(document_request_id).update(
+                    {"document": update_docu_data}
+                )
+
+                return HttpResponseRedirect(
+                    reverse(
+                        "appointment:document_issuing_process",
+                        kwargs={
+                            "document_request_id": document_request_id,
+                            "document_slugify": document_slugify,
+                        },
+                    )
+                )
 
 
 def add_document_request(request, account_num):
@@ -409,14 +573,14 @@ def add_document_request(request, account_num):
 
 
 def choose_document_request(request, document_request_id):
-    """.
+    """Display user's document request info.
 
     Args:
       request: URL request
       document_request_id: Document ID
 
     Returns:
-        Render document request list.
+        Render user's document request information.
     """
     request_data = firestoreQuery.get_document_data(
         collection_name="document_request", document_id=document_request_id
