@@ -48,7 +48,7 @@ urlpatterns = [
         name="document_issuing_success",
     ),
     path(
-        "user/document/issuing/process/<str:document_id>/<str:document_slugify>",
+        "user/document/issuing/process/<str:document_request_id>/<str:document_slugify>",
         views.document_issuing_process,
         name="document_issuing_process",
     ),
@@ -63,4 +63,14 @@ urlpatterns = [
         name="user_selection_data",
     ),
     path("user/verification/selection/filter", views.user_filter, name="user_filter"),
+    path(
+        "user/document/info/<str:document_request_id>/<str:document_slugify>",
+        views.document_input_info,
+        name="document_input_info",
+    ),
+    path(
+        "user/document/process/status/<str:document_request_id>",
+        views.document_process_change_status,
+        name="document_process_change_status",
+    ),
 ]
