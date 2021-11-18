@@ -3,9 +3,7 @@
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template.defaultfilters import safe
-from django.template.defaultfilters import striptags
-from django.template.defaultfilters import truncatewords
+from django.template.defaultfilters import safe, striptags, truncatewords
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 from firebase_admin import firestore
