@@ -4,13 +4,12 @@ import uuid
 from random import SystemRandom
 
 from django.http import Http404
+from django.utils.text import slugify
 from faker import Faker
 from firebase_admin import auth, firestore
 from firebase_admin.exceptions import AlreadyExistsError
-from slugify import slugify
 
 from appointment.custom_class.encrypter import Encrypter
-from ocr.scripts import Script
 from one_barangay.scripts.service_account import firestore_auth
 
 auth_dummy = firestore_auth(name="dummy_app")
@@ -187,10 +186,6 @@ class Dummy:
                         "created_on": str(datetime.datetime.now()),
                         "user_uid": user_uid,
                     }
-
-                    Script().append_to_local_json_file(
-                        new_data=user_account_data, filename="dummy"
-                    )
 
                     doc_ref_account.set(user_account_data, merge=True)
 
