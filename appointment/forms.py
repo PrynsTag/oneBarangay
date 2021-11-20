@@ -3,6 +3,16 @@ from django import forms
 from django.forms import fields
 
 
+document_list = [
+    ("barangay-certificate", "Barangay Certificate"),
+    ("barangay-clearance", "Barangay Clearance"),
+    ("barangay-cedula", "Barangay Cedula"),
+    ("barangay-local-employment", "Barangay Local Employment"),
+    ("barangay-verification", "Barangay Verification"),
+    ("certificate-of-indigency", "Certificate of Indigency"),
+]
+
+
 class AppointmentVerifyUser(forms.Form):
     """ID Verification class."""
 
