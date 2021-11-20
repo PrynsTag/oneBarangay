@@ -1,4 +1,6 @@
 """Hello World."""
+import datetime
+
 from django.shortcuts import render
 
 # Database
@@ -21,13 +23,40 @@ def index(request):
       : Display Service Page
     """
     # For Document Request
-    request_status = db.collection("document_request").where("status", "==", "request").get()
+    user_sess_data = request.session["user"]
+
+    document_ref = db.collection("document_request")
+
+    request_status = None
+    if user_sess_data["role"] in ["admin", "head_admin", "secretary", "worker"]:
+        request_status = document_ref.where("status", "==", "request").get()
+    else:
+        request_status = (
+            document_ref.where("status", "==", "request")
+            .where("user_id", "==", user_sess_data["user_id"])
+            .get()
+        )
+
     request_list = [request.to_dict() for request in request_status]
 
     # For Appointment Query
+    appointment_ref = db.collection("appointments")
+    appointments = None
 
-    # For Complaints
+    if user_sess_data["role"] in ["admin", "head_admin", "secretary", "worker"]:
+        appointments = appointment_ref.stream()
+    else:
+        appointments = appointment_ref.where("user_id", "==", user_sess_data["user_id"]).stream()
 
-    # For Bulk Schedule
+    appointments_data = [data.to_dict() for data in appointments]
 
-    return render(request, "services/service.html", {"request_count": len(request_list)})
+    return render(
+        request,
+        "services/service.html",
+        {
+            "request_count": len(request_list),
+            "appointment_count": len(appointments_data),
+            "date": datetime.date.today(),
+            "user_sess_data": user_sess_data,
+        },
+    )
