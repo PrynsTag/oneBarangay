@@ -31,8 +31,8 @@
                                 <div class="user-avatar">
                                     <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Maxwell Admin">
                                 </div>
-                                <h5 class="user-name">{{ user_document_data.first_name }} {{ user_document_data.last_name }}</h5>
-                                <h6 class="user-email">{{ user_document_data.account_type }}</h6>
+                                <h5 class="user-name">{{ user_document_data.first_name }} {{ user_document_data.middle_name }} {{ user_document_data.last_name }}</h5>
+                                <h6 class="user-email">{{ user_document_data.role|capfirst }}</h6>
                                 <button type="button" class="btn btn-outline-primary btn-sm my-2">View Profile</button>
                             </div>
                         </div>
@@ -70,13 +70,13 @@
                                 <div class="container">
                                     {% for document in user_document_data.document %}
                                         {% if document.ready_issue %}
-                                            <a href="{% url "appointment:document_issuing_process" user_document_data.document_id document.slugify %}">
+                                            <a href="{% url "appointment:docu_issue_process" user_document_data.document_id document.slugify %}">
                                                 <div class="notice notice-success">
                                                     <strong>Success</strong> {{ document.document_name }}
                                                 </div>
                                             </a>
                                         {% else %}
-                                            <a href="{% url "appointment:document_issuing_process" user_document_data.document_id document.slugify %}">
+                                            <a href="{% url "appointment:docu_issue_process" user_document_data.document_id document.slugify %}">
                                                 <div class="notice notice-info">
                                                     <strong>In Process</strong> {{ document.document_name }}
                                                 </div>
