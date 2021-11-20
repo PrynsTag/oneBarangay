@@ -3,6 +3,7 @@ import datetime
 import uuid
 from random import SystemRandom
 
+import pytz
 from django.http import Http404
 from django.utils.text import slugify
 from faker import Faker
@@ -23,7 +24,13 @@ document = [
     "Barangay Certificate",
 ]
 
-status = ["request", "in_progress", "get", "completed"]
+status_list = ["request", "progress", "get", "complete"]
+
+citizenship_list = ["Foreigner", "Filipino"]
+
+civil_status_list = ["Married", "Widowed", "Separated", "Divorced", "Single"]
+
+role_list = ["resident", "admin", "secretary", "worker"]
 
 cryptogen = SystemRandom()
 fake = Faker()
@@ -212,7 +219,7 @@ class Dummy:
                                 "ready_issue": False,
                             }
                         ],
-                        "status": status[cryptogen.randrange(0, len(status))],
+                        "status": status_list[cryptogen.randrange(0, len(status_list))],
                         "user_uid": user_uid,
                         "account_type": account_type,
                         "start_appointment": result_utc,
@@ -233,82 +240,67 @@ class Dummy:
                     else:
                         temp_minute += time_interval
 
-    def add_document_request(self, account_num: int):
+    def add_document_request(self):
         """For testing only.
 
         Args:
           self: str: input default password
-          account_num: int: number of account request
 
         Returns:
             adds document request
         """
-        for _ in range(account_num):
+        select_document = document[cryptogen.randrange(0, len(document))]
+        sentence = fake.sentence(nb_words=10)
+        appointment_image = (
+            "https://grit.ph/wp-content/uploads/2020/05/sss-umid-emv-card-1-1030x659.png"
+        )
+        user_col = self.db.collection("users").stream()
 
-            first_name = fake.first_name()
-            middle_name = fake.first_name()
-            last_name = fake.last_name()
-            address = fake.address()
-            email = fake.email(domain=None)
-            contact_no = fake.phone_number()
-            account_type = "resident"
-            sentence = fake.sentence(nb_words=10)
-            image = fake.file_name(category="image", extension="jpeg")
+        for user in user_col:
+            document_request_ref = self.db.collection("document_request").document()
+            document_request_ref_id = document_request_ref.id
+            user_data = user.to_dict()
 
-            try:
-                # Create Account in Firebase Authentication
-                # auth.create_user(email=email, password=password)
-                pass
+            # Adding user appointments in firestore
+            document_request_data = {
+                "document": [
+                    {
+                        "document_name": select_document,
+                        "slugify": slugify(select_document),
+                        "ready_issue": False,
+                        "info_status": False,
+                    }
+                ],
+                # "status": status[cryptogen.randrange(0, len(status))],
+                "status": "request",
+                "appointment_purpose": sentence,
+                "appointment_image": appointment_image,
+                "created_on": datetime.datetime.now(tz=pytz.timezone("Asia/Manila")),
+                "document_id": document_request_ref_id,
+                "user_verified": False,
+                "user_id": user_data["user_id"],
+                "first_name": user_data["first_name"],
+                "middle_name": user_data["middle_name"],
+                "last_name": user_data["last_name"],
+                "contact_number": user_data["contact_number"],
+                "email": user_data["email"],
+                "role": user_data["role"],
+                "address": user_data["address"],
+                "photo_url": user_data["photo_url"],
+            }
 
-            except AlreadyExistsError as e:
-                raise Http404 from e
+            document_request_ref.set(document_request_data, merge=True)
 
-            else:
+            document_col = (
+                self.db.collection("users")
+                .document(user_data["user_id"])
+                .collection("document_request")
+                .document()
+            )
 
-                # Get UID on created account in Firebase Authentication
-                # user_uid = auth.get_user_by_email(email=email).uid
-                user_uid = str(uuid.uuid4())
-
-                doc_ref_users = self.db.collection("users").document(user_uid)
-                document_request_ref = self.db.collection("document_request").document()
-                select_document = document[cryptogen.randrange(0, len(document))]
-
-                # Adding user appointments in firestore
-                document_request_data = {
-                    "document": [
-                        {
-                            "document_name": select_document,
-                            "slugify": slugify(select_document),
-                            "ready_issue": False,
-                        }
-                    ],
-                    # "status": status[cryptogen.randrange(0, len(status))],
-                    "status": "request",
-                    "user_uid": user_uid,
-                    "appointment_purpose": sentence,
-                    "appointment_image": image,
-                    "created_on": datetime.datetime.now(),
-                    "document_id": document_request_ref.id,
-                    "user_verified": False,
-                }
-
-                document_request_ref.set(document_request_data)
-
-                # Adding user accounts in firestore
-                user_account_data = {
-                    "first_name": first_name,
-                    "middle_name": middle_name,
-                    "last_name": last_name,
-                    "address": address,
-                    "email": email,
-                    "contact_no": contact_no,
-                    "account_type": account_type,
-                    "created_on": str(datetime.datetime.now()),
-                    "user_uid": user_uid,
-                    "document_request": [document_request_ref.id],
-                }
-
-                doc_ref_users.set(user_account_data, merge=True)
+            document_col.set(
+                document_request_data | {"user_document_request_id": document_col.id}, merge=True
+            )
 
     def document_id(self, year: int, month: int, day: int, hour: int, minute: int):
         """Create document ID for firebase firestore document.
