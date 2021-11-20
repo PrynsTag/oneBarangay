@@ -1,0 +1,117 @@
+{% extends "layouts/base.html" %}
+
+{% load poll_extras %}
+
+{% load static %}
+
+{% block title %}
+    Barangay Admin - Appointment Edit Document Request
+{% endblock %}
+
+{% block stylesheets %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link href="{% static "appointment/assets/css/docu_issue_process.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">Document Info.</h1>
+            <p class="mb-0">Display document information</p>
+        </div>
+    </div>
+
+    {% load crispy_forms_tags %}
+
+    <form action="{% url "appointment:docu_input_info" appointment_data.appointment_id document_slugify %}"
+          method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <a class="btn btn-light"
+           href="{% url "appointment:view_appointment" appointment_data.appointment_id %}">Cancel</a>
+        <input class="btn btn-secondary" type="submit" value="Generate">
+
+        {% if info_status %}
+            <button class="btn btn-primary btn-done" id="btn-done">Done</button>
+        {% endif %}
+    </form>
+
+    <div id="example1"></div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
+            integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/"
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.7/pdfobject.min.js"
+            integrity="sha512-g16L6hyoieygYYZrtuzScNFXrrbJo/lj9+1AYsw+0CYYYZ6lx5J3x9Yyzsm+D37/7jMIGh0fDqdvyYkNWbuYuA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+            integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            {% if info_status %}
+                function toDataURL(url, callback) {
+                    let xhr = new XMLHttpRequest();
+                    xhr.onload = function () {
+                        let reader = new FileReader();
+                        reader.onloadend = function () {
+                            callback(reader.result);
+                        }
+                        reader.readAsDataURL(xhr.response);
+                    };
+                    xhr.open('GET', url);
+                    xhr.responseType = 'blob';
+                    xhr.send();
+                }
+
+                toDataURL("{{ document_settings.file_url }}", function (dataURL) {
+                    let doc = new jsPDF("{{ document_settings.orientation }}", "mm", "{{ document_settings.paper_size }}");
+                    doc.addImage(dataURL, 0, 0, {{ paper_width }}, {{ paper_length }});
+
+                    {% for data in document_info_data %}
+                        doc.setFont("{{ data.font }}");
+                        doc.setFontType("{{ data.font_type }}");
+                        doc.setFontSize({{ data.font_size }});
+                        doc.text("{{ data.value }}", {{ data.offset_x }}, {{ data.offset_y }}, "{{ data.align }}");
+                    {% endfor %}
+
+                    PDFObject.embed(doc.output("datauristring"), "#example1");
+                });
+            {% endif %}
+
+            $(".btn-done").click(function (e) {
+                e.preventDefault()
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want to continue",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            {
+                                title: 'Success!',
+                                text: 'Your document information is done.',
+                                icon: 'success',
+                                confirmButtonText: 'Yes!',
+                            }
+                        ).then((result) => {
+                            window.location.href = "{% url "appointment:appointment_update_document" appointment_data.appointment_id document_slugify %}";
+                        })
+                    }
+                })
+            });
+        });
+    </script>
+
+{% endblock %}
