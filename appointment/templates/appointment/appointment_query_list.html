@@ -37,38 +37,38 @@
 
 {% block table_content %}
     <thead class="table-dark">
-    <tr>
-        <th data-field="appointment_id" data-sortable="true" data-visible="false" class="border-0">APPOINTMENT I.D</th>
-        <th data-field="start_appointment" data-sortable="true" class="border-0">START APPOINTMENT</th>
-        <th data-field="end_appointment" data-sortable="true" class="border-0">END APPOINTMENT</th>
-        <th data-field="status" data-sortable="true" class="border-0">STATUS</th>
-        <th data-field="first_name" data-sortable="true">FIRST NAME</th>
-        <th data-field="middle_name" data-sortable="true">MIDDLE NAME</th>
-        <th data-field="last_name" data-sortable="true">LAST NAME</th>
-        <th data-field="document" data-sortable="true">DOCUMENT</th>
-        <th data-field="purpose" data-formatter="createdFormatter" data-sortable="true" class="border-0">PURPOSE</th>
-        <th data-field="contact_number" data-sortable="true" class="border-0">CONTACT NUMBER</th>
-        <th data-field="address" data-sortable="true" class="border-0">ADDRESS</th>
-        <th data-field="created_on" data-sortable="true" class="border-0">CREATED ON</th>
-    </tr>
+        <tr>
+            <th data-field="appointment_id" data-sortable="true" data-visible="false" class="border-0">APPOINTMENT I.D</th>
+            <th data-field="start_appointment" data-sortable="true" class="border-0">START APPOINTMENT</th>
+            <th data-field="end_appointment" data-sortable="true" class="border-0">END APPOINTMENT</th>
+            <th data-field="status" data-sortable="true" class="border-0">STATUS</th>
+            <th data-field="first_name" data-sortable="true">FIRST NAME</th>
+            <th data-field="middle_name" data-sortable="true">MIDDLE NAME</th>
+            <th data-field="last_name" data-sortable="true">LAST NAME</th>
+            <th data-field="document" data-sortable="true">DOCUMENT</th>
+            <th data-field="purpose" data-formatter="createdFormatter" data-sortable="true" class="border-0">PURPOSE</th>
+            <th data-field="contact_number" data-sortable="true" class="border-0">CONTACT NUMBER</th>
+            <th data-field="address" data-sortable="true" class="border-0">ADDRESS</th>
+            <th data-field="created_on" data-sortable="true" class="border-0">CREATED ON</th>
+        </tr>
     </thead>
     <tbody>
-    {% for appointment in appointments_data %}
-        <tr>
-            <td>{{ appointment.appointment_id }}</td>
-            <td>{{ appointment.start_appointment }}</td>
-            <td>{{ appointment.end_appointment }}</td>
-            <td>{{ appointment.status }}</td>
-            <td>{{ appointment.first_name }}</td>
-            <td>{{ appointment.middle_name }}</td>
-            <td>{{ appointment.last_name }}</td>
-            <td>{{ appointment.document|unordered_list }}</td>
-            <td>{{ appointment.appointment_purpose }}</td>
-            <td>{{ appointment.contact_number }}</td>
-            <td>{{ appointment.address }}</td>
-            <td>{{ appointment.created_on }}</td>
-        </tr>
-    {% endfor %}
+        {% for appointment in appointments_data %}
+            <tr>
+                <td>{{ appointment.appointment_id }}</td>
+                <td>{{ appointment.start_appointment }}</td>
+                <td>{{ appointment.end_appointment }}</td>
+                <td>{{ appointment.status }}</td>
+                <td>{{ appointment.first_name }}</td>
+                <td>{{ appointment.middle_name }}</td>
+                <td>{{ appointment.last_name }}</td>
+                <td>{{ appointment.document|unordered_list }}</td>
+                <td>{{ appointment.appointment_purpose }}</td>
+                <td>{{ appointment.contact_number }}</td>
+                <td>{{ appointment.address }}</td>
+                <td>{{ appointment.created_on }}</td>
+            </tr>
+        {% endfor %}
     </tbody>
 {% endblock table_content %}
 
@@ -86,8 +86,8 @@
                                     </div>
                                     <div class="col-3 p-0 d-flex justify-content-end">
                                         <a class="btn mx-1 text-end"
-                                           onclick="redirectToUrl('{% url "appointment:view_appointment" appointment_id=0 %}', '%APPOINTMENT_ID%')"
-                                           data-toggle="tooltip" data-placement="top" title="View">
+                                            onclick="redirectToUrl('{% url "appointment:view_appointment" appointment_id=0 %}', '%APPOINTMENT_ID%')"
+                                            data-toggle="tooltip" data-placement="top" title="View">
                                             <i class="fas fa-eye fa-1x"></i>
                                         </a>
                                     </div>
@@ -132,20 +132,20 @@
                             {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
                                 <div class="col-12 col-lg-12 pt-5 d-flex justify-content-center">
                                     <a class="btn btn-outline-danger mx-1" id="btn-cancel"
-                                       onclick="redirectToUrl('{% url "appointment:appointment_cancel" appointment_id=0 %}', '%APPOINTMENT_ID%')"
-                                       data-toggle="tooltip" data-placement="top" title="Cancel">
+                                        onclick="redirectToUrl('{% url "appointment:appointment_cancel" appointment_id=0 %}', '%APPOINTMENT_ID%')"
+                                        data-toggle="tooltip" data-placement="top" title="Cancel">
                                         <i class="fas fa-calendar-times"></i>
                                         Cancel
                                     </a>
                                     <a class="btn btn-outline-primary mx-1"
-                                       onclick="redirectToUrl('{% url "appointment:reschedule_appointment" appointment_id=0 %}', '%APPOINTMENT_ID%')"
-                                       data-toggle="tooltip" data-placement="top" title="Reschedule">
+                                        onclick="redirectToUrl('{% url "appointment:reschedule_appointment" appointment_id=0 %}', '%APPOINTMENT_ID%')"
+                                        data-toggle="tooltip" data-placement="top" title="Reschedule">
                                         <i class="fas fa-calendar-alt"></i>
                                         Reschedule
                                     </a>
                                     <a class="btn btn-outline-info mx-1"
-                                       onclick="redirectToUrl('{% url "appointment:appointment_complete" appointment_id=0 %}', '%APPOINTMENT_ID%')"
-                                       data-toggle="tooltip" data-placement="top" title="Complete">
+                                        onclick="redirectToUrl('{% url "appointment:appointment_complete" appointment_id=0 %}', '%APPOINTMENT_ID%')"
+                                        data-toggle="tooltip" data-placement="top" title="Complete">
                                         <i class="fas fa-check"></i>
                                         Complete
                                     </a>
