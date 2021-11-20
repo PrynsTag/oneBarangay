@@ -34,8 +34,14 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <h5 class="test-test-test">Pending Requests</h5>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-end h-50">
+                                <a class="btn btn-secondary mx-2" href="{% url "appointment:my_document_request" %}">My
+                                    request</a>
+                                <a class="btn btn-primary mx-2" href="{% url "appointment:request_document" %}">Request
+                                    Document</a>
                             </div>
                         </div>
                         <table id="example" class="table table-striped" style="width: 100%">
@@ -53,19 +59,19 @@
                                                     <div class="media">
                                                         <div class="pull-left me-3">
                                                             <img class="rounded-circle"
-                                                                src="https://bootdey.com/img/Content/avatar/avatar1.png"
+                                                                src="{{ data.photo_url }}"
                                                                 alt="user-profile">
                                                         </div>
                                                         <div class="media-body">
-                                                            <h4 class="media-heading">{{ data.firstname }} {{ data.middle_name }} {{ data.last_name }}
-                                                                <small>Resident</small></h4>
+                                                            <h4 class="media-heading">{{ data.first_name }} {{ data.middle_name }} {{ data.last_name }}
+                                                                <small>{{ data.role|capfirst }}</small></h4>
                                                             <div class="media-content">
                                                                 <div class="row py-1">
                                                                     <div class="col-6"><i
                                                                         class="fas fa-map-marker-alt me-2"></i> {{ data.address }}
                                                                     </div>
                                                                     <div class="col-6"><i
-                                                                        class="fas fa-mobile me-2"></i> {{ data.contact_no }}
+                                                                        class="fas fa-mobile me-2"></i> {{ data.contact_number }}
                                                                     </div>
                                                                 </div>
                                                                 <div class="row py-1">
@@ -140,7 +146,7 @@
                         ).then((result) => {
                             let button_id = $(this).data("id")
                             let location_url = '{% url "appointment:document_cancel" %}';
-                            window.location.href=location_url.concat(button_id)
+                            window.location.href = location_url.concat(button_id)
                         })
                     }
                 })
