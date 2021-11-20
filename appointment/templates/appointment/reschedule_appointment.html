@@ -1,0 +1,93 @@
+{% extends "layouts/base.html" %}
+{% load poll_extras %}
+
+{% load static %}
+
+{% block title %}
+    Barangay Admin - Appointment Reschedule
+{% endblock %}
+
+{% block stylesheets %}
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+    <link href="{% static "appointment/assets/css/appointment_schedule.css" %}" rel="stylesheet">
+    {{ form.media.css }}
+{% endblock %}
+
+{% block content %}
+    <a href="{% url "appointment:appointment_query_list" %}">Back</a>
+    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">Appointment Reschedule</h1>
+            <p class="mb-0">Select date and time of your appointment.</p>
+        </div>
+    </div>
+    {% load crispy_forms_tags %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <form action="{% url "appointment:reschedule_appointment" appointment_id %}" method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-center">
+                                <a class="btn btn-secondary mx-2" href="{% url "appointment:appointment_query_list" %}">Cancel</a>
+                                <button class="btn btn-primary mx-2 btn-reschedule" id="reschedule" type="submit">
+                                    Reschedule
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    {{ form.media.js }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            // Date Picker
+            $('#id_date').datetimepicker({
+                format: 'Y/m/d H:i',
+                formatTime: 'H:i',
+                defaultDate: 0,
+                minDate: 0,
+                onGenerate: function (ct) {
+                    $(this).find('.xdsoft_date.xdsoft_weekend')
+                        .addClass('xdsoft_disabled');
+                },
+                minTime: '08:00',
+                maxTime: '17:00',
+                step: 15,
+                {#allowTimes: {{ filtered_allowed_times|safe }}#}
+            });
+        });
+    </script>
+
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    Swal.fire({
+                        title: "Success",
+                        icon: "success",
+                        text: '{{ message }}',
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    Swal.fire({
+                        title: "Error!",
+                        icon: "error",
+                        text: "{{ message }}",
+                    })
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock %}
