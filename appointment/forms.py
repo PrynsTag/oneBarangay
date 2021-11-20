@@ -111,3 +111,21 @@ class BarangayVerification(forms.Form):
     amount = forms.DecimalField(label="Amount", decimal_places=2, required=True)
     valid = fields.DateField(widget=forms.widgets.DateInput(attrs={"type": "date"}))
     prepared = forms.CharField(label="Prepared by", required=True)
+
+
+class DocumentSelection(forms.Form):
+    """Class for Document Selection."""
+
+    document = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple, choices=document_list
+    )
+
+    purpose = forms.CharField(
+        widget=forms.Textarea(attrs={"name": "purpose", "rows": "3", "col": "5"})
+    )
+
+    verification = forms.ImageField(
+        label_suffix="",
+        label="Upload your ID",
+        widget=forms.ClearableFileInput(attrs={"class": "form-control", "multiple": False}),
+    )
