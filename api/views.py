@@ -7,12 +7,16 @@ from django.core.cache import cache
 from django.http import JsonResponse
 
 # Create your views here.
+from django.templatetags.static import static
+from firebase_admin import messaging
+from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.serializers import NpEncoder
+from api.serializers import NotificationSerializer, NpEncoder
 from ocr.form_recognizer import form_recognizer_runner
 from one_barangay.local_settings import logger
-from one_barangay.settings import firestore_db
+from one_barangay.settings import firebase_app, firestore_db
 
 
 class OcrApiView(APIView):
@@ -163,3 +167,42 @@ class DataVizApiView(APIView):
         }
 
         return JsonResponse(data, encoder=NpEncoder)
+
+
+class SendNotification(APIView):
+    """Get the OCR result."""
+
+    def post(self, request):
+        """POST request to send notification.
+
+        Args:
+          request: The URL Request.
+
+        Returns:
+          A response object for success or fail.
+        """
+        serializer = NotificationSerializer(data=request.data)
+
+        if serializer.is_valid():
+            title = serializer.data["title"]
+            body = serializer.data["body"]
+            registration_token = serializer.data["token"]
+
+            icon = static("/assets/img/favicon/favicon.ico")
+
+            message_data = {
+                "title": title,
+                "body": body,
+                "icon": static("/assets/img/favicon/favicon.ico"),
+                "requireInteraction": "true",
+            }
+
+            message = messaging.Message(
+                notification=messaging.Notification(title=title, body=body, image=icon),
+                data=message_data,
+                token=registration_token,
+            )
+            messaging.send(message, app=firebase_app)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
