@@ -1,56 +1,56 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>View Document</title>
-</head>
-<body style="margin: 0px;">
-<div id="example1" style="height: 100vh; width: 100%;"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
-        integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/"
-        crossorigin="anonymous"></script>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+            content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>View Document</title>
+    </head>
+    <body style="margin: 0px;">
+        <div id="example1" style="height: 100vh; width: 100%;"></div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
+            integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/"
+            crossorigin="anonymous"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.7/pdfobject.min.js"
-        integrity="sha512-g16L6hyoieygYYZrtuzScNFXrrbJo/lj9+1AYsw+0CYYYZ6lx5J3x9Yyzsm+D37/7jMIGh0fDqdvyYkNWbuYuA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.7/pdfobject.min.js"
+            integrity="sha512-g16L6hyoieygYYZrtuzScNFXrrbJo/lj9+1AYsw+0CYYYZ6lx5J3x9Yyzsm+D37/7jMIGh0fDqdvyYkNWbuYuA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
-        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+            integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        function toDataURL(url, callback) {
-            let xhr = new XMLHttpRequest();
-            xhr.onload = function () {
-                let reader = new FileReader();
-                reader.onloadend = function () {
-                    callback(reader.result);
+        <script type="text/javascript">
+            $(document).ready(function () {
+                function toDataURL(url, callback) {
+                    let xhr = new XMLHttpRequest();
+                    xhr.onload = function () {
+                        let reader = new FileReader();
+                        reader.onloadend = function () {
+                            callback(reader.result);
+                        }
+                        reader.readAsDataURL(xhr.response);
+                    };
+                    xhr.open('GET', url);
+                    xhr.responseType = 'blob';
+                    xhr.send();
                 }
-                reader.readAsDataURL(xhr.response);
-            };
-            xhr.open('GET', url);
-            xhr.responseType = 'blob';
-            xhr.send();
-        }
 
-        toDataURL("{{ document_settings.file_url }}", function (dataURL) {
-            let doc = new jsPDF("{{ document_settings.orientation }}", "mm", "{{ document_settings.paper_size }}");
-            doc.addImage(dataURL, 0, 0, {{ paper_width }}, {{ paper_length }});
+                toDataURL("{{ document_settings.file_url }}", function (dataURL) {
+                    let doc = new jsPDF("{{ document_settings.orientation }}", "mm", "{{ document_settings.paper_size }}");
+                    doc.addImage(dataURL, 0, 0, {{ paper_width }}, {{ paper_length }});
 
-            {% for data in document_info_data %}
-                doc.setFont("{{ data.font }}");
-                doc.setFontType("{{ data.font_type }}");
-                doc.setFontSize({{ data.font_size }});
-                doc.text("{{ data.value }}", {{ data.offset_x }}, {{ data.offset_y }}, "{{ data.align }}");
-            {% endfor %}
+                    {% for data in document_info_data %}
+                        doc.setFont("{{ data.font }}");
+                        doc.setFontType("{{ data.font_type }}");
+                        doc.setFontSize({{ data.font_size }});
+                        doc.text("{{ data.value }}", {{ data.offset_x }}, {{ data.offset_y }}, "{{ data.align }}");
+                    {% endfor %}
 
-            PDFObject.embed(doc.output("datauristring"), "#example1");
-        });
-    });
-</script>
-</body>
+                    PDFObject.embed(doc.output("datauristring"), "#example1");
+                });
+            });
+        </script>
+    </body>
 </html>
