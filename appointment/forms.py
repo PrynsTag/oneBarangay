@@ -129,3 +129,28 @@ class DocumentSelection(forms.Form):
         label="Upload your ID",
         widget=forms.ClearableFileInput(attrs={"class": "form-control", "multiple": False}),
     )
+
+
+class Appointment(forms.Form):
+    """Class Appointment."""
+
+    date = forms.DateTimeField(
+        label="Date",
+        input_formats=[
+            "%Y-%m-%d",
+            "%m/%d/%Y %I:%M",
+            "%Y/%m/%d %H:%M",
+            "%m/%d/%y",
+            "%b %d %Y",
+            "%b %d, %Y",
+            "%d %b %Y",
+            "%d %b, %Y",
+            "%B %d %Y",
+            "%B %d, %Y",
+            "%d %B %Y",
+            "%d %B, %Y",
+        ],
+        widget=DatePickerWidget(
+            attrs={"class": "form-control", "autocomplete": "off"},
+        ),
+    )
