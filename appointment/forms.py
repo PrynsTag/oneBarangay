@@ -2,6 +2,7 @@
 from django import forms
 from django.forms import fields
 
+from one_barangay.widgets import DatePickerWidget
 
 document_list = [
     ("barangay-certificate", "Barangay Certificate"),
