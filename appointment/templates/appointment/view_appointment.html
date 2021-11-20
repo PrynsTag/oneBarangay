@@ -28,8 +28,8 @@
                     <div class="side-bar">
                         <div class="user-info">
                             <img class="img-profile img-circle img-responsive center-block rounded-circle"
-                                 src="{{ appointment_data.photo_url }}"
-                                 alt="{{ appointment_data.first_name }} {{ appointment_data.last_name }}">
+                                src="{{ appointment_data.photo_url }}"
+                                alt="{{ appointment_data.first_name }} {{ appointment_data.last_name }}">
                             <ul class="meta list list-unstyled">
                                 <li class="name">
                                     <p class="mb-0">{{ appointment_data.first_name }} {{ appointment_data.last_name }}</p>
@@ -58,7 +58,7 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <textarea class="form-control" rows="3" disabled
-                                                          readonly>{{ appointment_data.appointment_purpose }}</textarea>
+                                                    readonly>{{ appointment_data.appointment_purpose }}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -74,7 +74,7 @@
                                         <div class="drive-item module text-center w-25">
                                             <div class="drive-item-inner module-inner">
                                                 <div class="drive-item-title"><a
-                                                        href="#">{{ data.document_name }}</a></div>
+                                                    href="#">{{ data.document_name }}</a></div>
                                                 <div class="drive-item-thumb">
                                                     <i class="fas fa-file-alt fa-4x"></i>
                                                 </div>
@@ -82,19 +82,19 @@
                                             <div class="drive-item-footer module-footer">
                                                 {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
                                                     <a class="btn btn-primary mx-1"
-                                                       href="{% url "appointment:view_document_page" appointment_data.appointment_id data.slugify %}"
-                                                       target="_blank">View</a>
+                                                        href="{% url "appointment:view_document_page" appointment_data.appointment_id data.slugify %}"
+                                                        target="_blank">View</a>
                                                     <a class="btn btn-secondary mx-1"
-                                                       href="{% url "appointment:apt_edit_docu" appointment_data.appointment_id data.slugify %}">Edit</a>
+                                                        href="{% url "appointment:apt_edit_docu" appointment_data.appointment_id data.slugify %}">Edit</a>
                                                 {% else %}
                                                     {% if appointment_data.status == "get" %}
-{#                                                        <a class="btn btn-primary mx-1"#}
-{#                                                           href="#"#}
-{#                                                           target="_blank">View</a>#}
+                                                        {#                                                        <a class="btn btn-primary mx-1"#}
+                                                        {#                                                           href="#"#}
+                                                        {#                                                           target="_blank">View</a>#}
                                                     {% else %}
                                                         <a class="btn btn-primary mx-1"
-                                                           href="{% url "appointment:view_document_page" appointment_data.appointment_id data.slugify %}"
-                                                           target="_blank">View</a>
+                                                            href="{% url "appointment:view_document_page" appointment_data.appointment_id data.slugify %}"
+                                                            target="_blank">View</a>
                                                     {% endif %}
                                                 {% endif %}
                                             </div>
@@ -105,7 +105,7 @@
 
                             <div class="drive-grid-view d-flex justify-content-center py-4">
                                 <a class="btn btn-secondary mx-2"
-                                   href="{% url "appointment:appointment_query_list" %}">Cancel</a>
+                                    href="{% url "appointment:appointment_query_list" %}">Cancel</a>
                                 <button class="btn btn-primary mx-2" id="btn-complete">
                                     Complete
                                 </button>
