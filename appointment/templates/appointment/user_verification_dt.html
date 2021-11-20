@@ -19,6 +19,7 @@
 {% endblock %}
 
 {% block content %}
+    <a href="{% url "appointment:user_document_verification" document_request_id %}">Back</a>
     <div class="d-flex justify-content-between w-100 flex-wrap py-2">
         <div class="mb-3 mb-lg-0">
             <h1 class="h4">User Verification</h1>
@@ -131,10 +132,14 @@
                                     },
                                     error: function (request) {
                                         console.log("Error. Please contact your dev.")
+
+                                        window.location.href = "{% url "appointment:user_issuing_list" document_request_id %}";
                                     }
                                 }).done(function (data) {
                                     if (data.success) {
                                         window.location.href = data.url;
+                                        window.location(data.url);
+                                        window.location = `${data.url}`;
                                     }
                                 });
                             })
