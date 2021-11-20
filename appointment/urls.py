@@ -5,6 +5,19 @@ from . import views
 
 app_name = "appointment"
 
+
+# class DateConverter:
+#     regex = "\d{4}-\d{2}-\d{2}"
+#
+#     def to_python(self, value):
+#         return datetime.datetime.strptime(value, "%Y-%m-%d")
+#
+#     def to_url(self, value):
+#         return value
+#
+#
+# register_converter(DateConverter, "yyyy")
+
 urlpatterns = [
     path("document/request/", views.document_request, name="document_request"),
     path(
