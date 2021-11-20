@@ -152,7 +152,7 @@ class OcrResultView(ContextPageMixin, FormView):
 
         return context
 
-    def get(self, request, *args, **kwargs) -> HttpResponse:
+    def get(self, request, *args, **kwargs) -> HttpResponse:  # noqa: C901
         """GET request to display OCR scan result.
 
         Args:
@@ -190,9 +190,9 @@ class OcrResultView(ContextPageMixin, FormView):
             sex = family_data.get("sex_m_or_f", {"text": "M"}).get("text")
             if sex:
                 sex = sex.capitalize()
-                if sex == "M" or sex == "Male":
+                if sex in ["M", "Male"]:
                     sex = "Male"
-                elif sex == "F" or sex == "Female":
+                elif sex in ["F", "Female"]:
                     sex = "Female"
             else:
                 sex = "Others"

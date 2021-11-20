@@ -597,7 +597,7 @@ def main():
         sys.exit(2)
 
 
-def delete_all_data():
+def delete_all_data():  # noqa: C901
     """Delete all data in firebase."""
     # Firebase Auth
     for user in auth.list_users(app=firebase_app).iterate_all():

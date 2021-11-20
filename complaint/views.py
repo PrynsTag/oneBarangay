@@ -1,21 +1,15 @@
 """Create your complaint views here."""
 import json
 import os
-import uuid
-from datetime import datetime
-from random import SystemRandom
 from typing import Union
 
-import pytz
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import redirect
-from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.views.generic import FormView
-from faker import Faker
 from firebase_admin import firestore
 from google.api_core.exceptions import NotFound
 
@@ -290,7 +284,7 @@ class ComplaintDetailView(FormInvalidMixin, FormView):
                 notification.send_notification(
                     "Your complaint has been processed.",
                     f"Your complaint has changed status to {changed_fields['complaint_status']}",
-                    form.cleaned_data["user_id"]
+                    form.cleaned_data["user_id"],
                 )
             db = firestore.client(app=firebase_app)
             # Update complaints collection.

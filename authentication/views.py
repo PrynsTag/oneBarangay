@@ -6,8 +6,12 @@ from typing import Union
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.core.mail import send_mail
-from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
-from django.http import JsonResponse
+from django.http import (
+    HttpResponse,
+    HttpResponsePermanentRedirect,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import redirect
 from django.templatetags.static import static
 from django.urls import reverse_lazy
@@ -18,11 +22,9 @@ from firebase_admin.auth import UserRecord
 from one_barangay import settings
 from one_barangay.local_settings import logger
 from one_barangay.mixins import FormInvalidMixin
-from one_barangay.settings import firebase_app
-from one_barangay.settings import firestore_db
-from .forms import AccountSetupForm
+from one_barangay.settings import firebase_app, firestore_db
 
-from .forms import AuthenticationForm, ForgotPasswordForm, LockAccountForm
+from .forms import AccountSetupForm, AuthenticationForm, ForgotPasswordForm, LockAccountForm
 
 
 # TODO: Fix client-side validation
@@ -147,8 +149,6 @@ class AccountSetupFormView(FormInvalidMixin, FormView):
                     member_id = last_name_compound_query.id
                     family_member_doc = family_sub_col.document(member_id)
                     member_data = family_member_doc.get().to_dict()
-                    print(member_id)
-                    print(member_data)
 
                     user_ref = user_col.document(user_id)
                     user = auth.get_user(user_id, firebase_app)

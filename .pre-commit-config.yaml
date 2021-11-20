@@ -154,7 +154,7 @@ repos:
           django-storages,
           types-python-dateutil,
           django-ckeditor,
-          djangorestframework
+          djangorestframework,
           django-ckeditor,
           crispy-bootstrap5
         ]

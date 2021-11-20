@@ -32,11 +32,12 @@ class AccountSetupForm(forms.Form):
             }
         ),
     )
+    placeholder = "Room/Floor/Unit #. Bldg Name, House Lot/Block, Street, Subdivision"
     address = forms.CharField(
         widget=forms.HiddenInput(
             attrs={
                 "class": "",
-                "placeholder": "Room/Floor/Unit #. Bldg Name, House Lot/Block, Street, Subdivision",
+                "placeholder": placeholder,
             }
         )
     )
