@@ -52,10 +52,10 @@
                         <div class="account-settings">
                             <div class="user-profile">
                                 <div class="user-avatar">
-                                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Maxwell Admin">
+                                    <img src="{{ user_data.photo_url }}" alt="{{ user_data.first_name }} {{ user_data.last_name }}">
                                 </div>
-                                <h5 class="user-name">{{ document_data.first_name }} {{ document_data.last_name }}</h5>
-                                <h6 class="user-email">{{ document_data.account_type }}</h6>
+                                <h5 class="user-name">{{ user_data.first_name }} {{ user_data.middle_name }} {{ user_data.last_name }}</h5>
+                                <h6 class="user-email">{{ user_data.role|capfirst }}</h6>
                                 <button type="button" class="btn btn-outline-primary btn-sm my-2">View Profile</button>
                             </div>
                         </div>
@@ -123,7 +123,7 @@
                                             <div class="col-md-3 col-sm-4">
                                                 <div class="wrimagecard wrimagecard-topimage">
                                                     <a id="image-viewer"
-                                                        href="https://grit.ph/wp-content/uploads/2020/05/sss-umid-emv-card-1-1030x659.png">
+                                                        href="{{ document_data.appointment_image }}">
                                                         <div class="wrimagecard-topimage_header">
                                                             <i class="fas fa-image " style="font-size: 2rem"></i>
                                                         </div>
@@ -138,8 +138,7 @@
                         <div class="row gutters">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="text-right">
-                                    <button type="button" id="submit" name="submit" class="btn btn-secondary">Cancel
-                                    </button>
+                                    <a class="btn btn-secondary" href={% url "appointment:document_request" %}>Cancel</a>
                                     <a href="{% url "appointment:user_verification_dt" document_data.document_id %}" class="btn btn-primary">Verify User</a>
                                 </div>
                             </div>
@@ -162,7 +161,6 @@
             });
 
             $(".btn-select").click(function () {
-                console.log("here");
 
                 Swal.fire({
                     title: 'Are you sure?',
@@ -182,7 +180,7 @@
                             let document_request_id = "{{ document_request_id }}";
                             let user_id = $(this).data("user_uid");
                             let location_url = '{% url "appointment:document_request_verified" %}';
-                            window.location.href = location_url + document_request_id + "/" + user_id;
+                            window.location.href = location_url + document_request_id;
                         })
                     }
                 })
