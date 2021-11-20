@@ -301,7 +301,7 @@ class FirestoreData:
             return True
 
         elif get_appointment["status"] == "get":
-            appointment_ref.update({"status": "completed"})
+            appointment_ref.update({"status": "complete"})
 
             send_mail(
                 subject="Barangay Malanday - Document Issuing Status",
