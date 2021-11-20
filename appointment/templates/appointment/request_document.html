@@ -1,0 +1,110 @@
+{% extends "layouts/base.html" %}
+{% load poll_extras %}
+
+{% load static %}
+
+{% block title %}
+    Barangay Admin - Document Requests
+{% endblock %}
+
+{% block stylesheets %}
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+    <link href="{% static "appointment/assets/css/request_document.css" %}" rel="stylesheet">
+    {{ form.media.css }}
+{% endblock %}
+
+{% block content %}
+    {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
+        <a href="{% url "appointment:document_request" %}">Back</a>
+    {% else %}
+        <a href="{% url "appointment:my_document_request"  %}">Back</a>
+    {% endif %}
+    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">Document Request</h1>
+            <p class="mb-0">Select your document.</p>
+        </div>
+    </div>
+    {% load crispy_forms_tags %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <form action="{% url "appointment:request_document" %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    {{ document_url }}
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-center">
+                                {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
+                                    <a class="btn btn-secondary mx-2" href="{% url "services:index" %}">Cancel</a>
+                                {% else %}
+                                    {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
+                                        <a class="btn btn-secondary mx-2"
+                                            href="{% url "appointment:document_request" %}">Cancel</a>
+                                    {% else %}
+                                        <a class="btn btn-secondary mx-2"
+                                            href="{% url "appointment:my_document_request" %}">Cancel</a>
+                                    {% endif %}
+                                {% endif %}
+                                <button class="btn btn-primary mx-2 btn-submit" id="submit" type="submit">Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    {{ form.media.js }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#id_date').datetimepicker({
+                format: 'F d, Y',
+                minDate: 0,
+                onGenerate: function (ct) {
+                    $(this).find('.xdsoft_date.xdsoft_weekend')
+                        .addClass('xdsoft_disabled');
+                },
+                minTime: '8:00',
+                maxTime: '17:00',
+                step: 15,
+                allowTimes: {{ filtered_allowed_times|safe }}
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#submit").submit(function (e) {
+                e.preventDefault()
+                let form = $(this).parents('form');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want submit your request!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'Success!',
+                            'Your request has been sent to secretary',
+                            'success'
+                        ).then((result) => {
+                            form.submit();
+                        });
+                    }
+                })
+            });
+        });
+    </script>
+{% endblock %}
