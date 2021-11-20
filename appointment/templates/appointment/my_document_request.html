@@ -1,0 +1,142 @@
+{% extends "layouts/base_table.html" %}
+
+{% load static %}
+
+{% block title %}
+    Barangay Admin - My Document Request
+{% endblock %}
+
+{% block stylesheets %}
+    {{ block.super }}
+
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+    <link href="{% static "appointment/assets/css/my_document_request.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
+        <a href="{% url "appointment:document_request" %}">Back</a>
+    {% else %}
+        <a href="{% url "services:index" %}">Back</a>
+    {% endif %}
+
+    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">My Document Request</h1>
+            <p class="mb-0">List of your document request.</p>
+        </div>
+    </div>
+
+    {% if user_sess_data.role not in 'admin, head_admin, secretary, worker ' %}
+        <div class="col-md-6 d-flex justify-content-end h-50 w-100 pb-2">
+            <a class="btn btn-primary mx-2" href="{% url "appointment:request_document" %}">+ Request
+                Document</a>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block table_content %}
+    <thead class="table-dark">
+        <tr>
+            <th data-field="request_id" data-visible="false" data-sortable="true" class="border-0">REQUEST I.D</th>
+            <th data-field="document" data-sortable="true">DOCUMENT</th>
+            <th data-field="purpose" data-sortable="true">PURPOSE</th>
+            <th data-field="status" data-sortable="true">STATUS</th>
+            <th data-field="action" data-sortable="true">APPOINTMENT ACTION
+                {#        <th data-field="action" data-formatter="operateFormatter" data-events="operateEvents" class="border-0">ACTION#}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in request_data %}
+            <tr>
+                <td class="fw-bold d-flex align-items-center">{{ data.document_id }}</td>
+                <td>{{ data.document|unordered_list }}</td>
+                <td>{{ data.appointment_purpose }}</td>
+                <td>{{ data.status }}</td>
+                <td>
+                    {% if data.status == "get" %}
+                        {% if "start_appointment" in data %}
+                            <div class="btn btn-success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        {% else %}
+                            <a class="btn btn-primary" href="{% url "appointment:appointment_schedule" data.document_id %}">
+                                <i class="fas fa-calendar-alt"></i></a>
+                        {% endif %}
+                    {% else %}
+                        <a class="btn btn-light" href="#"><i class="fas fa-calendar-alt" style="color: lightgrey;"></i></a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+{% endblock table_content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            {{ block.super }}
+        });
+    </script>
+
+    {#    <script>#}
+    {#        function operateFormatter(value, row, index) {#}
+    {#            return [#}
+    {#                '<a class="like" href="javascript:void(0)" title="Like">',#}
+    {#                '<i class="fas fa-calendar-alt"></i>',#}
+    {#                '</a>  ',#}
+    {#            ].join('');#}
+    {#        }#}
+    {##}
+    {#        window.operateEvents = {#}
+    {#            'click .like': function (e, value, row, index) {#}
+    {#                window.location.href = "{% url "appointment:schedule" document_id %}"#}
+    {#alert(`You click like action, row: ${JSON.stringify(row)}`);#}
+    {#            },#}
+    {#        };#}
+    {#    </script>#}
+
+
+    {{ form.media.js }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#id_date').datetimepicker({
+                format: 'F d, Y',
+                minDate: 0,
+                onGenerate: function (ct) {
+                    $(this).find('.xdsoft_date.xdsoft_weekend')
+                        .addClass('xdsoft_disabled');
+                },
+                minTime: '8:00',
+                maxTime: '17:00',
+                step: 15,
+                allowTimes: {{ filtered_allowed_times|safe }}
+            });
+        });
+    </script>
+
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    Swal.fire({
+                        title: "Success",
+                        icon: "success",
+                        text: '{{ message }}',
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    Swal.fire({
+                        title: "Error!",
+                        icon: "error",
+                        text: "{{ message }}",
+                    })
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock %}
