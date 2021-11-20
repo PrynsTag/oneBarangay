@@ -7,11 +7,9 @@ black==21.10b0
 blackfire==1.7.1
 browserstack-local==1.2.3
 coveralls==3.2.0
-crispy-bootstrap5==0.6
 Django==3.2.9
 django-ckeditor==6.1.0
 django-coverage-plugin==2.0.1
-django-crispy-forms==1.13.0
 django-redis==5.0.0
 django-storages==1.12.3
 django-stubs==1.9.0

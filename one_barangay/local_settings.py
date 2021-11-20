@@ -75,13 +75,11 @@ INSTALLED_APPS = [
     "ckeditor_uploader",
     "appointment",
     "services",
-    "crispy_forms",
-    "crispy_bootstrap5",
 ]
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-
-CRISPY_TEMPLATE_PACK = "bootstrap5"
+# CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+#
+# CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 REST_FRAMEWORK: dict[str, Optional[list]] = {
     "UNAUTHENTICATED_USER": None,
@@ -296,7 +294,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-                "django.template.context_processors.debug",
+                # "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.messages.context_processors.messages",
                 "one_barangay.context_processors.get_notification",

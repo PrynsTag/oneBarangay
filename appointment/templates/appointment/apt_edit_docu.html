@@ -22,12 +22,13 @@
         </div>
     </div>
 
-    {% load crispy_forms_tags %}
+    {#    {% load crispy_forms_tags %}#}
 
     <form action="{% url "appointment:docu_input_info" appointment_data.appointment_id document_slugify %}"
         method="POST">
         {% csrf_token %}
-        {{ form|crispy }}
+        {{ form }}
+        {#        {{ form|crispy }}#}
         <a class="btn btn-light"
             href="{% url "appointment:view_appointment" appointment_data.appointment_id %}">Cancel</a>
         <input class="btn btn-secondary" type="submit" value="Generate">
