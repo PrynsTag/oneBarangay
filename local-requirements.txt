@@ -18,7 +18,7 @@ djangorestframework==3.12.4
 djangorestframework-stubs==1.4.0
 djhtml==1.4.9
 Faker==9.8.0
-firebase-admin==5.0.3
+firebase-admin==5.1.0
 gcloud-aio-storage==6.2.0
 gcloud-rest-storage==6.2.0
 google-api-python-client==2.29.0
