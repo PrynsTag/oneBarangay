@@ -81,7 +81,7 @@ class UserProfileFormView(ContextPageMixin, FormInvalidMixin, FormView):
         if changed_fields:
             self.request.session["user"].update(changed_fields)
             change_result = AuthModel().update_user_data(
-                self.request.session["user"]["uid"], changed_fields
+                self.request.session["user"]["user_id"], changed_fields
             )
             if change_result:
                 messages.success(
