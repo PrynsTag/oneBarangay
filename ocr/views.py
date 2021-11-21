@@ -165,18 +165,18 @@ class OcrResultView(ContextPageMixin, FormView):
         """
         context = self.get_context_data(**kwargs)
 
-        if os.getenv("GAE_ENV", "").startswith("standard"):
-            ocr_result = asyncio.run(form_recognizer_runner(kwargs["filename"]))
-        else:
-            # For Local Testing
-            ocr_result = cache.get("ocr")
-            if ocr_result is None:
-                ocr_result = asyncio.run(form_recognizer_runner(kwargs["filename"]))
-                cache.set("ocr", ocr_result, timeout=None)
-                logger.warning("OCR result is not cached!")
+        # if os.getenv("GAE_ENV", "").startswith("standard"):
+        #     ocr_result = asyncio.run(form_recognizer_runner(kwargs["filename"]))
+        # else:
 
-            else:
-                logger.info("OCR result is cached!")
+        # Cache all requests.
+        ocr_result = cache.get("ocr")
+        if ocr_result is None:
+            ocr_result = asyncio.run(form_recognizer_runner(kwargs["filename"]))
+            cache.set("ocr", ocr_result, timeout=None)
+            logger.warning("OCR result has been cached!")
+        else:
+            logger.info("OCR result is cached!")
 
         family_initial = []
         family_confidence = []
