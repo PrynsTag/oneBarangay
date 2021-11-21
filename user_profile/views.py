@@ -73,8 +73,10 @@ class UserProfileFormView(ContextPageMixin, FormInvalidMixin, FormView):
         changed_fields = {}
         if form.has_changed():
             for field in form.changed_data:
-                if field == "birth_date":
-                    changed_fields[field] = form.cleaned_data["birth_date"].strftime("%B %d, %Y")
+                if field == "date_of_birth":
+                    changed_fields[field] = form.cleaned_data["date_of_birth"].strftime(
+                        "%B %d, %Y"
+                    )
                 else:
                     changed_fields[field] = form.cleaned_data[field]
 
