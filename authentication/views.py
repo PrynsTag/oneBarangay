@@ -124,9 +124,7 @@ class AccountSetupFormView(FormInvalidMixin, FormView):
                 first_name_query = family_sub_col.where("first_name", "==", first_name).get()[0]
                 if contact_number:
                     contact_number_query = (
-                        family_sub_col.where("contact_number", "==", contact_number)
-                        .get()[0]
-                        .exists
+                        family_sub_col.where("contact_number", "==", contact_number).get().exists
                     )
                 else:
                     contact_number_query = False
