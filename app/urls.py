@@ -8,7 +8,7 @@ app_name = "app"
 urlpatterns = [
     # The home page
     path("", views.index, name="home"),
-    path("about", views.about, name="about"),
+    path("government", views.government, name="government"),
     path("work", views.work, name="work"),
     path("pricing", views.pricing, name="pricing"),
     path("contact", views.contact, name="contact"),

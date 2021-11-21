@@ -14,7 +14,7 @@ def index(request):
     return render(request, "app/index.html")
 
 
-def about(request):
+def government(request):
     """Display about pages.
 
     Args:
@@ -23,7 +23,7 @@ def about(request):
     Returns:
         render about page.
     """
-    return render(request, "app/about.html")
+    return render(request, "app/government.html")
 
 
 def work(request):
