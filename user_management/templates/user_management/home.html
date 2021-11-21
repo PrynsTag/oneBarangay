@@ -89,14 +89,14 @@
                                 <div class="form-group col">
                                     <!-- Form -->
                                     <div class="form-group mb-4">
-                                        {{ form.phone_number.label_tag }}
+                                        {{ form.contact_number.label_tag }}
                                         <div class="input-group">
                                             <span class="input-group-text" id="basic-addon2">
                                                 <span class="fas fa-phone"></span>
                                             </span>
-                                            {{ form.phone_number }}
+                                            {{ form.contact_number }}
                                         </div>
-                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.phone_number.errors|striptags }}</div>
+                                        <div class="badge m-0 bg-danger text-uppercase">{{ form.contact_number.errors|striptags }}</div>
                                     </div>
                                     <!-- End of Form -->
                                 </div>
@@ -152,7 +152,7 @@
             <th data-field="house_num" data-halign="center" data-visible="false" data-align="center" data-sortable="true">HOUSE #</th>
             <!-- RBI DATA -->
             <th data-field="email" data-halign="center" data-visible="false" data-align="center" data-sortable="true">EMAIL</th>
-            <th data-field="phone_number" data-halign="center" data-align="center" data-sortable="true">PHONE NUMBER</th>
+            <th data-field="contact_number" data-halign="center" data-align="center" data-sortable="true">CONTACT NUMBER</th>
             <th data-field="role" data-halign="center" data-align="center" data-sortable="true">USER ROLE</th>
             <th data-field="provider" data-halign="center" data-align="center" data-sortable="true">ACCOUNT PROVIDER</th>
             <th data-field="last_sign_in" data-halign="center" data-align="center" data-sortable="true" data-formatter="lastSignInFormatter">ACTIVE</th>
@@ -220,7 +220,7 @@
                                 <div class="row justify-content-start">
                                     <div class="col col-md-auto">
                                         <div class="fw-extrabold">Contact Number</div>
-                                        <p class="fs-6">%PHONE_NUMBER%</p>
+                                        <p class="fs-6">%CONTACT_NUMBER%</p>
                                     </div>
                                     <div class="col col-md-auto">
                                         <div class="fw-extrabold w-auto">User Role</div>
@@ -246,7 +246,7 @@
                         </div>
                         <div class="col-12 col-lg-12 pt-5 d-flex flex-row-reverse">
                             <button class="btn btn-outline-info remove" name="delete" id="edit-account"
-                                onclick="editAccount('%ID%', '%NAME%', '%EMAIL%', '%USER_ROLE%', '%PHONE_NUMBER%', '%TYPE%')"
+                                onclick="editAccount('%ID%', '%NAME%', '%EMAIL%', '%USER_ROLE%', '%CONTACT_NUMBER%', '%TYPE%')"
                                 data-toggle="tooltip" data-placement="top" title="Edit Account">
                                 <span class="fas fa-edit"></span>
                                 Edit

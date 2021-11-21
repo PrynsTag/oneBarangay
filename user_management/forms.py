@@ -70,7 +70,7 @@ class UserManagementCreateForm(forms.Form):
         message="Phone number must be entered in the format: \
         '+999999999'. Up to 15 digits allowed.",
     )
-    phone_number = forms.CharField(
+    contact_number = forms.CharField(
         validators=[phone_regex],
         required=False,
         label="Phone Number",

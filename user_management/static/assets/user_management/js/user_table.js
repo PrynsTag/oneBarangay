@@ -8,7 +8,7 @@ const $name = $('input[name=display_name]');
 const $email = $('input[name=email]');
 const $role = $('select[name=role]');
 const $disabled = $('select[name=disabled]');
-const $phoneNumber = $('input[name=phone_number]');
+const $contactNumber = $('input[name=contact_number]');
 
 $('#cancel-modal').on('click', () => {
   userModal.hide();
@@ -30,8 +30,8 @@ function populateEditModal(data) {
   $role.val(data.role).change();
   $disabled.val(data.disabled === true ? 'True' : 'False').change();
 
-  if (!data.phone_number.startsWith('None')) {
-    $phoneNumber.val(data.phone_number);
+  if (!data.contact_number.startsWith('None')) {
+    $contactNumber.val(data.contact_number);
   }
   if (!data.display_name.startsWith('None')) {
     $name.val(data.display_name);
@@ -42,7 +42,7 @@ function populateEditModal(data) {
 
 function editAccount(...data) {
   const userData = {};
-  const keys = ['uid', 'display_name', 'email', 'role', 'phone_number', 'disabled'];
+  const keys = ['uid', 'display_name', 'email', 'role', 'contact_number', 'disabled'];
   data.forEach((element, index) => {
     userData[keys[index]] = element;
   });
@@ -74,7 +74,7 @@ function customViewFormatter(data) {
       .replace('%ACTIVE%', lastSignIn)
       .replace('%CIVIL_STATUS%', row.civil_status)
       .replaceAll('%STATUS%', accountStatus)
-      .replaceAll('%PHONE_NUMBER%', row.phone_number)
+      .replaceAll('%CONTACT_NUMBER%', row.contact_number)
       .replace('%ADDRESS%', row.address);
   });
   return `<div class="row mx-0">${view}</div>`;

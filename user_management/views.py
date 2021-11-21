@@ -231,8 +231,13 @@ class UserManagementEditView(UserManagementHomeView, FormInvalidMixin):
             del auth_data["user_id"]
 
         try:
+            # Remove contact_number key from auth_data.
+            auth_data["phone_number"] = auth_data["contact_number"]
+            auth_data.pop("contact_number")
+
             # Modify Firebase Auth
             auth.update_user(form.cleaned_data["user_id"], **auth_data, app=firebase_app)
+
             # Modify Firestore User Collection
             db = firestore.client(app=firebase_app)
             changed_fields["updated_on"] = firestore.SERVER_TIMESTAMP
