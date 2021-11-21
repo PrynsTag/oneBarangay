@@ -108,7 +108,7 @@ class UserProfileForm(forms.Form):
         message="Phone number must be entered in the format: \
             '+999999999'. Up to 15 digits allowed.",
     )
-    phone_number = forms.CharField(
+    contact_number = forms.CharField(
         validators=[phone_regex],
         label="Phone",
         label_suffix="",
@@ -164,5 +164,5 @@ class UserProfileForm(forms.Form):
             )
             self.fields["email"].initial = request.session["user"].get("email")
             self.fields["gender"].initial = request.session["user"].get("sex")
-            self.fields["phone_number"].initial = request.session["user"].get("contact_number")
+            self.fields["contact_number"].initial = request.session["user"].get("contact_number")
             self.fields["address"].initial = request.session["user"].get("address")

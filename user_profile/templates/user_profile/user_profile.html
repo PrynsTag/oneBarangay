@@ -208,9 +208,9 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
-                                {{ form.phone_number.label_tag }}
-                                {{ form.phone_number }}
-                                <div class="invalid-feedback">{{ form.phone_number.errors|striptags }}</div>
+                                {{ form.contact_number.label_tag }}
+                                {{ form.contact_number }}
+                                <div class="invalid-feedback">{{ form.contact_number.errors|striptags }}</div>
                             </div>
                         </div>
                     </div>
@@ -548,7 +548,7 @@
     <script>
         const editBtn = document.getElementById('edit-button');
         const saveProfileBtn = document.getElementById('submit-button')
-        const phoneNumber = document.getElementById('id_phone_number')
+        const contactNumber = document.getElementById('id_contact_number')
         const address = document.getElementById('id_address')
 
         const complaintTable = document.getElementById('complaint-table')
@@ -576,14 +576,14 @@
         editBtn.addEventListener('click', function () {
             // Remove hidden button
             saveProfileBtn.hidden = !saveProfileBtn;
-            const phoneNumberReadonly = phoneNumber.hasAttribute('readonly');
+            const contactNumberReadonly = contactNumber.hasAttribute('readonly');
             const addressReadonly = address.hasAttribute('readonly');
 
-            if (phoneNumberReadonly || addressReadonly) {
-                phoneNumber.removeAttribute('readonly');
+            if (contactNumberReadonly || addressReadonly) {
+                contactNumber.removeAttribute('readonly');
                 address.removeAttribute('readonly');
             } else {
-                phoneNumber.toggleAttribute('readonly');
+                contactNumber.toggleAttribute('readonly');
                 address.toggleAttribute('readonly');
             }
         });
