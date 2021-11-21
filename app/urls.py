@@ -1,11 +1,15 @@
 """URL Configuration for 'app'."""
-from django.urls import path, re_path
+from django.urls import path
 
 from app import views
+
+app_name = "app"
 
 urlpatterns = [
     # The home page
     path("", views.index, name="home"),
-    # Matches any html file
-    re_path(r"^.*\.html", views.pages, name="pages"),
+    path("government", views.government, name="government"),
+    path("work", views.work, name="work"),
+    path("pricing", views.pricing, name="pricing"),
+    path("contact", views.contact, name="contact"),
 ]
