@@ -86,9 +86,9 @@ class UserManagementCreateForm(forms.Form):
         ),
     )
 
-    photo_url = forms.ImageField(
-        required=False,
-        label="Profile Picture",
-        label_suffix="",
-        widget=forms.FileInput(attrs={"class": "form-control"}),
-    )
+    # photo_url = forms.ImageField(
+    #     required=False,
+    #     label="Profile Picture",
+    #     label_suffix="",
+    #     widget=forms.FileInput(attrs={"class": "form-control"}),
+    # )
