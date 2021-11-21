@@ -115,13 +115,13 @@ class ComplaintHomeView(FormView):
                     recipient_list=[email],
                 )
                 messages.success(request, "Complainant has been emailed successfully!")
-            else:
-                db = firestore.client(app=firebase_app)
-                dummy_list = self.dummy_complaint(form.cleaned_data["dummy_count"])
-                for dummy in dummy_list:
-                    db.collection("complaints").document(dummy["complaint_id"]).set(
-                        dummy, merge=True
-                    )
+            # else:
+            #     db = firestore.client(app=firebase_app)
+            #     dummy_list = self.dummy_complaint(form.cleaned_data["dummy_count"])
+            #     for dummy in dummy_list:
+            #         db.collection("complaints").document(dummy["complaint_id"]).set(
+            #             dummy, merge=True
+            #         )
             return self.form_valid(form=form)
         else:
             return self.form_invalid(**{form_name: form})

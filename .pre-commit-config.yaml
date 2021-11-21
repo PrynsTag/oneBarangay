@@ -132,6 +132,7 @@ repos:
           - django-ckeditor
           - mypy
           - djangorestframework
+          - crispy-bootstrap5
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.910-1
@@ -155,6 +156,7 @@ repos:
           django-ckeditor,
           djangorestframework,
           django-ckeditor,
+          crispy-bootstrap5
         ]
 
   - repo: https://github.com/asottile/pyupgrade

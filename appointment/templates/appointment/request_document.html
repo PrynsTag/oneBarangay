@@ -26,15 +26,14 @@
             <p class="mb-0">Select your document.</p>
         </div>
     </div>
-    {#    {% load crispy_forms_tags %}#}
+    {% load crispy_forms_tags %}
 
     <div class="container">
         <div class="row">
             <div class="col-12">
                 <form action="{% url "appointment:request_document" %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {{ form }}
-                    {#                    {{ form|crispy }}#}
+                    {{ form|crispy }}
                     {{ document_url }}
                     <div class="container">
                         <div class="row">

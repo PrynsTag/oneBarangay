@@ -1,34 +1,62 @@
 """Create your App views here."""
-from django.http import HttpResponse
-from django.template import loader
+from django.shortcuts import render
 
 
 def index(request):
-    """Fetch index.html for App.
+    """Display home page.
 
     Args:
       request: The URL Request.
 
     Returns:
-      The index.html of App.
+      render home page.
     """
-    html_template = loader.get_template("index.html")
-
-    return HttpResponse(html_template.render({"segment": "index"}, request))
+    return render(request, "app/index.html")
 
 
-def pages(request):
-    """Fetch Pages other than index.html.
+def government(request):
+    """Display about pages.
 
     Args:
-      request: The URL Request.
+      request: URL request
 
     Returns:
-      The requested HTML File.
+        render about page.
     """
-    # Pick out the html file name from the url. And load that templates.
-    # ex. barangay-admin/ocr/file-upload = file-upload
-    load_template = request.path.split("/")[-1]
-    html_template = loader.get_template(load_template)
+    return render(request, "app/government.html")
 
-    return HttpResponse(html_template.render({"segment": load_template}, request))
+
+def work(request):
+    """Display about page.
+
+    Args:
+      request: URL request
+
+    Returns:
+        render about page.
+    """
+    return render(request, "app/work.html")
+
+
+def pricing(request):
+    """Display pricing page.
+
+    Args:
+      request: URL request
+
+    Returns:
+        render pricing page.
+    """
+    return render(request, "app/pricing.html")
+
+
+def contact(request):
+    """Display contact page.
+
+    Args:
+      request: URL request
+
+    Returns:
+        render contact page.
+    """
+    return render(request, "app/contact.html")

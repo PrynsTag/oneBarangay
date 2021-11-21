@@ -1,0 +1,64 @@
+.btn-outline-primary:hover {
+    background-color: #004F87;
+    border: #004F87;
+}
+
+.btn-outline-primary:active {
+    background-color: #004F87;
+    border-color: #004F87 !important;
+}
+
+.btn-outline-primary.active {
+    background-color: #004F87;
+    border: #004F87;
+}
+
+.btn-primary {
+    background-color: #004F87;
+    border: #004F87;
+}
+
+.btn-primary:hover {
+    background-color: #004F87;
+    border: #004F87;
+}
+
+.w-100 .bg-primary .py-3 {
+    background-color: #004f87 !important;
+}
+
+.footer-container {
+    background-color: #08395b !important;
+}
+
+.copyright-footer {
+    background-color: #101011 !important;
+}
+
+.login-icon {
+    color: #004F87 !important;
+}
+
+.about-title {
+    color: #004F87 !important;
+}
+
+.local-gov-container {
+    background-color: #004F87 !important;
+}
+
+.local-gov-card {
+    background-color: #0873BF !important
+}
+
+.objective-icon {
+    background-color: #004F87 !important;
+}
+
+.typo-space-line::after {
+    border-bottom: 5px solid #004F87 !important;
+}
+
+.btn-send {
+    background-color: #004F87 !important;
+}

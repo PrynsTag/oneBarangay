@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static "/assets/img/favicon/favicon-16x16.png" %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static "/assets/img/favicon/favicon-32x32.png" %}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{% static "/assets/img/favicon/favicon-96x96.png" %}">
+        <link rel="icon" type="image/png" sizes="194x194" href="{% static "/assets/img/favicon/favicon-194x194.png" %}">
+        <link rel="icon" type="image/png" sizes="192x192"
+            href="{% static "/assets/img/favicon/android-chrome-192x192.png" %}">
+
+        {#    <link rel="apple-touch-icon" href="{% static "/assets/img/home/apple-icon.png" %}">#}
+        {#    <link rel="shortcut icon" type="image/x-icon" href="{% static "/assets/img/home/favicon.ico" %}">#}
+        <!-- Load Require CSS -->
+        <link href="{% static "/assets/css/home/bootstrap.min.css" %}" rel="stylesheet">
+        <!-- Font CSS -->
+        <link href="{% static "/assets/css/home/boxicon.min.css" %}" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+        <!-- Load Tempalte CSS -->
+        <link rel="stylesheet" href="{% static "/assets/css/home/templatemo.css" %}">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="{% static "/assets/css/home/custom.css" %}">
+
+        <!-- Custom Stylesheets -->
+        {% block stylesheet %}
+
+        {% endblock %}
+    </head>
+
+    <body>
+
+        {% include "includes/home/top_navbar.html" %}
+
+        {% block content %}
+
+        {% endblock %}
+
+        {% include "includes/home/footer.html" %}
+
+        <!-- Bootstrap -->
+        <script src="{% static "/assets/js/home/bootstrap.bundle.min.js" %}"></script>
+        <!-- Load jQuery require for isotope -->
+        <script src="{% static "/assets/js/home/jquery.min.js" %}"></script>
+        <!-- Isotope -->
+        <script src="{% static "/assets/js/home/isotope.pkgd.js" %}"></script>
+
+        <!-- Templatemo -->
+        <script src="{% static "/assets/js/home/templatemo.js" %}"></script>
+        <!-- Custom -->
+        <script src="{% static "/assets/js/home/custom.js" %}"></script>
+
+        {% block scripts %}
+
+        {% endblock %}
+
+    </body>
+
+</html>
