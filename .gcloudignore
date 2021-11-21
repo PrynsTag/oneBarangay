@@ -45,8 +45,11 @@ local-requirements.txt
 cors.json
 .restyled.yaml
 .pylintrc
-.eslintrc.json
 **/migrations
+frontend
+send_mail_to.py
+auth_data.json
+responses.csv
 
 # Explicitly include
 !one_barangay/settings.py
