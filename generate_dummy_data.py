@@ -163,7 +163,7 @@ class User:
         email = f"c5zzk.{name_lower}@inbox.testmail.app"
         password = f"{name_lower}123"
         display_name = f"{self.first_name} {self.last_name}"
-        role = self.crypto_gen.choice(["resident", "admin", "secretary", "worker"])
+        role = self.crypto_gen.choice(["resident", "admin", "secretary", "worker", "head_admin"])
         photo_url = f"https://i.pravatar.cc/150?img={self.crypto_gen.randint(1, 70)}"
         phone_number = self.fake.mobile_number().replace("-", "")
         formatted_phone_number = (
