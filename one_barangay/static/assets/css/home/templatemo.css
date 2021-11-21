@@ -40,7 +40,7 @@ p, a {font-weight: 400;}
   width: 150px;
   display:block;
   position: absolute;
-  border-bottom:  5px solid #6266ea;
+  border-bottom:  5px solid #ffffff;
   padding-top: .5em;
 }
 .typo-space-line-center::after {
@@ -51,7 +51,7 @@ p, a {font-weight: 400;}
 #main_nav .nav-item .nav-link:hover {color: #fff;}
 /* Home */
 #index_banner {
-  background-image: url('./../../img/home/carousel-2.png');
+  background-image: url('../../img/home/oneBarangay-carousell.png');
   background-position: center center; background-size: cover;
   height: 100%;
   min-height: 60vh;
@@ -62,7 +62,7 @@ p, a {font-weight: 400;}
 }
 #index_banner .carousel-control-prev i,
 #index_banner .carousel-control-next i {
-  color: #6266ea !important;
+  color: #ffffff !important;
   text-decoration: none;
   font-size: 4em;
 }
@@ -71,7 +71,7 @@ p, a {font-weight: 400;}
 }
 #index_banner .carousel-indicators li,
 #index_banner .carousel-indicators.active {
-  background-color: #6266ea !important;
+  background-color: #ffffff !important;
 }
 .service-wrapper .service-footer {
   max-width: 720px;
@@ -101,26 +101,26 @@ p, a {font-weight: 400;}
 }
 .recent-work .recent-work-vertical {
 	background: rgb(255,255,255);
-  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 33.333%, rgba(97,84,199,1) 66.666%, rgba(255,255,255,0) 99.999%);
+  background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 33.333%, rgb(0, 79, 135) 66.666%, rgba(255,255,255,0) 99.999%);
   background-size: 300% 300%;
   background-position: 0% 100%;
   transition: .5s;
   cursor: pointer;
 }
-.recent-work .recent-work-vertical:hover {
-  background-position: 0% 0%;
-  transition: .5s;
-}
-.recent-work .recent-work-vertical:hover div.recent-work-content {
-  top: 50%;
-  margin-top: -2.5em;
-  position: absolute;
-}
-.recent-work .recent-work-vertical:hover * {
-  color: white;
-  transition: .5s;
-}
-/* About */
+/*.recent-work .recent-work-vertical:hover {*/
+/*  background-position: 0% 0%;*/
+/*  transition: .5s;*/
+/*}*/
+/*.recent-work .recent-work-vertical:hover div.recent-work-content {*/
+/*  top: 50%;*/
+/*  margin-top: -2.5em;*/
+/*  position: absolute;*/
+/*}*/
+/*.recent-work .recent-work-vertical:hover * {*/
+/*  color: white;*/
+/*  transition: .5s;*/
+/*}*/
+ About
 #work_banner {
   background-image: url('./../../img/home/banner-bg-02.jpg');
   background-position: center center; background-size: cover;
