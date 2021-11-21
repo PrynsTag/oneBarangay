@@ -70,17 +70,34 @@ class Notification:
 
         if isinstance(registration_token, list):
 
-            message = messaging.MulticastMessage(
-                data=message_data,
-                tokens=registration_token,
-            )
-            messaging.send_multicast(message, app=firebase_app)
+            if platform == "all":
+                message = messaging.MulticastMessage(
+                    notification=messaging.Notification(
+                        title=title, body=body, image=message_data["icon"]
+                    ),
+                    data=message_data,
+                    tokens=registration_token,
+                )
+                messaging.send_multicast(message, app=firebase_app)
+            # else:
+            #     message = messaging.Message(
+            #         data=message_data,
+            #         token=registration_token,
+            #     )
+            #     messaging.send_multicast(message, app=firebase_app)
         else:
-            message = messaging.Message(
-                data=message_data,
-                token=registration_token,
-            )
-            messaging.send(message, app=firebase_app)
+            if platform == "all":
+                message = messaging.Message(
+                    data=message_data,
+                    token=registration_token,
+                )
+                messaging.send(message, app=firebase_app)
+            else:
+                message = messaging.MulticastMessage(
+                    data=message_data,
+                    tokens=registration_token,
+                )
+                messaging.send_multicast(message, app=firebase_app)
 
         self.save_notification(registration_token, message_data, platform)
 
@@ -96,26 +113,26 @@ class Notification:
           None.
         """
         device = "web" if platform == "all" else platform
-
         if isinstance(registration_token, list):
             for token in registration_token:
                 notification_query = (
                     firestore_db.collection("users")
                     .where(f"{device}_notification", "==", token)
-                    .get()[0]
+                    .stream()
                 )
-
-                if notification_query.exists:
-                    user_id = notification_query.id
-                    (
-                        firestore_db.collection("users")
-                        .document(user_id)
-                        .collection("notification")
-                        .add(
-                            notification_data
-                            | {"time": datetime.now(tz=pytz.timezone("Asia/Manila"))}
+                for query in notification_query:
+                    if query.exists:
+                        user_id = query.id
+                        (
+                            firestore_db.collection("users")
+                            .document(user_id)
+                            .collection("notification")
+                            .add(
+                                notification_data
+                                | {"time": datetime.now(tz=pytz.timezone("Asia/Manila"))}
+                            )
                         )
-                    )
+
         else:
             notification_query = (
                 firestore_db.collection("users")

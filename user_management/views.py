@@ -17,6 +17,7 @@ from google.api_core.exceptions import NotFound
 
 from one_barangay.local_settings import logger
 from one_barangay.mixins import FormInvalidMixin
+from one_barangay.notification import Notification
 from one_barangay.settings import firebase_app
 
 # TODO: send email delete account.
@@ -221,7 +222,6 @@ class UserManagementEditView(UserManagementHomeView, FormInvalidMixin):
         # Get only truthy form fields
         changed_fields = {k: v for k, v in form.cleaned_data.items() if v}
         changed_fields["disabled"] = changed_fields["disabled"] == "True"
-
         # Format / clean data for auth.update_user
         auth_data = changed_fields.copy()
         if changed_fields.get("role"):
@@ -246,6 +246,21 @@ class UserManagementEditView(UserManagementHomeView, FormInvalidMixin):
                 self.request,
                 f"Successfully updated user: {form.cleaned_data['email']}",
             )
+            user_id = form.cleaned_data["user_id"]
+            email = form.cleaned_data["email"]
+
+            notification = Notification()
+            notification.send_notification(
+                "Account Notification.",
+                "Your account has been modified by an admin.",
+                user_id,
+            )
+            send_mail(
+                subject="Account Notification.",
+                message="Your account has been modified by an admin.",
+                from_email=os.getenv("ADMIN_EMAIL"),
+                recipient_list=[email],
+            )
         except NotFound:
             logger.exception("User %s doesn't exists!", form.cleaned_data["email"])
             messages.error(self.request, "User %s doesn't exists!", form.cleaned_data["email"])
@@ -265,10 +280,26 @@ def delete(request, user_id) -> Union[HttpResponseRedirect, HttpResponsePermanen
     """
     db = firestore.client(app=firebase_app)
     try:
+        notification = Notification()
+        notification.send_notification(
+            "Account Notification.",
+            "Your account has been modified by an admin.",
+            user_id,
+        )
         # Delete from Firebase Auth
         auth.delete_user(user_id, app=firebase_app)
+
+        user_ref = db.collection("users").document(user_id)
+        user_data = user_ref.get().to_dict()
+        send_mail(
+            subject="Account Notification.",
+            message="Your account has been modified by an admin.",
+            from_email=os.getenv("ADMIN_EMAIL"),
+            recipient_list=[user_data["email"]],
+        )
+
         # Delete from Firestore
-        db.collection("users").document(user_id).delete()
+        user_ref.delete()
 
         logger.info("Successfully deleted user: %s", user_id)
         # TODO: Display Flash message in template.

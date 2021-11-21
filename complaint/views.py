@@ -173,6 +173,8 @@ class ComplaintCreateView(FormInvalidMixin, FormView):
           The valid ComplaintCreateForm submitted.
         """
         image = form.cleaned_data.get("image")
+        message = form.cleaned_data["comment"]
+        email = form.cleaned_data["email"]
 
         if image:
             image_name = default_storage.generate_filename(image.name)
@@ -191,6 +193,18 @@ class ComplaintCreateView(FormInvalidMixin, FormView):
             .collection("complaints")
             .document(doc_ref.id)
             .set(form.cleaned_data, merge=True)
+        )
+        notification = Notification()
+        notification.send_notification(
+            "Complaint created.",
+            "Your complaint has been received and for review",
+            self.request.session["user"]["user_id"],
+        )
+        send_mail(
+            subject="Your complaint has been processed.",
+            message=message,
+            from_email=os.getenv("ADMIN_EMAIL"),
+            recipient_list=[email],
         )
 
         messages.success(
