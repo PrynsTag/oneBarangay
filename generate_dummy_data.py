@@ -256,6 +256,7 @@ class User:
             "first_name": family_member["first_name"],
             "last_name": family_member["last_name"],
             "age": family_member["age"],
+            "remarks": family_member["remarks"],
         }
         user_data = auth_information | house_information | member_information
 
