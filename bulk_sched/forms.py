@@ -13,24 +13,28 @@ class BulkSchedCreateForm(forms.Form):
     required_css_class = "required"
 
     EVENT_CHOICES = (
+        (None, "--- Select Event ---"),
         ("rbi", "RBI Collection"),
         ("covid vaccine", "COVID Vaccine"),
         ("circumcision", "Circumcision"),
         ("basketball", "Basketball Competition"),
     )
     NOTIFICATION_CHOICES = (
-        ("app", "App"),
-        ("email", "Email"),
-        ("text", "Text"),
+        ("Mobile", "Mobile"),
+        ("Email", "Email"),
+        ("Web", "Web"),
+        # ("text", "Text"),
     )
     RELATIONSHIP_CHOICES = (
-        ("head of family", "Head of Family"),
-        ("father", "Father"),
-        ("mother", "Mother"),
-        ("son", "Son"),
-        ("daughter", "Daughter"),
+        (None, "--- Select Role ---"),
+        ("Father", "Father"),
+        ("Mother", "Mother"),
+        ("Son", "Son"),
+        ("Daughter", "Daughter"),
     )
     STREET_CHOICES = (
+        (None, "--- Select Street ---"),
+        ("", "All"),
         ("A. Duque", "A. Duque"),
         ("Aca Road", "Aca Road"),
         ("Bangcal Extension", "Bangcal Extension"),
@@ -62,26 +66,28 @@ class BulkSchedCreateForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-select", "aria-label": "Event Select"}),
         choices=EVENT_CHOICES,
     )
-    resident_quantity = forms.IntegerField(
-        label_suffix="",
-        min_value=0,
-        widget=forms.NumberInput(attrs={"class": "form-control rounded-end"}),
-    )
-    relationship_type = forms.ChoiceField(
-        label_suffix="",
-        widget=forms.Select(attrs={"class": "form-select", "aria-label": "Relationship Select"}),
-        choices=RELATIONSHIP_CHOICES,
-    )
-    street = forms.ChoiceField(
-        label_suffix="",
-        widget=forms.Select(attrs={"class": "form-select", "aria-label": "Street Select"}),
-        choices=STREET_CHOICES,
-    )
-    time_interval = forms.IntegerField(
-        label_suffix="",
-        min_value=0,
-        widget=forms.NumberInput(attrs={"class": "form-control rounded-end"}),
-    )
+    # resident_quantity = forms.IntegerField(
+    #     label_suffix="",
+    #     min_value=0,
+    #     widget=forms.NumberInput(attrs={"class": "form-control rounded-end"}),
+    # )
+    # relationship_type = forms.ChoiceField(
+    #     label_suffix="",
+    #     label="Family Role",
+    #     widget=forms.Select(attrs={"class": "form-select",
+    #     "aria-label": "Relationship Select"}),
+    #     choices=RELATIONSHIP_CHOICES,
+    # )
+    # street = forms.ChoiceField(
+    #     label_suffix="",
+    #     widget=forms.Select(attrs={"class": "form-select", "aria-label": "Street Select"}),
+    #     choices=STREET_CHOICES,
+    # )
+    # time_interval = forms.IntegerField(
+    #     label_suffix="",
+    #     min_value=0,
+    #     widget=forms.NumberInput(attrs={"class": "form-control rounded-end"}),
+    # )
     notification_type = forms.MultipleChoiceField(
         label_suffix="",
         widget=forms.CheckboxSelectMultiple(attrs={"class": "form-checkbox"}),
@@ -100,6 +106,13 @@ class BulkSchedCreateForm(forms.Form):
         widget=forms.DateTimeInput(
             attrs={"class": "form-control rounded-end rounded-end", "autocomplete": "off"}
         ),
+    )
+    title = forms.CharField(
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+    )
+    event_message = forms.CharField(
+        label_suffix="",
+        widget=forms.Textarea(attrs={"class": "form-control"}),
     )
 
 

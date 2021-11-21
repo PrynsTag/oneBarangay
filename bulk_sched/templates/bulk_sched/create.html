@@ -56,39 +56,7 @@
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="form-group col">
-                            {{ form.resident_quantity.label_tag }}
-                            <div class="input-group justify-content-start">
-                                <span class="input-group-text">
-                                    <i class="fas fa-balance-scale"></i>
-                                </span>
-                                {{ form.resident_quantity }}
-                            </div>
-                            {% if form.resident_quantity.errors %}
-                                <div>
-                                    <div class="badge m-0 bg-danger text-uppercase">
-                                        {{ form.resident_quantity.errors|striptags }}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="form-group col">
-                            <div class="row">
-                                {{ form.notification_type.label_tag }}
-                                <div class="input-group justify-content-start">
-                                    {{ form.notification_type }}
-                                </div>
-                            </div>
-                            {% if form.notification_type.errors %}
-                                <div>
-                                    <div class="badge m-0 bg-danger text-uppercase">
-                                        {{ form.notification_type.errors|striptags }}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row mb-4">
+                        <!--
                         <div class="form-group col">
                             {{ form.relationship_type.label_tag }}
                             <div class="input-group justify-content-start">
@@ -106,6 +74,41 @@
                                 </div>
                             {% endif %}
                         </div>
+                        <div class="form-group col">
+                            {{ form.resident_quantity.label_tag }}
+                            <div class="input-group justify-content-start">
+                                <span class="input-group-text">
+                                    <i class="fas fa-balance-scale"></i>
+                                </span>
+                                {{ form.resident_quantity }}
+                            </div>
+                            {% if form.resident_quantity.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.resident_quantity.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        -->
+                        <div class="form-group col">
+                            <div class="row">
+                                {{ form.notification_type.label_tag }}
+                                <div class="input-group justify-content-start">
+                                    {{ form.notification_type }}
+                                </div>
+                            </div>
+                            {% if form.notification_type.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.notification_type.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!--
+                    <div class="row mb-4">
                         <div class="form-group col">
                             {{ form.street.label_tag }}
                             <div class="input-group justify-content-start">
@@ -139,7 +142,8 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="row">
+                                            -->
+                    <div class="row mb-4">
                         <div class="form-group col">
                             {{ form.start_date.label_tag }}
                             <div class="input-group justify-content-start">
@@ -173,8 +177,44 @@
                             {% endif %}
                         </div>
                     </div>
+                    <div class="row mb-4">
+                        <div class="form-group col">
+                            {{ form.title.label_tag }}
+                            <div class="input-group justify-content-start">
+                                <span class="input-group-text">
+                                    <i class="fas fa-pencil-ruler"></i>
+                                </span>
+                                {{ form.title }}
+                            </div>
+                            {% if form.title.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.title.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            {{ form.event_message.label_tag }}
+                            <div class="input-group justify-content-start">
+                                <span class="input-group-text">
+                                    <i class="fas fa-scroll"></i>
+                                </span>
+                                {{ form.event_message }}
+                            </div>
+                            {% if form.event_message.errors %}
+                                <div>
+                                    <div class="badge m-0 bg-danger text-uppercase">
+                                        {{ form.event_message.errors|striptags }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                     <div class="text-center mt-4">
-                        <button type="reset" form="bulk-sched-form" href="{% url "announcement:home" %}" class="btn btn-danger">Cancel</button>
+                        <a href="{% url "bulk_sched:home" %}" class="btn btn-danger">Cancel</a>
                         <button type="submit" form="bulk-sched-form" href="#" class="btn btn-primary">Save</button>
                     </div>
                 </form>

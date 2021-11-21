@@ -1,0 +1,165 @@
+{% extends "layouts/base_table.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% load static %}
+
+<!-- Page Title & Subtitle -->
+{% block page_title %}{{ title }}{% endblock page_title %}
+{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
+{% block content %}
+    <div class="buttons pb-4">
+        <a href="{% url "bulk_sched:create" %}">
+            <button type="button" class="btn btn-primary d-inline-flex align-items-center">
+                <i class="fas fa-plus pe-2" aria-hidden="true"></i>
+                Add Event
+            </button>
+        </a>
+    </div>
+{% endblock %}
+{% block table_content %}
+    <thead class="table-dark">
+        <tr>
+            <th data-checkbox="true"></th>
+            <th data-field="creation_date" data-halign="center" data-align="center" data-sortable="true">
+                EVENT CREATION
+            </th>
+            <th data-field="event_id" data-halign="center" data-align="center" data-sortable="true">
+                EVENT I.D.
+            </th>
+            <th data-field="event_type" data-halign="center" data-align="center" data-sortable="true">
+                EVENT TYPE
+            </th>
+            <th data-field="event_title" data-halign="center" data-align="center" data-sortable="true">
+                EVENT TITLE
+            </th>
+            <th data-field="event_purpose" data-halign="center" data-align="center" data-sortable="true">
+                EVENT PURPOSE
+            </th>
+            <th data-field="start_event" data-halign="center" data-align="center" data-sortable="true">
+                START EVENT
+            </th>
+            <th data-field="end_event" data-halign="center" data-align="center" data-sortable="true">
+                END EVENT
+            </th>
+            <th data-field="notification_type" data-halign="center" data-align="center" data-sortable="true">
+                NOTIFICATION TYPE
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for event in events %}
+            <tr>
+                <td></td>
+                <td class="fw-bold">{{ event.creation_date }}</td>
+                <td>{{ event.event_id }}</td>
+                <td>{{ event.event_type|capfirst }}</td>
+                <td>{{ event.event_title }}</td>
+                <td>{{ event.event_purpose }}</td>
+                <td>{{ event.start_event }}</td>
+                <td>{{ event.end_event }}</td>
+                <td>{{ event.notification_type|unordered_list }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+{% endblock %}
+
+{% block template %}
+    <template id="profileTemplate">
+        <div class="col-4 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-8 col-md-6">
+                            <h3 class="font-weight-bold">EVENT I.D.</h3>
+                            <h4 class="font-weight-bold">%EVENT_ID%</h4>
+                            <div class="align-items-center justify-content-center">
+                                <div class="row">
+                                    <div class="fw-extrabold mt-3">Event Name</div>
+                                    <p class="fs-6">%EVENT_TITLE%</p>
+                                </div>
+                                <div class="row">
+                                    <div class="col col-md-auto">
+                                        <p>
+                                            <span class="fw-extrabold d-block">Event Purpose</span>
+                                            %EVENT_PURPOSE%
+                                        </p>
+                                        <p>
+                                            <span class="fw-extrabold d-block">Event Type</span>
+                                            %EVENT_TYPE%
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-start">
+                                    <div class="col col-md-auto">
+                                        <div class="fw-extrabold">Notification Type</div>
+                                        <p class="fs-6">%NOTIFICATION_TYPE%</p>
+                                    </div>
+                                    <div class="col col-md-auto">
+                                        <div class="fw-extrabold w-auto">Start Event</div>
+                                        <p>%START_EVENT%</p>
+                                    </div>
+                                    <div class="col col-md-auto">
+                                        <div class="fw-extrabold w-auto">End Event</div>
+                                        <p>%END_EVENT%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+{% endblock template %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        function customViewFormatter(data) {
+            const template = $('#profileTemplate').html();
+            let view = '';
+            $.each(data, (i, row) => {
+                console.log(row)
+                $.each(row, (key, _) => {
+                    if (row[key]) {
+                        /* eslint no-param-reassign:0 */
+                        row[key] = row[key] === '' ? null : row[key];
+                    }
+                });
+                view += template
+                    .replaceAll('%EVENT_ID%', row.event_id)
+                    .replace('%EVENT_TITLE%', row.event_title)
+                    .replace('%EVENT_TYPE%', row.event_type)
+                    .replace('%EVENT_PURPOSE%', row.event_purpose)
+                    .replaceAll('%START_EVENT%', row.start_event)
+                    .replace('%END_EVENT%', row.end_event)
+                    .replace('%NOTIFICATION_TYPE%', row.notification_type)
+            });
+            return `<div class="row mx-0">${view}</div>`;
+        }
+    </script>
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    Swal.fire({
+                        title: "Success!",
+                        icon: "success",
+                        text: '{{ message }}',
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    Swal.fire({
+                        title: "Error!",
+                        icon: "error",
+                        text: "{{ message }}",
+                    })
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                    Swal.fire({
+                        title: "Attention!",
+                        icon: "info",
+                        text: "{{ message }}",
+                    })
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock scripts %}
