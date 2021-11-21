@@ -2,10 +2,10 @@
 echo """---
 runtime: python39
 env: standard
-instance_class: F1
+instance_class: F4_1G
 inbound_services:
   - warmup
-entrypoint: gunicorn main:app -w 1 -k uvicorn.workers.UvicornWorker
+entrypoint: gunicorn main:app -w 8 -k uvicorn.workers.UvicornWorker
 
 handlers:
   - url: /favicon.ico
@@ -51,9 +51,11 @@ env_variables:
   AZURE_STORAGE_BLOB_NAME: \"$AZURE_STORAGE_BLOB_NAME\"
 
 automatic_scaling:
-  min_idle_instances: automatic
-  max_idle_instances: automatic
-  min_pending_latency: automatic
+  max_instances: 2
+  min_idle_instances: 0
+  max_idle_instances: 0
+  min_pending_latency: 900ms
   max_pending_latency: automatic
-  target_cpu_utilization: 0.75
-  max_instances: 1"""
+  target_cpu_utilization: 0.95
+  target_throughput_utilization: 0.95
+  max_concurrent_requests: 80"""
