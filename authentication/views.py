@@ -302,14 +302,22 @@ def login(request):
     # Query in family sub-col if it exists
     family_col = rbi_col.document(street_query.id).collection("family")
     last_name_query = family_col.where("last_name", "==", user_data["last_name"])
-    date_of_birth_query = last_name_query.where(
-        "date_of_birth", "==", user_data["date_of_birth"]
-    ).get()[0]
 
-    if date_of_birth_query.exists:
-        resident_data = family_col.document(date_of_birth_query.id).get().to_dict()
-    else:
-        resident_data = {}
+    try:
+        date_of_birth_query = last_name_query.where(
+            "date_of_birth", "==", user_data["date_of_birth"]
+        ).get()[0]
+
+        if date_of_birth_query.exists:
+            resident_data = family_col.document(date_of_birth_query.id).get().to_dict()
+        else:
+            resident_data = {}
+    except IndexError:
+        # date_of_birth_query = last_name_query.where(
+        #     "date_of_birth", "==", user_data["date_of_birth"]
+        # ).get()
+        user_id = last_name_query.get()[0]
+        resident_data = family_col.document(user_id.id).get().to_dict()
 
     request.session["user"] = resident_data | user_data
 
