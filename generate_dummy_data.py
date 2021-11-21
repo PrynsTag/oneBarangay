@@ -744,6 +744,10 @@ def delete_all_data():  # noqa: C901
         announcements_user_docs = user_ref.document(user.id).collection("announcements").stream()
         appointments_user_docs = user_ref.document(user.id).collection("appointments").stream()
         complaints_user_docs = user_ref.document(user.id).collection("complaints").stream()
+        notification_user_docs = user_ref.document(user.id).collection("notification").stream()
+        document_request_user_docs = (
+            user_ref.document(user.id).collection("document_request").stream()
+        )
         family_user_docs = user_ref.document(user.id).collection("family").stream()
         account_user_docs = user_ref.document(user.id).collection("account").stream()
 
@@ -758,6 +762,12 @@ def delete_all_data():  # noqa: C901
 
         for family in family_user_docs:
             family.reference.delete()
+
+        for notification in notification_user_docs:
+            notification.reference.delete()
+
+        for document_request in document_request_user_docs:
+            document_request.reference.delete()
 
         for account in account_user_docs:
             account.reference.delete()
