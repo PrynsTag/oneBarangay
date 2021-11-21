@@ -291,6 +291,86 @@ class User:
             email_writer.writerow([f"{email}", f"{password}", f"{role}"])
 
 
+class DocumentRequest:
+    """Create dummy document request."""
+
+    def __init__(self):
+        """Initialize DocumentRequest properties."""
+        self.firestore_app = firestore.client(app=firebase_app)
+        self.fake = Faker(["fil_PH"])
+        self.crypto_gen = SystemRandom()
+
+    def create_document_request(self, family_member, house_data, auth_data):
+        """Create dummy document request.
+
+        Args:
+          family_member: the data of the family member.
+          house_data: the house information of the user.
+          auth_data: the authentication data of user.
+
+        Returns:
+          Dictionary data of document request.
+        """
+        document_type_choices = [
+            "Barangay Clearance",
+            "Certificate of Indigency",
+            "Barangay Cedula",
+            "Barangay Certificate",
+            "Barangay Local Employment",
+            "Barangay Verification",
+        ]
+        document_type = self.crypto_gen.choice(document_type_choices)
+        sentence = self.fake.sentence(nb_words=10)
+        appointment_image = STATIC_URL + "assets/img/default-appointment-id.png"
+
+        document_request_data = {
+            "document": [
+                {
+                    "document_name": document_type,
+                    "slugify": slugify(document_type),
+                    "ready_issue": False,
+                    "info_status": False,
+                }
+            ],
+            "status": "request",
+            "appointment_purpose": sentence,
+            "appointment_image": appointment_image,
+            "created_on": datetime.now(tz=pytz.timezone("Asia/Manila")),
+            "user_verified": False,
+            "first_name": family_member["first_name"],
+            "middle_name": family_member["middle_name"],
+            "last_name": family_member["last_name"],
+            "contact_number": family_member["contact_number"],
+            "address": house_data["address"],
+            "user_id": auth_data["user_id"],
+            "email": auth_data["email"],
+            "role": auth_data["role"],
+            "photo_url": auth_data["photo_url"],
+        }
+
+        return document_request_data
+
+    def save_document_request(self, doc_request_data):
+        """Save document request data.
+
+        Args:
+          doc_request_data: the data of the request.
+
+        Returns:
+          None.
+        """
+        doc_request_ref = firestore_db.collection("document_request").document()
+        doc_req_id = doc_request_ref.id
+
+        doc_request_data.update({"document_id": doc_req_id})
+
+        doc_request_ref.set(doc_request_data, merge=True)
+
+        firestore_db.collection("users").document(doc_request_data["user_id"]).collection(
+            "document_request"
+        ).document(doc_req_id).set(doc_request_data)
+
+
 class Complaint:
     """Complaint class."""
 
@@ -550,6 +630,12 @@ def main():
 
                     user_list.append(auth_data)
 
+                    document_request = DocumentRequest()
+                    document_request_data = document_request.create_document_request(
+                        family_member, house_data, auth_data
+                    )
+                    document_request.save_document_request(document_request_data)
+
                     # Complaint Class
                     complaint = Complaint(
                         house_data["address"],
@@ -604,6 +690,12 @@ def delete_all_data():  # noqa: C901
         print("------------------ Firebase Auth --------------------")  # noqa: T001
         print("Deleting user " + user.uid)  # noqa: T001
         auth.delete_user(user.uid, app=firebase_app)
+
+    document_request_docs = firestore_db.collection("document_request").stream()
+    for doc_request in document_request_docs:
+        print("------------------ Document Request --------------------")  # noqa: T001
+        print("Deleting document request " + doc_request.id)  # noqa: T001
+        doc_request.reference.delete()
 
     announcement_docs = firestore_db.collection("announcements").stream()
     for post in announcement_docs:
