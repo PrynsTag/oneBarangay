@@ -505,6 +505,7 @@ def user_selection_data(request, document_request_id):
         # Change status from request to process in document request and user collection
         user_sess_data = request.session["user"]
         document_ref = db.collection("document_request")
+        document_data = document_ref.document(document_request_id).get().to_dict()
         document_ref.document(document_request_id).update(
             {"user_verified": True, "status": "process"}
         )
@@ -513,7 +514,7 @@ def user_selection_data(request, document_request_id):
             subject="Barangay Malanday - Document Issuing Status",
             message="Your document is in process.",
             from_email=os.getenv("ADMIN_EMAIL"),
-            recipient_list=["johnchristianmgaron@gmail.com"],
+            recipient_list=[f"{document_data['email']}"],
         )
 
         user_ref = db.collection("users")
@@ -869,7 +870,7 @@ def document_process_change_status(request, document_request_id):
         subject="Barangay Malanday - Document Issuing Status",
         message="You can now get your document.",
         from_email=os.getenv("ADMIN_EMAIL"),
-        recipient_list=["johnchristianmgaron@gmail.com"],
+        recipient_list=[f"{document_data['email']}"],
     )
 
     return HttpResponseRedirect(reverse("appointment:document_request"))
@@ -1471,7 +1472,7 @@ def appointment_complete(request, appointment_id):
             subject="Barangay Malanday - Document Issuing Status",
             message="Your document is complete. Thank you!",
             from_email=os.getenv("ADMIN_EMAIL"),
-            recipient_list=["johnchristianmgaron@gmail.com"],
+            recipient_list=[f"{document_data['email']}"],
         )
 
         return HttpResponseRedirect(reverse("appointment:appointment_query_list"))
