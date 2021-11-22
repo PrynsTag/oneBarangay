@@ -13,13 +13,21 @@
     <link href="{% static "appointment/assets/css/view_appointment.css" %}" rel="stylesheet">
 {% endblock %}
 
-{% block content %}
-    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">View Appointment</h1>
-            <p class="mb-0">Display appointment details.</p>
-        </div>
+{% block back_button %}
+    <div class="mb-3">
+        <a href="{% url "appointment:appointment_query_list" %}"><--Go back to appointments</a>
     </div>
+{% endblock %}
+
+{% block page_title %}
+    View Appointment
+{% endblock %}
+
+{% block page_subtitle %}
+    Display appointment details.
+{% endblock %}
+
+{% block content %}
 
     <div class="container m-0">
         <div class="view-account">
@@ -28,24 +36,20 @@
                     <div class="side-bar">
                         <div class="user-info">
                             <img class="img-profile img-circle img-responsive center-block rounded-circle"
-                                src="{{ appointment_data.photo_url }}"
-                                alt="{{ appointment_data.first_name }} {{ appointment_data.last_name }}">
+                                src="{{ document_data.photo_url }}"
+                                alt="{{ document_data.first_name }} {{ document_data.last_name }}">
                             <ul class="meta list list-unstyled">
                                 <li class="name">
-                                    <p class="mb-0">{{ appointment_data.first_name }} {{ appointment_data.last_name }}</p>
-                                    <label class="label label-info">{{ appointment_data.role|capfirst }}</label>
+                                    <p class="mb-0">{{ document_data.first_name }} {{ document_data.last_name }}</p>
+                                    <label class="label label-info">{{ document_data.role|capfirst }}</label>
                                 </li>
-                                <li class="email"><p><a href="#">{{ appointment_data.email|truncatechars:25 }}</a></p>
+                                <li class="email"><p><a href="#">{{ document_data.email|truncatechars:25 }}</a></p>
                                 </li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="content-panel">
-                        <div class="mb-3">
-                            <a href="{% url "appointment:appointment_query_list" %}"><--Go back to appointments</a>
-                        </div>
-
                         <div class="content-header-wrapper">
                             <h2 class="title">Information</h2>
                         </div>
@@ -58,7 +62,7 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <textarea class="form-control" rows="3" disabled
-                                                    readonly>{{ appointment_data.appointment_purpose }}</textarea>
+                                                    readonly>{{ document_data.appointment_purpose }}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -70,7 +74,7 @@
                             </div>
                             <div class="drive-wrapper drive-grid-view">
                                 <div class="grid-items-wrapper">
-                                    {% for data in appointment_data.document %}
+                                    {% for data in document_data.document %}
                                         <div class="drive-item module text-center w-25">
                                             <div class="drive-item-inner module-inner">
                                                 <div class="drive-item-title"><a
@@ -82,18 +86,18 @@
                                             <div class="drive-item-footer module-footer">
                                                 {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
                                                     <a class="btn btn-primary mx-1"
-                                                        href="{% url "appointment:view_document_page" appointment_data.appointment_id data.slugify %}"
+                                                        href="{% url "appointment:view_document_page" document_data.document_id data.slugify %}"
                                                         target="_blank">View</a>
                                                     <a class="btn btn-secondary mx-1"
-                                                        href="{% url "appointment:apt_edit_docu" appointment_data.appointment_id data.slugify %}">Edit</a>
+                                                        href="{% url "appointment:apt_edit_docu" document_data.document_id data.slugify %}">Edit</a>
                                                 {% else %}
-                                                    {% if appointment_data.status == "get" %}
+                                                    {% if document_data.status == "get" %}
                                                         {#                                                        <a class="btn btn-primary mx-1"#}
                                                         {#                                                           href="#"#}
                                                         {#                                                           target="_blank">View</a>#}
                                                     {% else %}
                                                         <a class="btn btn-primary mx-1"
-                                                            href="{% url "appointment:view_document_page" appointment_data.appointment_id data.slugify %}"
+                                                            href="{% url "appointment:view_document_page" document_data.document_id data.slugify %}"
                                                             target="_blank">View</a>
                                                     {% endif %}
                                                 {% endif %}
@@ -103,13 +107,16 @@
                                 </div>
                             </div>
 
-                            <div class="drive-grid-view d-flex justify-content-center py-4">
-                                <a class="btn btn-secondary mx-2"
-                                    href="{% url "appointment:appointment_query_list" %}">Cancel</a>
-                                <button class="btn btn-primary mx-2" id="btn-complete">
-                                    Complete
-                                </button>
-                            </div>
+                            {% if user_sess_data.role in 'admin, head_admin, secretary, worker' %}
+                                <div class="drive-grid-view d-flex justify-content-center py-4">
+                                    <a class="btn btn-secondary mx-2"
+                                        href="{% url "appointment:appointment_query_list" %}">Cancel</a>
+
+                                    <button class="btn btn-primary mx-2" id="btn-complete">
+                                        Complete
+                                    </button>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -143,7 +150,7 @@
                                 confirmButtonText: 'Yes!',
                             }
                         ).then((result) => {
-                            window.location.href = "{% url "appointment:appointment_complete" appointment_data.appointment_id %}";
+                            window.location.href = "{% url "appointment:appointment_complete" document_data.document_id %}";
                         })
                     }
                 })
