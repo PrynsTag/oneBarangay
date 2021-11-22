@@ -14,30 +14,46 @@
     <link href="{% static "appointment/assets/css/docu_issue_process.css" %}" rel="stylesheet">
 {% endblock %}
 
+{% block back_button %}
+    <a href="{% url "appointment:user_issuing_list" user_document_data.document_id %}">Back</a>
+{% endblock %}
+
+{% block page_title %}
+    Document Info.
+{% endblock %}
+
+{% block page_subtitle %}
+    Display document information
+{% endblock %}
+
 {% block content %}
-    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Document Info.</h1>
-            <p class="mb-0">Display document information</p>
+
+    <div class="container-fluid m-0 w-100">
+        <div class="row">
+            <div class="col-6">
+                {% load crispy_forms_tags %}
+
+                <form action="{% url "appointment:document_input_info" user_document_data.document_id document_slugify %}"
+                    method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="d-flex justify-content-center">
+                        <a class="btn btn-outline-danger mx-2"
+                            href="{% url "appointment:user_issuing_list" user_document_data.document_id %}">Cancel</a>
+                        <input class="btn btn-secondary mx-2" type="submit" value="Generate">
+
+                        {% if info_status %}
+                            <button class="btn btn-primary btn-done mx-2" id="btn-done">Done</button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+            <div class="col-6">
+                <div id="example1" class="mt-4"></div>
+            </div>
         </div>
     </div>
-
-    {% load crispy_forms_tags %}
-
-    <form action="{% url "appointment:document_input_info" user_document_data.document_id document_slugify %}"
-        method="POST">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <a class="btn btn-light"
-            href="{% url "appointment:user_issuing_list" user_document_data.document_id %}">Cancel</a>
-        <input class="btn btn-secondary" type="submit" value="Generate">
-
-        {% if info_status %}
-            <button class="btn btn-primary btn-done" id="btn-done">Done</button>
-        {% endif %}
-    </form>
-
-    <div id="example1"></div>
 {% endblock %}
 
 {% block scripts %}

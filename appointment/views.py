@@ -174,20 +174,24 @@ def document_request(request):
     Returns:
         Render list of user's with request status in table.
     """
-    request_status = db.collection("document_request").where("status", "==", "request").get()
+    document_ref = db.collection("document_request")
+
+    request_status = document_ref.where("status", "in", ["request", "process"]).stream()
     request_list = [request.to_dict() for request in request_status]
 
     combine_user_document = []
 
-    for count, request_data in enumerate(request_list):
-        document_temp = []
-        for document in request_data["document"]:
-            document_temp.append(document["document_name"])
+    for request_data in request_list:
+        user_data = db.collection("users").document(request_data["user_id"]).get().to_dict()
+        # This code fix if user account was deleted and there is an appointment
+        if user_data is None or user_data.get("user_id") is None:
+            continue
+        else:
+            document_temp = []
+            for document in request_data["document"]:
+                document_temp.append(document["document_name"])
 
-        request_list[count]["document_list"] = document_temp
-
-        user_data = (db.collection("users").document(request_data["user_id"]).get()).to_dict()
-        combine_user_document.append(request_data | user_data)
+            combine_user_document.append({"document_list": document_temp} | request_data)
 
     return render(
         request, "appointment/document_request.html", {"request_list": combine_user_document}
@@ -224,7 +228,10 @@ def my_document_request(request):
     return render(
         request,
         "appointment/my_document_request.html",
-        {"request_data": my_request_list, "user_sess_data": session_user_data},
+        {
+            "request_data": my_request_list,
+            "user_sess_data": session_user_data,
+        },
     )
 
 
@@ -258,30 +265,26 @@ def appointment_schedule(request, document_id):
             )
 
         else:
-            user_session_data = request.session["user"]
 
             start_appointment = form.cleaned_data["date"]
             end_appointment = start_appointment + datetime.timedelta(minutes=15)
+
+            # Document Collection
             document_request_ref = db.collection("document_request")
             document_data = (document_request_ref.document(document_id).get()).to_dict()
-            appointment_ref = db.collection("appointments").document()
-            appointment_id = appointment_ref.id
-            users_ref = (
-                db.collection("users")
-                .document(user_session_data["user_id"])
-                .collection("appointments")
-                .document(appointment_id)
-            )
+
+            # User Collection
+            user_ref = db.collection("users")
 
             appointment_data = {
                 "start_appointment": start_appointment,
                 "end_appointment": end_appointment,
-                "appointment_id": appointment_id,
             }
 
-            appointment_ref.set(appointment_data | document_data, merge=True)
             document_request_ref.document(document_id).set(appointment_data, merge=True)
-            users_ref.set(appointment_data | document_data, merge=True)
+            user_ref.document(document_data["user_id"]).collection("document_request").document(
+                document_data["document_id"]
+            ).update(appointment_data)
 
             messages.success(
                 request,
@@ -331,7 +334,7 @@ def appointment_schedule(request, document_id):
     )
 
 
-def user_document_verification(request, document_request_id):
+def user_document_verification(request, document_id):
     """Display user's document information request.
 
     Args:
@@ -342,23 +345,22 @@ def user_document_verification(request, document_request_id):
         Render user document verification view.
     """
     # Document Data
-    user_document_data = (
-        db.collection("document_request").document(document_request_id).get()
-    ).to_dict()
+    document_ref = db.collection("document_request")
+    user_document_data = document_ref.document(document_id).get().to_dict()
 
     if user_document_data["user_verified"]:
         return HttpResponseRedirect(
             reverse(
                 "appointment:user_issuing_list",
-                kwargs={"document_request_id": user_document_data["document_id"]},
+                kwargs={"document_id": user_document_data["document_id"]},
             )
         )
 
     else:
-        # User Data
-        user_data = (
-            db.collection("users").document(user_document_data["user_id"]).get()
-        ).to_dict()
+
+        # User Collection
+        user_ref = db.collection("users")
+        user_data = user_ref.document(user_document_data["user_id"]).get().to_dict()
 
         document_userdata_list = []
 
@@ -374,7 +376,7 @@ def user_document_verification(request, document_request_id):
         )
 
 
-def user_document_cancel(request, document_request_id):
+def user_document_cancel(request, document_id):
     """Remove document request.
 
     Args:
@@ -384,7 +386,20 @@ def user_document_cancel(request, document_request_id):
     Returns:
         Remove document data in firebase.
     """
-    db.collection("document_request").document(document_request_id).delete()
+    # Document Collection
+    document_ref = db.collection("document_request")
+    document_data = document_ref.document(document_id).get().to_dict()
+
+    # User Collection
+    user_ref = db.collection("users")
+
+    # User document request delete
+    user_ref.document(document_data["user_id"]).collection("document_request").document(
+        document_data["document_id"]
+    ).delete()
+
+    # Document request delete
+    document_ref.document(document_data["document_id"]).delete()
 
     return HttpResponseRedirect(reverse("appointment:document_request"))
 
@@ -412,7 +427,7 @@ def document_request_verified(request, document_request_id):
 
 
 # For User Document Request with Data Table
-def user_verification_dt(request, document_request_id):
+def user_verification_dt(request, document_id):
     """Render list of users.
 
     Args:
@@ -422,44 +437,21 @@ def user_verification_dt(request, document_request_id):
     Returns:
         Display list of users.
     """
-    all_user_data = db.collection("users").stream()
+    verification_status = {"user_verified": True, "status": "process"}
 
-    user_data_list = [user_data.to_dict() for user_data in all_user_data]
+    # Document Collection
+    document_ref = db.collection("document_request")
+    document_data = document_ref.document(document_id).get().to_dict()
+    document_ref.document(document_data["document_id"]).update(verification_status)
 
-    role = {"": 0, "resident": 1, "admin": 2, "worker": 3, "secretary": 4}
+    # User Collection
+    user_ref = db.collection("users")
+    user_ref.document(document_data["user_id"]).collection("document_request").document(
+        document_data["document_id"]
+    ).update(verification_status)
 
-    civil_status = {
-        "": 0,
-        "Single": 1,
-        "Married": 2,
-        "Widowed": 3,
-        "Separated": 4,
-        "Divorced": 5,
-    }
-
-    keys = ["first_name", "middle_name", "last_name", "street", "role", "civil_status"]
-    field = ["First Name", "Middle Name", "Last Name", "Street", "Role", "Civil Status"]
-
-    data_table = []
-
-    for data in user_data_list:
-        values_dict = {}
-
-        for count, keys_value in enumerate(keys):
-            values_dict[field[count]] = data.get(keys_value)
-        data_table.append(values_dict)
-
-    user_data_table = []
-
-    for data in data_table:
-        data["Role"] = role.get(data["Role"])
-        data["Civil Status"] = civil_status.get(data["Civil Status"])
-        user_data_table.append(data)
-
-    return render(
-        request,
-        "appointment/user_verification_dt.html",
-        {"user_data": user_data_table, "document_request_id": document_request_id},
+    return HttpResponseRedirect(
+        reverse("appointment:user_issuing_list", kwargs={"document_id": document_id})
     )
 
 
@@ -513,6 +505,7 @@ def user_selection_data(request, document_request_id):
         # Change status from request to process in document request and user collection
         user_sess_data = request.session["user"]
         document_ref = db.collection("document_request")
+        document_data = document_ref.document(document_request_id).get().to_dict()
         document_ref.document(document_request_id).update(
             {"user_verified": True, "status": "process"}
         )
@@ -521,7 +514,7 @@ def user_selection_data(request, document_request_id):
             subject="Barangay Malanday - Document Issuing Status",
             message="Your document is in process.",
             from_email=os.getenv("ADMIN_EMAIL"),
-            recipient_list=["johnchristianmgaron@gmail.com"],
+            recipient_list=[f"{document_data['email']}"],
         )
 
         user_ref = db.collection("users")
@@ -540,57 +533,17 @@ def user_selection_data(request, document_request_id):
         )
 
 
-def user_filter(request):
-    """Search user for verification.
-
-    Args:
-      request: URL request
-
-    Returns:
-        Verify user document request.
-    """
-    # role = {"": 0, "resident": 1, "admin": 2, "worker": 3, "secretary": 4}
-    #
-    # civil_status = {
-    #     "": 0,
-    #     "Single": 1,
-    #     "Married": 2,
-    #     "Widowed": 3,
-    #     "Separated": 4,
-    #     "Divorced": 5,
-    # }
-    #
-    # json_user_data = json.loads(request.POST.get("row_data"))
-    #
-    # json_user_data["Civil Status"] = get_key(
-    #     my_dict=civil_status, val=json_user_data["Civil Status"]
-    # )
-    # json_user_data["Role"] = get_key(my_dict=role, val=json_user_data["Role"])
-
-    # Image Uploading
-    # thumbnail_name = default_storage.get_valid_name(form.cleaned_data["thumbnail"].name)
-    # default_storage.save(thumbnail_name, form.cleaned_data["thumbnail"])
-    # default_storage.url(filename) # Link
-    if request.is_ajax():
-        data = json.loads(request.POST.get("data"))
-        # print(data)
-        return JsonResponse({"data": data})
-
-
-def user_issuing_list(request, document_request_id):
+def user_issuing_list(request, document_id):
     """Render user request list of documents.
 
     Args:
       request: URL request
-      document_request_id: document ID in firebase
-      user_id: user id of user
+      document_id: document ID in firebase
 
     Returns:
         Render document issuing done.
     """
-    user_document_data = (
-        db.collection("document_request").document(document_request_id).get()
-    ).to_dict()
+    user_document_data = (db.collection("document_request").document(document_id).get()).to_dict()
 
     user_data = (db.collection("users").document(user_document_data["user_id"]).get()).to_dict()
 
@@ -653,9 +606,12 @@ def docu_issue_process(request, document_id, document_slugify):  # noqa: C901
     Returns:
         Document information.
     """
+    user_sess_data = request.session["user"]
+
+    document_settings_ref = db.collection("admin_settings")
+
     document_settings = (
-        db.collection("admin_settings")
-        .document("document")
+        document_settings_ref.document("document")
         .collection(document_slugify)
         .where("active", "==", True)
         .get()
@@ -735,11 +691,17 @@ def docu_issue_process(request, document_id, document_slugify):  # noqa: C901
                     first_name = user_document_data["first_name"]
                     middle_name = user_document_data["middle_name"]
                     last_name = user_document_data["last_name"]
+
+                    first_sess_data = user_sess_data["first_name"]
+                    middle_sess_data = user_sess_data["middle_name"][0]
+                    last_sess_data = user_sess_data["last_name"]
+
                     initial_dict = {
                         "date": (datetime.datetime.now()).date(),
                         "fullname": f"{first_name} {middle_name} {last_name}",
                         "address": user_document_data["address"],
                         "valid": document_validity,
+                        "prepared": f"{first_sess_data} {middle_sess_data}. {last_sess_data}",
                     }
 
                     form = None
@@ -780,7 +742,7 @@ def docu_issue_process(request, document_id, document_slugify):  # noqa: C901
     )
 
 
-def request_update_document(request, document_request_id, document_slugify):
+def request_update_document(request, document_id, document_slugify):
     """Update request status of document.
 
     Args:
@@ -792,11 +754,11 @@ def request_update_document(request, document_request_id, document_slugify):
         Change document status in firestore.
     """
     document_request_ref = db.collection("document_request")
-    user_docu_data = (document_request_ref.document(document_request_id).get()).to_dict()
+    user_docu_data = (document_request_ref.document(document_id).get()).to_dict()
 
+    docu_settings_ref = db.collection("admin_settings")
     docu_settings_data = (
-        db.collection("admin_settings")
-        .document("document")
+        docu_settings_ref.document("document")
         .collection(document_slugify)
         .where("active", "==", True)
         .get()
@@ -818,38 +780,39 @@ def request_update_document(request, document_request_id, document_slugify):
             else:
                 update_docu_data.append(docu_data)
 
-        document_request_ref.document(document_request_id).update({"document": update_docu_data})
+        document_request_ref.document(document_id).update({"document": update_docu_data})
         user_ref = db.collection("users")
         user_ref.document(user_docu_data["user_id"]).collection("document_request").document(
-            document_request_id
+            document_id
         ).update({"document": update_docu_data})
 
         return HttpResponseRedirect(
             reverse(
                 "appointment:user_issuing_list",
-                kwargs={"document_request_id": document_request_id},
+                kwargs={"document_id": document_id},
             )
         )
 
 
-def appointment_update_document(request, appointment_id, document_slugify):
+def appointment_update_document(request, document_id, document_slugify):
     """Update appointment document status.
 
     Args:
       request: URL request
-      appointment_id: appointment id in firestore
+      document_id: document id in firestore
       document_slugify: document name in slugify
 
     Returns:
         Change document status in firestore.
     """
-    appointment_ref = db.collection("appointments")
-    user_docu_data = (appointment_ref.document(appointment_id).get()).to_dict()
-    user_sess_data = request.session["user"]
+    #  Document Collection
+    document_ref = db.collection("document_request")
+    document_data = document_ref.document(document_id).get().to_dict()
 
+    # Document settings collection
+    document_settings_ref = db.collection("admin_settings")
     docu_settings_data = (
-        db.collection("admin_settings")
-        .document("document")
+        document_settings_ref.document("document")
         .collection(document_slugify)
         .where("active", "==", True)
         .get()
@@ -863,7 +826,7 @@ def appointment_update_document(request, appointment_id, document_slugify):
     else:
         update_docu_data = []
 
-        for docu_data in user_docu_data["document"]:
+        for docu_data in document_data["document"]:
             if docu_data["slugify"] == document_slugify:
                 docu_data["ready_issue"] = True
                 docu_data["info_status"] = True
@@ -871,10 +834,10 @@ def appointment_update_document(request, appointment_id, document_slugify):
             else:
                 update_docu_data.append(docu_data)
 
-        appointment_ref.document(appointment_id).update({"document": update_docu_data})
+        document_ref.document(document_data["document_id"]).update({"document": update_docu_data})
         user_ref = db.collection("users")
-        user_ref.document(user_sess_data["user_id"]).collection("appointments").document(
-            appointment_id
+        user_ref.document(document_data["user_id"]).collection("document_request").document(
+            document_data["document_id"]
         ).update({"document": update_docu_data})
 
         return HttpResponseRedirect(
@@ -903,12 +866,12 @@ def document_process_change_status(request, document_request_id):
         document_request_id
     ).update({"status": "get"})
 
-    send_mail(
-        subject="Barangay Malanday - Document Issuing Status",
-        message="You can now get your document.",
-        from_email=os.getenv("ADMIN_EMAIL"),
-        recipient_list=["johnchristianmgaron@gmail.com"],
-    )
+    # send_mail(
+    #     subject="Barangay Malanday - Document Issuing Status",
+    #     message="You can now set an appointment.",
+    #     from_email=os.getenv("ADMIN_EMAIL"),
+    #     recipient_list=["johnchristianmgaron@gmail.com"],
+    # )
 
     return HttpResponseRedirect(reverse("appointment:document_request"))
 
@@ -988,32 +951,35 @@ def document_input_info(request, document_id, document_slugify):  # noqa: C901
                 reverse(
                     "appointment:docu_issue_process",
                     kwargs={
-                        "document_request_id": document_id,
+                        "document_id": document_id,
                         "document_slugify": document_slugify,
                     },
                 )
             )
 
 
-def docu_input_info(request, appointment_id, document_slugify):  # noqa: C901
+def docu_input_info(request, document_id, document_slugify):  # noqa: C901
     """Set document information.
 
     Args:
       request: URL request
-      appointment_id: Document ID
+      document_id: Document ID
       document_slugify: document name in slugify
 
     Returns:
         Update document request info in database.
     """
-    appointment_ref = db.collection("appointments")
-    user_docu_data = (appointment_ref.document(appointment_id).get()).to_dict()
-    user_ref = db.collection("users")
-    user_sess_data = request.session["user"]
+    # Document Collection
+    document_ref = db.collection("document_request")
+    document_data = document_ref.document(document_id).get().to_dict()
 
+    # User Collection
+    user_ref = db.collection("users")
+
+    # Admin settings collection
+    document_settings_ref = db.collection("admin_settings")
     docu_settings_data = (
-        db.collection("admin_settings")
-        .document("document")
+        document_settings_ref.document("document")
         .collection(document_slugify)
         .where("active", "==", True)
         .get()
@@ -1053,24 +1019,26 @@ def docu_input_info(request, appointment_id, document_slugify):  # noqa: C901
 
             update_docu_data = []
 
-            for docu_data in user_docu_data["document"]:
+            for docu_data in document_data["document"]:
                 if docu_data["slugify"] == document_slugify:
                     docu_data["document_data"] = form_data
                     update_docu_data.append(docu_data)
                 else:
                     update_docu_data.append(docu_data)
 
-            appointment_ref.document(appointment_id).update({"document": update_docu_data})
+            document_ref.document(document_data["document_id"]).update(
+                {"document": update_docu_data}
+            )
 
-            user_ref.document(user_sess_data["user_id"]).collection("appointments").document(
-                appointment_id
+            user_ref.document(document_data["user_id"]).collection("document_request").document(
+                document_data["document_id"]
             ).update({"document": update_docu_data})
 
             return HttpResponseRedirect(
                 reverse(
                     "appointment:apt_edit_docu",
                     kwargs={
-                        "appointment_id": appointment_id,
+                        "document_id": document_data["document_id"],
                         "document_slugify": document_slugify,
                     },
                 )
@@ -1121,46 +1089,30 @@ def appointment_query_list(request):
     # For Appointment Query
     user_sess_data = request.session["user"]
 
-    appointment_ref = db.collection("appointments")
+    # Document Collection
+    document_ref = db.collection("document_request")
 
     appointments = None
 
     if user_sess_data["role"] in ["admin", "head_admin", "secretary", "worker"]:
-        appointments = appointment_ref.stream()
+        appointments = (
+            document_ref.where("status", "==", "get")
+            .order_by("start_appointment", direction="DESCENDING")
+            .stream()
+        )
     else:
-        appointments = appointment_ref.where("user_id", "==", user_sess_data["user_id"]).stream()
-    #           .where(
-    # x          "start_appointment",
-    #           ">",
-    #           datetime.datetime(
-    #               year=date.year,
-    #               month=date.month,
-    #               day=date.day - 1,
-    #               hour=23,
-    #               minute=59,
-    #               second=59,
-    #               tzinfo=pytz.timezone("Asia/Manila"),
-    #           ),
-    #       )
-    #     .where(
-    #     "start_appointment",
-    #     "<=",
-    #     datetime.datetime(
-    #         year=date.year,
-    #         month=date.month,
-    #         day=date.day,
-    #         hour=23,
-    #         minute=59,
-    #         second=59,
-    #         tzinfo=pytz.timezone("Asia/Manila"),
-    #     ),
-    # )
+        appointments = (
+            document_ref.where("user_id", "==", user_sess_data["user_id"])
+            .where("status", "in", ["get", "complete"])
+            .order_by("start_appointment", direction="DESCENDING")
+            .stream()
+        )
 
-    appointments_data = [data.to_dict() for data in appointments]
+    document_data = [data.to_dict() for data in appointments]
 
-    appointment_list = []
+    list_document_data = []
 
-    for data in appointments_data:
+    for data in document_data:
         document_data_list = []
 
         for document_data in data["document"]:
@@ -1172,13 +1124,13 @@ def appointment_query_list(request):
         )
         data["end_appointment"] = data["end_appointment"].astimezone(pytz.timezone("Asia/Manila"))
 
-        appointment_list.append(data)
+        list_document_data.append(data)
 
     return render(
         request,
         "appointment/appointment_query_list.html",
         {
-            "appointments_data": appointment_list,
+            "documents_data": list_document_data,
             "id": "appointment_id",
             "sort": [
                 {"sortName": "start_appointment", "sortOrder": "desc"},
@@ -1188,19 +1140,20 @@ def appointment_query_list(request):
     )
 
 
-def view_appointment(request, appointment_id):
+def view_appointment(request, document_id):
     """View appointment details.
 
     Args:
       request: URL request
-      appointment_id: appointment id in firestore
+      document_id: document id in firestore
 
     Returns:
         Display appointment info.
     """
-    appointment_ref = db.collection("appointments")
-    appointment_data = (appointment_ref.document(appointment_id).get()).to_dict()
-    appointment_date = appointment_data["start_appointment"].date()
+    # Document Collection
+    document_ref = db.collection("document_request")
+    document_data = document_ref.document(document_id).get().to_dict()
+    document_date = document_data["start_appointment"].date()
 
     user_sess_data = request.session["user"]
 
@@ -1208,27 +1161,28 @@ def view_appointment(request, appointment_id):
         request,
         "appointment/view_appointment.html",
         {
-            "appointment_data": appointment_data,
-            "date": appointment_date,
+            "document_data": document_data,
+            "date": document_date,
             "user_sess_data": user_sess_data,
         },
     )
 
 
-def view_document_page(request, appointment_id, document_slugify):
+def view_document_page(request, document_id, document_slugify):
     """View document on another page.
 
     Args:
       request: URL request
-      appointment_id: appointment id in firestore
+      document_id: document id in firestore
       document_slugify: document name in slugify
 
     Returns:
         Display a document on another page.
     """
+    # Document settings collection
+    document_settings_ref = db.collection("admin_settings")
     document_settings = (
-        db.collection("admin_settings")
-        .document("document")
+        document_settings_ref.document("document")
         .collection(document_slugify)
         .where("active", "==", True)
         .get()
@@ -1243,9 +1197,9 @@ def view_document_page(request, appointment_id, document_slugify):
 
     combine_document_list = []
 
-    user_appointment_data = (
-        db.collection("appointments").document(appointment_id).get()
-    ).to_dict()
+    # Document Collection
+    document_ref = db.collection("document_request")
+    user_appointment_data = document_ref.document(document_id).get().to_dict()
 
     for document_data in user_appointment_data["document"]:
         if document_data["slugify"] == document_slugify:
@@ -1271,12 +1225,12 @@ def view_document_page(request, appointment_id, document_slugify):
             )
 
 
-def apt_edit_docu(request, appointment_id, document_slugify):  # noqa: C901
+def apt_edit_docu(request, document_id, document_slugify):  # noqa: C901
     """Edit document in appointment.
 
     Args:
       request: URL request
-      appointment_id: appointment id in firestore
+      document_id: document id in firestore
       document_slugify: document name in slugify
 
     Returns:
@@ -1301,20 +1255,19 @@ def apt_edit_docu(request, appointment_id, document_slugify):  # noqa: C901
         raise Http404("Page not found.")
 
     else:
-        appointment_data = (
-            db.collection("appointments").document(appointment_id).get()
-        ).to_dict()
 
-        for document_data in appointment_data["document"]:
+        # Document request collection
+        document_ref = db.collection("document_request")
+        user_document_data = document_ref.document(document_id).get().to_dict()
+
+        for document_data in user_document_data["document"]:
             if document_data["slugify"] == document_slugify:
                 if document_data["info_status"]:
                     form = None
 
                     if document_slugify not in document_list:
                         raise Http404("Page not found.")
-                    elif document_slugify == "barangay-certificate":
-
-                        form = None
+                    else:
 
                         if document_slugify == "barangay-certificate":
                             form = BarangayCertificate(
@@ -1340,7 +1293,13 @@ def apt_edit_docu(request, appointment_id, document_slugify):  # noqa: C901
                     combine_document_list = []
 
                     for settings_data in document_settings_data["document_format"]:
-                        data = document_data["document_data"].get(settings_data["name"])
+                        if settings_data["name"] == "date":
+                            data = document_data["document_data"]["date"].date()
+                        elif settings_data["name"] == "valid":
+                            data = document_data["document_data"]["valid"].date()
+                        else:
+                            data = document_data["document_data"].get(settings_data["name"])
+
                         settings_data["value"] = data
                         combine_document_list.append(settings_data)
 
@@ -1353,27 +1312,26 @@ def apt_edit_docu(request, appointment_id, document_slugify):  # noqa: C901
                         "appointment/apt_edit_docu.html",
                         {
                             "form": form,
-                            "appointment_data": appointment_data,
+                            "appointment_data": user_document_data,
                             "document_slugify": document_slugify,
                             "document_info_data": combine_document_list,
                             "document_settings": document_settings_data,
                             "paper_width": float(paper_size[0]),
                             "paper_length": float(paper_size[1]),
                             "info_status": document_data["info_status"],
-                            "date": appointment_data["start_appointment"].date(),
                         },
                     )
                 else:
                     document_validity = (
                         datetime.datetime.now() + relativedelta(months=+3)
                     ).date()
-                    first_name = appointment_data["first_name"]
-                    middle_name = appointment_data["middle_name"]
-                    last_name = appointment_data["last_name"]
+                    first_name = document_data["first_name"]
+                    middle_name = document_data["middle_name"]
+                    last_name = document_data["last_name"]
                     initial_dict = {
                         "date": (datetime.datetime.now()).date(),
                         "fullname": f"{first_name} {middle_name} {last_name}",
-                        "address": appointment_data["address"],
+                        "address": document_data["address"],
                         "valid": document_validity,
                     }
 
@@ -1381,7 +1339,7 @@ def apt_edit_docu(request, appointment_id, document_slugify):  # noqa: C901
 
                     if document_slugify not in document_list:
                         raise Http404("Page not found.")
-                    elif document_slugify == "barangay-certificate":
+                    else:
 
                         form = None
 
@@ -1405,10 +1363,10 @@ def apt_edit_docu(request, appointment_id, document_slugify):  # noqa: C901
                         "appointment/apt_edit_docu.html",
                         {
                             "form": form,
-                            "appointment_data": appointment_data,
+                            "appointment_data": document_data,
                             "document_slugify": document_slugify,
                             "info_status": document_data["info_status"],
-                            "date": appointment_data["start_appointment"].date(),
+                            "date": document_data["start_appointment"].date(),
                         },
                     )
             else:
@@ -1430,8 +1388,8 @@ def reschedule_appointment(request, appointment_id):
     form = Appointment(request.POST)
 
     # Appointment Collection
-    appointment_ref = db.collection("appointments")
-    appointment_data = (appointment_ref.document(appointment_id).get()).to_dict()
+    document_ref = db.collection("document_request")
+    document_data = document_ref.document(appointment_id).get().to_dict()
 
     date_url = datetime.date.today()
 
@@ -1454,20 +1412,16 @@ def reschedule_appointment(request, appointment_id):
             start_appointment = form.cleaned_data["date"]
             end_appointment = start_appointment + datetime.timedelta(minutes=15)
 
-            appointment_data_dict = {
+            document_data_dict = {
                 "start_appointment": start_appointment,
                 "end_appointment": end_appointment,
             }
 
-            # Appointment Collection
-            appointment_ref = db.collection("appointments")
-            appointment_ref.document(appointment_id).update(appointment_data_dict)
-
             # User Collection
             user_ref = db.collection("users")
-            user_ref.document(appointment_data["user_id"]).collection("appointments").document(
+            user_ref.document(document_data["user_id"]).collection("document_request").document(
                 appointment_id
-            ).update(appointment_data_dict)
+            ).update(document_data_dict)
 
             messages.success(
                 request,
@@ -1496,53 +1450,55 @@ def appointment_complete(request, appointment_id):
     status_data = {"status": "complete"}
 
     # Appointment Collection
-    appointment_ref = db.collection("appointments")
-    appointment_data = (appointment_ref.document(appointment_id).get()).to_dict()
+    document_ref = db.collection("document_request")
+    document_data = document_ref.document(appointment_id).get().to_dict()
 
     # User Collection
     user_ref = db.collection("users")
 
-    if not appointment_data["status"] == "get":
+    if not document_data["status"] == "get":
         raise Http404("Appointment error.")
 
-    elif appointment_data["status"] == "get":
+    elif document_data["status"] == "get":
         # User Collection
-        user_ref.document(appointment_data["user_id"]).collection("appointments").document(
-            appointment_id
+        user_ref.document(document_data["user_id"]).collection("document_request").document(
+            document_data["document_id"]
         ).update(status_data)
 
-        # Appointment Collection
-        appointment_ref.document(appointment_id).update(status_data)
+        # Document request collection
+        document_ref.document(appointment_id).update(status_data)
 
         send_mail(
             subject="Barangay Malanday - Document Issuing Status",
             message="Your document is complete. Thank you!",
             from_email=os.getenv("ADMIN_EMAIL"),
-            recipient_list=["johnchristianmgaron@gmail.com"],
+            recipient_list=[f"{document_data['email']}"],
         )
 
         return HttpResponseRedirect(reverse("appointment:appointment_query_list"))
 
 
-def appointment_cancel(request, appointment_id):
+def appointment_cancel(request, document_id):
     """Cancel appointment.
 
     Args:
       request: URL request
-      appointment_id: appointment id in firestore
+      document_id: document id in firestore
 
     Returns:
         Remove appointment.
     """
     # Appointment Collection
-    appointment_ref = db.collection("appointments")
-    appointment_data = appointment_ref.document(appointment_id).get().to_dict()
-    appointment_ref.document(appointment_id).delete()
+    document_ref = db.collection("document_request")
+    document_data = document_ref.document(document_id).get().to_dict()
 
     # User Collection
-    db.collection("users").document(appointment_data["user_id"]).collection(
-        "appointments"
-    ).document(appointment_id).delete()
+    usr_ref = db.collection("users")
+    usr_ref.document(document_data["user_id"]).collection("document_request").document(
+        document_data["user_id"]
+    ).delete()
+
+    document_ref.document(document_data["document_id"]).delete()
 
     return HttpResponseRedirect(reverse("appointment:appointment_query_list"))
 

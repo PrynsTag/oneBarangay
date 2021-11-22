@@ -40,13 +40,21 @@ def index(request):
     request_list = [request.to_dict() for request in request_status]
 
     # For Appointment Query
-    appointment_ref = db.collection("appointments")
     appointments = None
 
     if user_sess_data["role"] in ["admin", "head_admin", "secretary", "worker"]:
-        appointments = appointment_ref.stream()
+        appointments = (
+            document_ref.where("status", "==", "get")
+            .order_by("start_appointment", direction="DESCENDING")
+            .stream()
+        )
     else:
-        appointments = appointment_ref.where("user_id", "==", user_sess_data["user_id"]).stream()
+        appointments = (
+            document_ref.where("user_id", "==", user_sess_data["user_id"])
+            .where("status", "==", "get")
+            .order_by("start_appointment", direction="DESCENDING")
+            .stream()
+        )
 
     appointments_data = [data.to_dict() for data in appointments]
 

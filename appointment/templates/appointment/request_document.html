@@ -14,18 +14,26 @@
     {{ form.media.css }}
 {% endblock %}
 
-{% block content %}
-    {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
-        <a href="{% url "appointment:document_request" %}">Back</a>
-    {% else %}
-        <a href="{% url "appointment:my_document_request"  %}">Back</a>
-    {% endif %}
-    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Document Request</h1>
-            <p class="mb-0">Select your document.</p>
-        </div>
+{% block back_button %}
+    <div class="mb-1">
+        {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
+            <a href="{% url "appointment:document_request" %}"><--Go back to request</a>
+        {% else %}
+            <a href="{% url "appointment:my_document_request" %}"><--Go back to my document request</a>
+        {% endif %}
     </div>
+{% endblock %}
+
+{% block page_title %}
+    Document Request
+{% endblock %}
+Select your document.
+{% block page_subtitle %}
+
+{% endblock %}
+
+{% block content %}
+
     {% load crispy_forms_tags %}
 
     <div class="container">
