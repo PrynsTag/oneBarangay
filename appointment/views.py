@@ -866,12 +866,12 @@ def document_process_change_status(request, document_request_id):
         document_request_id
     ).update({"status": "get"})
 
-    send_mail(
-        subject="Barangay Malanday - Document Issuing Status",
-        message="You can now get your document.",
-        from_email=os.getenv("ADMIN_EMAIL"),
-        recipient_list=[f"{document_data['email']}"],
-    )
+    # send_mail(
+    #     subject="Barangay Malanday - Document Issuing Status",
+    #     message="You can now set an appointment.",
+    #     from_email=os.getenv("ADMIN_EMAIL"),
+    #     recipient_list=["johnchristianmgaron@gmail.com"],
+    # )
 
     return HttpResponseRedirect(reverse("appointment:document_request"))
 
