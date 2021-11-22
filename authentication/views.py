@@ -86,111 +86,131 @@ class AccountSetupFormView(FormInvalidMixin, FormView):
           HttpResponse: Redirects to dashboard.
         """
         user_id = self.kwargs["user_id"]
+        # email = self.kwargs["email"]
+        user_session = self.request.session.get("user")
 
-        first_name = form.cleaned_data["first_name"]
-        middle_name = form.cleaned_data.get("middle_name")
-        last_name = form.cleaned_data["last_name"]
+        if user_session:
+            session_email = user_session.get("email")
+        else:
+            session_email = ""
 
-        street = form.cleaned_data["street"]
-        contact_number = form.cleaned_data.get("contact_number")
-        birth_place = form.cleaned_data["birth_place"]
-        date_of_birth = form.cleaned_data["date_of_birth"].strftime("%B %d, %Y")
-
+        # print(session_email)
         user_col = firestore_db.collection("users")
         rbi_col = firestore_db.collection("rbi")
 
-        last_name_query = rbi_col.where("family_name", "==", last_name)
-        street_compound_query = last_name_query.where("street", "==", street).get()[0]
+        # email_query = [
+        #     user.to_dict() for user in user_col.where("email", "==", session_email).get()
+        # ]
 
-        # TODO: Add address to query.
-        if street_compound_query.exists:
-            rbi_doc = rbi_col.document(street_compound_query.id)
-            rbi_data = rbi_doc.get().to_dict()
+        if not session_email:
+            first_name = form.cleaned_data["first_name"]
+            middle_name = form.cleaned_data.get("middle_name")
+            last_name = form.cleaned_data["last_name"]
 
-            rbi_data.pop("creation_date")
-            rbi_data.pop("date_accomplished")
+            street = form.cleaned_data["street"]
+            contact_number = form.cleaned_data.get("contact_number")
+            birth_place = form.cleaned_data["birth_place"]
+            date_of_birth = form.cleaned_data["date_of_birth"].strftime("%B %d, %Y")
 
-            if rbi_data:
-                family_sub_col = rbi_doc.collection("family")
+            last_name_query = rbi_col.where("family_name", "==", last_name)
+            street_compound_query = last_name_query.where("street", "==", street).get()[0]
 
-                date_of_birth_query = family_sub_col.where("date_of_birth", "==", date_of_birth)
-                birth_place_compound_query = date_of_birth_query.where(
-                    "birth_place", "==", birth_place
+            # TODO: Add address to query.
+            if street_compound_query.exists:
+                rbi_doc = rbi_col.document(street_compound_query.id)
+                rbi_data = rbi_doc.get().to_dict()
+
+                rbi_data.pop("creation_date")
+                rbi_data.pop("date_accomplished")
+
+                if rbi_data:
+                    family_sub_col = rbi_doc.collection("family")
+
+                    date_of_birth_query = family_sub_col.where(
+                        "date_of_birth", "==", date_of_birth
+                    )
+                    birth_place_compound_query = date_of_birth_query.where(
+                        "birth_place", "==", birth_place
+                    )
+                    last_name_compound_query = birth_place_compound_query.where(
+                        "last_name", "==", last_name
+                    ).get()[0]
+
+                    first_name_query = family_sub_col.where("first_name", "==", first_name).get()[
+                        0
+                    ]
+                    if contact_number:
+                        contact_number_query = (
+                            family_sub_col.where("contact_number", "==", contact_number)
+                            .get()
+                            .exists
+                        )
+                    else:
+                        contact_number_query = False
+                    if middle_name:
+                        middle_name_query = (
+                            family_sub_col.where("middle_name", "==", middle_name).get()[0].exists
+                        )
+                    else:
+                        middle_name_query = False
+
+                    query = [
+                        last_name_compound_query.exists,
+                        first_name_query.exists,
+                        contact_number_query,
+                        middle_name_query,
+                    ]
+
+                    # Check if query has more than one correct result.
+                    if query.count(True) >= 1:
+                        member_id = last_name_compound_query.id
+                        family_member_doc = family_sub_col.document(member_id)
+                        member_data = family_member_doc.get().to_dict()
+
+                        user_ref = user_col.document(user_id)
+                        user = auth.get_user(user_id, firebase_app)
+                        account_data = {
+                            "provider": user.provider_id,
+                            "creation_date": user.user_metadata.creation_timestamp,
+                            "last_sign_in": user.user_metadata.last_sign_in_timestamp,
+                        }
+                        user_info = {
+                            "user_id": user_id,
+                            "display_name": user.display_name,
+                            "email": user.email,
+                            "role": "resident",
+                            "email_verified": user.email_verified,
+                            "disabled": user.disabled,
+                            "new_user": False,
+                        }
+
+                        user_profile_data = rbi_data | member_data | user_info
+                        # Save user profile data to users collection.
+                        user_ref.set(user_profile_data, merge=True)
+                        # Set user session data.
+                        self.request.session["user"] = user_profile_data
+
+                        user_ref.collection("account").document(user_id).set(account_data)
+
+                        # Save family info in family sub-collection.
+                        family_doc = rbi_doc.collection("family").stream()
+                        for member in family_doc:
+                            user_ref.collection("family").document(user_id).set(member.to_dict())
+
+                        family_member_data = form.cleaned_data | member_data | user_info
+                        family_member_doc.set(family_member_data, merge=True)
+
+                        messages.info(
+                            self.request,
+                            "User has been successfully verified and is a resident of barangay!",
+                        )
+            else:
+                self.request.session["user"]["not_resident"] = True
+                messages.info(
+                    self.request,
+                    "User not found in the barangay's record! "
+                    "Limited functionality are observed.",
                 )
-                last_name_compound_query = birth_place_compound_query.where(
-                    "last_name", "==", last_name
-                ).get()[0]
-
-                first_name_query = family_sub_col.where("first_name", "==", first_name).get()[0]
-                if contact_number:
-                    contact_number_query = (
-                        family_sub_col.where("contact_number", "==", contact_number).get().exists
-                    )
-                else:
-                    contact_number_query = False
-                if middle_name:
-                    middle_name_query = (
-                        family_sub_col.where("middle_name", "==", middle_name).get()[0].exists
-                    )
-                else:
-                    middle_name_query = False
-
-                query = [
-                    last_name_compound_query.exists,
-                    first_name_query.exists,
-                    contact_number_query,
-                    middle_name_query,
-                ]
-
-                # Check if query has more than one correct result.
-                if query.count(True) >= 1:
-                    member_id = last_name_compound_query.id
-                    family_member_doc = family_sub_col.document(member_id)
-                    member_data = family_member_doc.get().to_dict()
-
-                    user_ref = user_col.document(user_id)
-                    user = auth.get_user(user_id, firebase_app)
-                    account_data = {
-                        "provider": user.provider_id,
-                        "creation_date": user.user_metadata.creation_timestamp,
-                        "last_sign_in": user.user_metadata.last_sign_in_timestamp,
-                    }
-                    user_info = {
-                        "user_id": user_id,
-                        "display_name": user.display_name,
-                        "email": user.email,
-                        "role": "resident",
-                        "email_verified": user.email_verified,
-                        "disabled": user.disabled,
-                        "new_user": False,
-                    }
-
-                    user_profile_data = rbi_data | member_data | user_info
-                    # Save user profile data to users collection.
-                    user_ref.set(user_profile_data, merge=True)
-                    # Set user session data.
-                    self.request.session["user"] = user_profile_data
-
-                    user_ref.collection("account").document(user_id).set(account_data)
-
-                    # Save family info in family sub-collection.
-                    family_doc = rbi_doc.collection("family").stream()
-                    for member in family_doc:
-                        user_ref.collection("family").document(user_id).set(member.to_dict())
-
-                    family_member_data = form.cleaned_data | member_data | user_info
-                    family_member_doc.set(family_member_data, merge=True)
-
-                    messages.info(
-                        self.request,
-                        "User has been successfully verified and is a resident of barangay!",
-                    )
-        else:
-            self.request.session["user"]["not_resident"] = True
-            messages.info(
-                self.request,
-                "User not found in the barangay's record! Limited functionality are observed.",
-            )
 
         return super().form_valid(form)
         # return JsonResponse({"success": "Successfully setup account!"}, status=200)
@@ -353,11 +373,11 @@ def register(request):
     # Set user role.
     auth.set_custom_user_claims(user_id, {"resident": True}, app=firebase_app)
     user: UserRecord = auth.get_user(user_id, firebase_app)
-    account_data = {
-        "provider": user.provider_id,
-        "creation_date": user.user_metadata.creation_timestamp,
-        "last_sign_in": user.user_metadata.last_sign_in_timestamp,
-    }
+    # account_data = {
+    #     "provider": user.provider_id,
+    #     "creation_date": user.user_metadata.creation_timestamp,
+    #     "last_sign_in": user.user_metadata.last_sign_in_timestamp,
+    # }
     user_data = {
         "user_id": user.uid,
         "display_name": user.display_name,
@@ -370,10 +390,15 @@ def register(request):
         "new_user": auth_data["newUser"],
     }
 
+    # request.session["user"] = user_data
+    # print(request.session["user"])
     user_col = firestore_db.collection("users")
-
-    user_col.document(user_id).set(user_data)
-    user_col.document(user_id).collection("account").add(account_data)
+    firestore_user = list(user_col.where("email", "==", user_data["email"]).stream())[0]
+    request.session["user"] = user_col.document(firestore_user.id).get().to_dict() | {
+        "new_user": auth_data["newUser"]
+    }
+    # user_col.document(user_id).set(user_data)
+    # user_col.document(user_id).collection("account").add(account_data)
 
     # TODO: Display Modal to input credentials 'Let us setup your account'".
     # TODO: family col first_name, last_name, date_of_birth.

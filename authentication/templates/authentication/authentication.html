@@ -271,6 +271,8 @@
                                         let userData = doc.data()
                                         if (userData['new_user']) {
                                             window.location.href = setupLink.replace(/0/, user.uid?.toString());
+                                        } else {
+                                            sendToServer(user.uid, token, providerData, additionalInfo, userProfileLink, authBtn.innerText, email.value);
                                         }
                                     });
                                 })
