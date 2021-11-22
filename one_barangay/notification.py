@@ -134,23 +134,26 @@ class Notification:
                         )
 
         else:
-            notification_query = (
-                firestore_db.collection("users")
-                .where(f"{device}_notification", "==", registration_token)
-                .get()[0]
-            )
-
-            if notification_query.exists:
-                user_id = notification_query.id
-                (
+            try:
+                notification_query = (
                     firestore_db.collection("users")
-                    .document(user_id)
-                    .collection("notification")
-                    .add(
-                        notification_data
-                        | {"time": datetime.now(tz=pytz.timezone("Asia/Manila"))}
-                    )
+                    .where(f"{device}_notification", "==", registration_token)
+                    .get()[0]
                 )
+
+                if notification_query.exists:
+                    user_id = notification_query.id
+                    (
+                        firestore_db.collection("users")
+                        .document(user_id)
+                        .collection("notification")
+                        .add(
+                            notification_data
+                            | {"time": datetime.now(tz=pytz.timezone("Asia/Manila"))}
+                        )
+                    )
+            except IndexError:
+                pass
 
     def delete_notification(self, registration_token, notification_id, platform: str):
         """Delete notification.
