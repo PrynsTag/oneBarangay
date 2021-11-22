@@ -317,6 +317,10 @@ CONTACT MODAL VIEW
     align-self: center;
 }
 
+.btn-back {
+    text-decoration: none;
+}
+
 @media (max-width: 800px) {
     .page-people-directory .contact-top-bar {
         text-align: left;

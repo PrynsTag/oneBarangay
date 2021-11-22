@@ -14,30 +14,43 @@
     <link href="{% static "appointment/assets/css/docu_issue_process.css" %}" rel="stylesheet">
 {% endblock %}
 
+{% block back_button %}
+    <a href="{% url "appointment:view_appointment" appointment_data.document_id %}">Back</a>
+{% endblock %}
+
+{% block page_title %}
+    Document Info.
+{% endblock %}
+
+{% block page_subtitle %}
+    Display document information
+{% endblock %}
+
 {% block content %}
-    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Document Info.</h1>
-            <p class="mb-0">Display document information</p>
+    <div class="cotainer-fluid m-0 w-100">
+        <div class="row">
+            <div class="col-6">
+                {% load crispy_forms_tags %}
+
+                <form action="{% url "appointment:docu_input_info" appointment_data.document_id document_slugify %}"
+                    method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <a class="btn btn-light"
+                        href="{% url "appointment:view_appointment" appointment_data.document_id %}">Cancel</a>
+                    <input class="btn btn-secondary" type="submit" value="Generate">
+
+                    {% if info_status %}
+                        <button class="btn btn-primary btn-done" id="btn-done">Done</button>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="col-6">
+                <div id="example1"></div>
+            </div>
         </div>
     </div>
 
-    {% load crispy_forms_tags %}
-
-    <form action="{% url "appointment:docu_input_info" appointment_data.appointment_id document_slugify %}"
-        method="POST">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <a class="btn btn-light"
-            href="{% url "appointment:view_appointment" appointment_data.appointment_id %}">Cancel</a>
-        <input class="btn btn-secondary" type="submit" value="Generate">
-
-        {% if info_status %}
-            <button class="btn btn-primary btn-done" id="btn-done">Done</button>
-        {% endif %}
-    </form>
-
-    <div id="example1"></div>
 {% endblock %}
 
 {% block scripts %}
@@ -75,10 +88,10 @@
                     doc.addImage(dataURL, 0, 0, {{ paper_width }}, {{ paper_length }});
 
                     {% for data in document_info_data %}
-                        doc.setFont("{{ data.font }}");
-                        doc.setFontType("{{ data.font_type }}");
-                        doc.setFontSize({{ data.font_size }});
-                        doc.text("{{ data.value }}", {{ data.offset_x }}, {{ data.offset_y }}, "{{ data.align }}");
+                        doc.setFont("{{ data.font|safe }}");
+                        doc.setFontType("{{ data.font_type|safe }}");
+                        doc.setFontSize({{ data.font_size|safe }});
+                        doc.text("{{ data.value|safe }}", {{ data.offset_x|safe }}, {{ data.offset_y|safe }}, "{{ data.align|safe }}");
                     {% endfor %}
 
                     PDFObject.embed(doc.output("datauristring"), "#example1");
@@ -106,7 +119,7 @@
                                 confirmButtonText: 'Yes!',
                             }
                         ).then((result) => {
-                            window.location.href = "{% url "appointment:appointment_update_document" appointment_data.appointment_id document_slugify %}";
+                            window.location.href = "{% url "appointment:view_appointment" appointment_data.document_id %}";
                         })
                     }
                 })

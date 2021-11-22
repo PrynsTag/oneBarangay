@@ -7,7 +7,7 @@ from one_barangay.widgets import DatePickerWidget
 document_list = [
     ("barangay-certificate", "Barangay Certificate"),
     ("barangay-clearance", "Barangay Clearance"),
-    ("barangay-cedula", "Barangay Cedula"),
+    # ("barangay-cedula", "Barangay Cedula"),
     ("barangay-local-employment", "Barangay Local Employment"),
     ("barangay-verification", "Barangay Verification"),
     ("certificate-of-indigency", "Certificate of Indigency"),
@@ -54,6 +54,7 @@ class BarangayClearance(forms.Form):
     conforme = forms.CharField(label="Conforme", required=True)
     ctc = forms.CharField(label="CTC No.", max_length=15, required=True)
     region = forms.CharField(label="Region", required=True)
+    orno = forms.CharField(label="OR No.", required=True)
     amount = forms.DecimalField(label="Amount", decimal_places=2, required=True)
     valid = fields.DateField(widget=forms.widgets.DateInput(attrs={"type": "date"}))
     prepared = forms.CharField(label="Prepared by", required=True)

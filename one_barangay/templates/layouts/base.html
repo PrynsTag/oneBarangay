@@ -51,7 +51,9 @@
         <link rel="icon" type="image/png" sizes="32x32" href="{% static "/assets/img/favicon/favicon-32x32.png" %}">
         <link rel="icon" type="image/png" sizes="96x96" href="{% static "/assets/img/favicon/favicon-96x96.png" %}">
         <link rel="icon" type="image/png" sizes="194x194" href="{% static "/assets/img/favicon/favicon-194x194.png" %}">
-        <link rel="icon" typ![](../../../app/static/app/assets/img/apple-icon.png)e="image/png" sizes="192x192" href="{% static "/assets/img/favicon/android-chrome-192x192.png" %}">
+        <link rel="icon" typ![](..
+            /../../app/static/app/assets/img/apple-icon.png)e="image/png" sizes="192x192"
+            href="{% static "/assets/img/favicon/android-chrome-192x192.png" %}">
         <link rel="shortcut icon" href="{% static "/assets/img/favicon/favicon.ico" %}">
         <link rel="apple-touch-icon" sizes="180x180" href="{% static "/assets/img/favicon/apple-touch-icon.png" %}">
         <link rel="mask-icon" href="{% static "/assets/img/favicon/safari-pinned-tab.svg" %}" color="#d21404">
@@ -78,10 +80,16 @@
     <body>
         {% include 'includes/sidebar.html' with user=request.session.user %}
 
+
         <main class="content">
             {% include 'includes/navigation.html' %}
             <div class="d-flex justify-content-between w-100 flex-wrap px-2 py-4">
                 <div class="mb-3 mb-lg-0">
+
+
+                    <div class="mb-3">
+                        {% block back_button %}{% endblock %}
+                    </div>
                     <h1 class="h4" id="text-title">{% block page_title %}{% endblock page_title %}</h1>
                     <p class="mb-0">{% block page_subtitle %}{% endblock page_subtitle %}</p>
                 </div>

@@ -19,15 +19,21 @@
     <link href="{% static "appointment/assets/css/document_request.css" %}" rel="stylesheet">
 {% endblock %}
 
-{% block content %}
-    <a href="{% url "services:index" %}">Back</a>
-    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Document Request</h1>
-            <p class="mb-0">List of document request of residents</p>
-        </div>
-    </div>
+{#{% block back_button %}#}
+{#    <div class="mb-1">#}
+{#        <a class="btn-back text-dark" href="{% url "services:index" %}"><--Go back to services</a>#}
+{#    </div>#}
+{#{% endblock %}#}
 
+{% block page_title %}
+    Document Request
+{% endblock %}
+
+{% block page_subtitle %}
+    List of document request of residents
+{% endblock %}
+
+{% block content %}
     <div class="container mt-3 mb-8">
         <div class="col-md-12">
             <div class="page-people-directory">
@@ -63,8 +69,16 @@
                                                                 alt="user-profile">
                                                         </div>
                                                         <div class="media-body">
-                                                            <h4 class="media-heading">{{ data.first_name }} {{ data.middle_name }} {{ data.last_name }}
-                                                                <small>{{ data.role|capfirst }}</small></h4>
+                                                            <div class="container m-0">
+                                                                <div class="row">
+                                                                    <div class="col-8">
+                                                                        <h4 class="media-heading">{{ data.first_name }} {{ data.middle_name }} {{ data.last_name }}
+                                                                            <small>{{ data.role|capfirst }}</small></h4></div>
+                                                                    <div class="col-4">
+                                                                        <p class="text-end">Request Status: {{ data.status }}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                             <div class="media-content">
                                                                 <div class="row py-1">
                                                                     <div class="col-6"><i
@@ -89,13 +103,11 @@
                                                                         Requested on: {{ data.created_on }}
                                                                     </div>
                                                                     <div class="col-6 d-flex justify-content-end">
-                                                                        <button class="btn btn-primary mx-2"
-                                                                            onclick="window.location.href='{% url "appointment:user_document_verification" data.document_id %}'"
-                                                                            formtarget="_parent" type="button">
-                                                                            View
-                                                                        </button>
+                                                                        <a class="btn btn-primary mx-2"
+                                                                            href="{% url "appointment:user_document_verification" data.document_id %}">View</a>
                                                                         <button data-id="{{ data.document_id }}"
                                                                             class="btn btn-danger mx-2 btn-cancel"
+                                                                            id="btn-cancel"
                                                                             formtarget="_parent"
                                                                             type="button">
                                                                             Cancel

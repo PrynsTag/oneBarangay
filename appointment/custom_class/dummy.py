@@ -22,6 +22,8 @@ document = [
     "Certificate of Indigency",
     "Barangay Cedula",
     "Barangay Certificate",
+    "Barangay Local Employment",
+    "Barangay Verification",
 ]
 
 status_list = ["request", "progress", "get", "complete"]
@@ -271,7 +273,6 @@ class Dummy:
                         "info_status": False,
                     }
                 ],
-                # "status": status[cryptogen.randrange(0, len(status))],
                 "status": "request",
                 "appointment_purpose": sentence,
                 "appointment_image": appointment_image,
@@ -298,9 +299,7 @@ class Dummy:
                 .document()
             )
 
-            document_col.set(
-                document_request_data | {"user_document_request_id": document_col.id}, merge=True
-            )
+            document_col.set(document_request_data | {"document_id": document_col.id}, merge=True)
 
     def document_id(self, year: int, month: int, day: int, hour: int, minute: int):
         """Create document ID for firebase firestore document.

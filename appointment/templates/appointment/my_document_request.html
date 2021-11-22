@@ -14,20 +14,26 @@
     <link href="{% static "appointment/assets/css/my_document_request.css" %}" rel="stylesheet">
 {% endblock %}
 
-{% block content %}
+
+{% block back_button %}
     {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
-        <a href="{% url "appointment:document_request" %}">Back</a>
-    {% else %}
-        <a href="{% url "services:index" %}">Back</a>
-    {% endif %}
-
-    <div class="d-flex justify-content-between w-100 flex-wrap py-2">
-        <div class="mb-3 mb-lg-0">
-            <h1 class="h4">My Document Request</h1>
-            <p class="mb-0">List of your document request.</p>
+        <div class="mb-1">
+            <a href="{% url "appointment:document_request" %}"><--Go back to document request</a>
         </div>
-    </div>
+    {% else %}
+        <a href="{% url "services:index" %}"><--Go back to services</a>
+    {% endif %}
+{% endblock %}
 
+{% block page_title %}
+    My Document Request
+{% endblock %}
+
+{% block page_subtitle %}
+    List of your document request.
+{% endblock %}
+
+{% block content %}
     {% if user_sess_data.role not in 'admin, head_admin, secretary, worker ' %}
         <div class="col-md-6 d-flex justify-content-end h-50 w-100 pb-2">
             <a class="btn btn-primary mx-2" href="{% url "appointment:request_document" %}">+ Request
