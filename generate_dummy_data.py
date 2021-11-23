@@ -461,7 +461,7 @@ class Appointment:
         start_appointment = datetime(
             2021,
             11,
-            datetime.now().day + self.crypto_gen.randint(1, 7),
+            datetime.now(tz=pytz.timezone("Asia/Manila")).day + self.crypto_gen.randint(1, 7),
             self.crypto_gen.randint(0, 23),
             self.crypto_gen.randint(0, 59),
             tzinfo=pytz.timezone("Asia/Manila"),
@@ -556,7 +556,7 @@ class Announcement:
         """Create dummy announcement."""
         body = "\n".join(list(self.fake.paragraphs(nb=5)))
         categories = self.crypto_gen.choice(["covid-19", "political", "environmental"])
-        created = datetime.now()
+        created = datetime.now(tz=pytz.timezone("Asia/Manila"))
         photo_url = STATIC_URL + "assets/img/default-blog-image.jpg"
         thumbnail_name = "default-image"
         title = self.fake.paragraphs(nb=1)[0]
