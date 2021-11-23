@@ -72,6 +72,15 @@ document_list = [
     "certificate-of-indigency",
 ]
 
+document_acro = {
+    "barangay-cedula": "BCE",
+    "barangay-certificate": "CRT",
+    "barangay-clearance": "CLR",
+    "barangay-local-employment": "LCE",
+    "barangay-verification": "VER",
+    "certificate-of-indigency": "COI",
+}
+
 
 def request_document(request):
     """Display all available document that can request.
