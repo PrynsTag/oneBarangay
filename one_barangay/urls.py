@@ -40,7 +40,6 @@ urlpatterns = [
         name="service-worker.js",
     ),
     path("appointment/", include("appointment.urls")),
-    path("services/", include("services.urls")),
     url(
         r"^firebase-messaging-sw.js",
         cache_control(max_age=2592000)(
