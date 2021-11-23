@@ -4,8 +4,16 @@
 
 <!-- Page Title & Subtitle -->
 {% block page_title %}{{ title }}{% endblock page_title %}
-{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
 
+{% block page_subtitle %}{{ sub_title }}{% endblock page_subtitle %}
+{% block stylesheets %}
+    <style>
+        label.required:after {
+            content: " *";
+            color: red;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     <div class="container w-50 py-5">
         <form method="post" enctype="multipart/form-data">
