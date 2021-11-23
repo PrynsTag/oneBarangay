@@ -132,12 +132,14 @@ def request_document(request):
                     raise Http404("Document settings error.")
                 else:
                     data = settings_data[0]
+                    acro = document_acro[data["slugify"]]
                     document_request_list.append(
                         {
                             "document_name": data["name"],
                             "slugify": data["slugify"],
                             "ready_issue": False,
                             "info_status": False,
+                            "document_type_id": f"{acro}-{document_request_id}",
                         }
                     )
 
@@ -1123,10 +1125,13 @@ def appointment_query_list(request):
 
     for data in document_data:
         document_data_list = []
+        document_id_list = []
 
         for document_data in data["document"]:
             document_data_list.append(document_data["document_name"])
+            document_id_list.append(document_data["document_type_id"])
         data["document"] = document_data_list
+        data["document_type_id"] = document_id_list
 
         data["start_appointment"] = data["start_appointment"].astimezone(
             pytz.timezone("Asia/Manila")
