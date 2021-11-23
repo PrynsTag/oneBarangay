@@ -82,7 +82,6 @@ INSTALLED_APPS = [
     "ckeditor",
     "ckeditor_uploader",
     "appointment",
-    "services",
     "crispy_forms",
     "crispy_bootstrap5",
 ]
