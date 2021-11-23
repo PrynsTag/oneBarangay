@@ -49,6 +49,7 @@
             <th data-field="middle_name" data-sortable="true">MIDDLE NAME</th>
             <th data-field="last_name" data-sortable="true">LAST NAME</th>
             <th data-field="document" data-sortable="true">DOCUMENT</th>
+            <th data-field="document_type_id" data-sortable="true">DOCUMENT TYPE ID</th>
             <th data-field="purpose" data-formatter="createdFormatter" data-sortable="true" class="border-0">PURPOSE</th>
             <th data-field="contact_number" data-sortable="true" class="border-0">CONTACT NUMBER</th>
             <th data-field="address" data-sortable="true" class="border-0">ADDRESS</th>
@@ -66,6 +67,7 @@
                 <td>{{ document.middle_name }}</td>
                 <td>{{ document.last_name }}</td>
                 <td>{{ document.document|unordered_list }}</td>
+                <td>{{ document.document_type_id|unordered_list }}</td>
                 <td>{{ document.appointment_purpose }}</td>
                 <td>{{ document.contact_number }}</td>
                 <td>{{ document.address }}</td>
@@ -136,7 +138,7 @@
                                 <div class="col">
                                     <div class="fw-extrabold text-nowrap">Document Type ID</div>
                                     <div class="text-uppercase">
-                                        <div class="text-info">%DOCUMENT_TRUNC%</div>
+                                        <div class="text-info">%DOCUMENT_TYPE_ID%</div>
                                     </div>
                                 </div>
                             </div>
@@ -188,25 +190,10 @@
                     .replace('%PURPOSE%', row.purpose)
                     .replace('%STATUS%', row.status)
                     .replace('%DOCUMENT%', row.document)
-                    .replace('%DOCUMENT_TRUNC%', documentTrunc(row.document, row.document_id))
+                    .replace('%DOCUMENT_TYPE_ID%', row.document_type_id)
                     .replaceAll('%DOCUMENT_id%', row.document_id)
             })
             return `<div class="row mx-0">${view}</div>`
-        }
-
-        function documentTrunc(documentName, documentID) {
-            console.log(documentName);
-            if (documentName.toLowerCase() === "<li>barangay certificate</li>") {
-                return `CRT-${documentID}`
-            } else if (documentName.toLowerCase() == "<li>barangay clearance</li>") {
-                return `CLR-${documentID}`
-            } else if (documentName.toLowerCase() == "<li>barangay local employment</li>") {
-                return `LCE-${documentID}`
-            } else if (documentName.toLowerCase() == "<li>barangay verification</li>") {
-                return `VER-${documentID}`
-            } else if (documentName.toLowerCase() == "<li>certificate of indigency</li>") {
-                return `COI-${documentID}`
-            }
         }
     </script>
 
@@ -214,9 +201,5 @@
         function redirectToUrl(urlTemplateTag, arg) {
             window.location.href = urlTemplateTag.replace(/0/, arg?.toString());
         }
-    </script>
-
-    <script type="text/javascript">
-
     </script>
 {% endblock %}
