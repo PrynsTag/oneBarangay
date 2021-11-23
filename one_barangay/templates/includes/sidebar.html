@@ -135,12 +135,12 @@
                         <li class="nav-item {% if 'document_request' in segment %} active {% endif %}">
                             {% if user.role == 'resident' %}
                                 <a class="nav-link" href="{% url "appointment:my_document_request" %}">
-                                    <i class="fas fa-fingerprint sidebar-icon"></i>
+                                    <i class="fas fa-file-alt sidebar-icon"></i>
                                     <span class="sidebar-text">Document Request</span>
                                 </a>
                             {% else %}
                                 <a class="nav-link" href="{% url "appointment:document_request" %}">
-                                    <i class="fas fa-fingerprint sidebar-icon"></i>
+                                    <i class="fas fa-file-alt sidebar-icon"></i>
                                     <span class="sidebar-text">Document Request</span>
                                 </a>
                             {% endif %}
@@ -150,12 +150,12 @@
                         <li class="nav-item {% if 'appointments' in segment %} active {% endif %}">
                             {% if user.role == "resident" %}
                                 <a class="nav-link" href="{% url "appointment:appointment_query_list" %}">
-                                    <i class="fas fa-fingerprint sidebar-icon"></i>
+                                    <i class="fas fa-calendar-alt sidebar-icon"></i>
                                     <span class="sidebar-text">My Appointments</span>
                                 </a>
                             {% else %}
                                 <a class="nav-link" href="{% url "appointment:appointment_query_list" %}">
-                                    <i class="fas fa-fingerprint sidebar-icon"></i>
+                                    <i class="fas fa-calendar-alt sidebar-icon"></i>
                                     <span class="sidebar-text">Appointment Query</span>
                                 </a>
                             {% endif %}
