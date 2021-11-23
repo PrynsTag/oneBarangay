@@ -23,7 +23,7 @@
                         {% if post.updated %}
                             <div class="text-muted fst-italic mb-2">Updated {{ post.updated|timesince }}</div>
                         {% endif %}
-                        <div class="text-muted fst-italic mb-2">Posted on {{ post.created|date:"D, M d Y" }} by {{ post.author|title }}</div>
+                        <div class="text-muted fst-italic mb-2">Posted on {{ post.creation_date|date:"D, M d Y" }} by {{ post.author|title }}</div>
                         <!-- Post categories-->
                         {% for category in post.categories %}
                             <a class="badge bg-secondary text-decoration-none link-light" href="#">{{ category|title }}</a>
