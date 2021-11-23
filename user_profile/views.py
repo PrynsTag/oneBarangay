@@ -1,4 +1,6 @@
 """Create your user_profile views here."""
+import contextlib
+
 from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse_lazy
@@ -41,13 +43,29 @@ class UserProfileFormView(ContextPageMixin, FormInvalidMixin, FormView):
                 .get()
             )
             user_appointments = (
-                firestore_db.collection("user_appointments")
+                firestore_db.collection("document_request")
+                .where("user_id", "==", request.session["user"]["user_id"])
+                .get()
+            )
+            user_data = (
+                firestore_db.collection("users")
                 .where("user_id", "==", request.session["user"]["user_id"])
                 .get()
             )
 
             context["complaints"] = [doc.to_dict() for doc in complaint]
-            context["user_appointments"] = [doc.to_dict() for doc in user_appointments]
+
+            context["user_appointments"] = []
+            for doc in user_appointments:
+                appointment_data = doc.to_dict()
+                document_data = appointment_data.pop("document")
+
+                with contextlib.suppress(KeyError):
+                    appointment_data["document"] = document_data[0]["document_name"]
+
+                context["user_appointments"].append(appointment_data)
+
+            context["user_data"] = [doc.to_dict() for doc in user_data]
 
         return self.render_to_response(context)
 

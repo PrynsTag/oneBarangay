@@ -497,9 +497,9 @@
                         <tbody>
                             {% for appointment in user_appointments %}
                                 <tr>
-                                    <td class="fw-bold d-flex align-items-center">{{ appointment.appointment_id|truncatechars:5 }}</td>
+                                    <td class="fw-bold d-flex align-items-center">{{ appointment.document_id|truncatechars:5 }}</td>
                                     <td>{{ appointment.created_on }}</td>
-                                    <td>{{ appointment.document|unordered_list }}</td>
+                                    <td>{{ appointment.document }}</td>
                                     <td>{{ appointment.start_appointment }}</td>
                                     <td>{{ appointment.end_appointment }}</td>
                                 </tr>
