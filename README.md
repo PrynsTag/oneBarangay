@@ -1,12 +1,16 @@
 [![Contributors][contributor-shield]][contributor-url]
 [![Issues][issues-shield]][issues-url]
 [![Apache License][license-shield]][license-url]
-[![Circle CI][ci-shield]][ci-url] [![Coveralls][coverage-shield]][coverage-url]
+[![Circle CI][ci-shield]][ci-url]
+[![Coveralls][coverage-shield]][coverage-url]
 [![Codacy][codacy-shield]][codacy-url]
 [![Requires][requires-shield]][requires-url]
+[![Black][black-shield]][black-url]
+[![Isort][isort-shield]][isort-url]
+[![Checked with mypy][mypy-shield]][mypy-url]
+[![pre-commit.ci status][pre-commit-shield]][pre-commit-url]
 [![Deep Source][deepsource-shield]][deepsource-url]
 [![Deep Source][deepsource-resolved-shield]][deepsource-resolved-url]
-[![Black][black-shield]][black-url] [![Isort][isort-shield]][isort-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -498,10 +502,14 @@ Project Link:
   https://deepsource.io/gh/PrynsTag/oneBarangay.svg/?label=resolved+issues&token=QI2m-XNk586t3GYXw6YhzOn6
 [deepsource-resolved-url]:
   https://deepsource.io/gh/PrynsTag/oneBarangay/?ref=repository-badge
-[black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg
+[black-shield]: https://img.shields.io/badge/code%20style-black-black?style=for-the-badge
 [black-url]: https://github.com/psf/black
 [isort-shield]:
-  https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
+  https://img.shields.io/badge/%20imports-isort-%231674b1?style=for-the-badge&labelColor=ef8336
 [isort-url]: https://pycqa.github.io/isort/
 [product-screenshot]:
   https://storage.googleapis.com/onebarangay-media/scan-document.png
+[mypy-shield]: https://img.shields.io/badge/mypy-checked-blue?style=for-the-badge
+[mypy-url]: http://mypy-lang.org/
+[pre-commit-shield]: https://results.pre-commit.ci/badge/github/PrynsTag/oneBarangay/develop.svg?style=for-the-badge
+[pre-commit-url]: https://results.pre-commit.ci/latest/github/PrynsTag/oneBarangay/develop
