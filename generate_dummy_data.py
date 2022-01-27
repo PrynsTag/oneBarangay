@@ -31,9 +31,7 @@ class RBI:
         house_num = str(self.crypto_gen.randrange(100000, 999999))
         address = self.fake.address()
         street = self.crypto_gen.choice(STREET_CHOICES)
-        date_accomplished = datetime.combine(
-            self.fake.date_between(start_date="-2y"), datetime.min.time()
-        )
+        date_accomplished = datetime.combine(self.fake.date_between(start_date="-2y"), datetime.min.time())
         last_name = self.fake.last_name()
         creation_date = datetime.now(tz=pytz.timezone("Asia/Manila"))
 
@@ -43,23 +41,17 @@ class RBI:
             middle_name = self.fake.last_name()
             ext = self.fake.suffix()
             birth_place = self.fake.city()
-            birth_date = self.fake.date_of_birth(minimum_age=15, maximum_age=60).strftime(
-                "%B %d, %Y"
-            )
+            birth_date = self.fake.date_of_birth(minimum_age=15, maximum_age=60).strftime("%B %d, %Y")
 
             contact_number = self.fake.mobile_number().replace("-", "")
             formatted_contact_number = (
-                contact_number.replace("0", "+63", 1)
-                if contact_number.startswith("0")
-                else contact_number
+                contact_number.replace("0", "+63", 1) if contact_number.startswith("0") else contact_number
             )
 
             today = date.today()
             birth_date_dt = datetime.strptime(birth_date, "%B %d, %Y")
             age = (
-                today.year
-                - birth_date_dt.year
-                - ((today.month, today.day) < (birth_date_dt.month, birth_date_dt.day))
+                today.year - birth_date_dt.year - ((today.month, today.day) < (birth_date_dt.month, birth_date_dt.day))
             )
             civil_status = self.crypto_gen.choice(
                 [
@@ -166,9 +158,7 @@ class User:
         role = self.crypto_gen.choice(["resident", "admin", "secretary", "worker", "head_admin"])
         photo_url = f"https://i.pravatar.cc/150?img={self.crypto_gen.randint(1, 70)}"
         phone_number = self.fake.mobile_number().replace("-", "")
-        formatted_phone_number = (
-            phone_number.replace("0", "+63", 1) if phone_number.startswith("0") else phone_number
-        )
+        formatted_phone_number = phone_number.replace("0", "+63", 1) if phone_number.startswith("0") else phone_number
 
         return {
             "email": email,
@@ -367,9 +357,9 @@ class DocumentRequest:
 
         doc_request_ref.set(doc_request_data, merge=True)
 
-        firestore_db.collection("users").document(doc_request_data["user_id"]).collection(
-            "document_request"
-        ).document(doc_req_id).set(doc_request_data)
+        firestore_db.collection("users").document(doc_request_data["user_id"]).collection("document_request").document(
+            doc_req_id
+        ).set(doc_request_data)
 
 
 class Complaint:
@@ -398,9 +388,7 @@ class Complaint:
                 "Public Disturbance",
             ]
         )
-        complaint_status = self.crypto_gen.choice(
-            ["For Review", "Ongoing", "Handed to Police", "Resolved"]
-        )
+        complaint_status = self.crypto_gen.choice(["For Review", "Ongoing", "Handed to Police", "Resolved"])
         comment = self.fake.paragraphs(nb=5)[0]
         image_url = STATIC_URL + "assets/img/default-complaint-image.png"
 
@@ -461,7 +449,7 @@ class Appointment:
         start_appointment = datetime(
             2021,
             11,
-            datetime.now(tz=pytz.timezone("Asia/Manila")).day + self.crypto_gen.randint(1, 7),
+            abs((datetime.now(tz=pytz.timezone("Asia/Manila")).day + self.crypto_gen.randint(1, 7)) - 32),
             self.crypto_gen.randint(0, 23),
             self.crypto_gen.randint(0, 59),
             tzinfo=pytz.timezone("Asia/Manila"),
@@ -524,10 +512,7 @@ class Appointment:
 
         # Save to appointment_details sub-collection
         doc_appointment_details = (
-            db.collection("user_appointments")
-            .document(doc_appointment.id)
-            .collection("appointment_details")
-            .document()
+            db.collection("user_appointments").document(doc_appointment.id).collection("appointment_details").document()
         )
         doc_appointment_details.set(appointment_details, merge=True)
 
@@ -587,9 +572,7 @@ class Announcement:
         db = firestore.client(app=firebase_app)
 
         announcement_data["announcement_id"] = slugify(announcement_data["title"])
-        db.collection("announcements").document(announcement_data["announcement_id"]).set(
-            announcement_data, merge=True
-        )
+        db.collection("announcements").document(announcement_data["announcement_id"]).set(announcement_data, merge=True)
         (
             db.collection("users")
             .document(announcement_data["user_id"])
@@ -605,78 +588,80 @@ def main():
 
     try:
         # Define the get opt parameters
-        opts, args = getopt.getopt(argv, "n:", ["num_dummy"])
+        opts, args = getopt.getopt(argv, "n:d", ["num-family", "delete-db"])
         # Check if the options' length is 1 (can be enhanced)
         if len(opts) == 0 and len(opts) > 1:
-            print("usage: generate_dummy_data.py -n <number-of-dummy>")  # noqa: T001
+            print("usage: generate_dummy_data.py -n <number-of-family>")  # noqa: T001
         else:
-            _, num_dummy = opts[0]
+            option = opts[0][0]
+            if option in ["-n", "--num-family"]:
+                _, num_family = opts[0]
 
-            for _ in range(int(num_dummy)):
-                # RBI Class
-                rbi = RBI()
-                rbi_data = rbi.create_rbi()
-                house_data, family_data = rbi_data["house_data"], rbi_data["family_data"]
+                for _ in range(int(num_family)):
+                    # RBI Class
+                    rbi = RBI()
+                    rbi_data = rbi.create_rbi()
+                    house_data, family_data = rbi_data["house_data"], rbi_data["family_data"]
 
-                user_list = []
-                for _, family_member in family_data.items():
-                    # User Class
-                    user = User(family_member["first_name"], family_member["last_name"])
-                    user_data = user.create_user()
-                    auth_data = user.save_user_to_auth(user_data)
-                    user.save_user_to_db(auth_data, house_data, family_data, family_member)
-                    user.write_to_csv(
-                        auth_data["email"], user_data["password"], auth_data["role"]
+                    user_list = []
+                    for _, family_member in family_data.items():
+                        # User Class
+                        user = User(family_member["first_name"], family_member["last_name"])
+                        user_data = user.create_user()
+                        auth_data = user.save_user_to_auth(user_data)
+                        user.save_user_to_db(auth_data, house_data, family_data, family_member)
+                        user.write_to_csv(auth_data["email"], user_data["password"], auth_data["role"])
+
+                        user_list.append(auth_data)
+
+                        document_request = DocumentRequest()
+                        document_request_data = document_request.create_document_request(
+                            family_member, house_data, auth_data
+                        )
+                        document_request.save_document_request(document_request_data)
+
+                        # Complaint Class
+                        complaint = Complaint(
+                            house_data["address"],
+                            auth_data["email"],
+                            auth_data["display_name"],
+                            auth_data["contact_number"],
+                            house_data["house_num"],
+                            auth_data["user_id"],
+                        )
+                        complaint_data = complaint.create_complaint()
+                        complaint.save_complaint(complaint_data)
+
+                        # Appointment Class
+                        appointment = Appointment(
+                            family_member["first_name"],
+                            family_member["last_name"],
+                            family_member["contact_number"],
+                            auth_data["user_id"],
+                            auth_data["email"],
+                        )
+                        appointment_data = appointment.create_appointment()
+                        appointment.save_appointment(appointment_data)
+
+                        # Announcement Class
+                        announcement = Announcement(
+                            auth_data["display_name"],
+                            auth_data["user_id"],
+                        )
+                        announcement_data = announcement.create_announcement()
+                        announcement.save_announcement(announcement_data)
+
+                    rbi.save_rbi(house_data, family_data, user_list)
+                    print(  # noqa: T001
+                        json.dumps(
+                            family_data,
+                            indent=4,
+                            sort_keys=True,
+                            default=str,
+                        )
                     )
-
-                    user_list.append(auth_data)
-
-                    document_request = DocumentRequest()
-                    document_request_data = document_request.create_document_request(
-                        family_member, house_data, auth_data
-                    )
-                    document_request.save_document_request(document_request_data)
-
-                    # Complaint Class
-                    complaint = Complaint(
-                        house_data["address"],
-                        auth_data["email"],
-                        auth_data["display_name"],
-                        auth_data["contact_number"],
-                        house_data["house_num"],
-                        auth_data["user_id"],
-                    )
-                    complaint_data = complaint.create_complaint()
-                    complaint.save_complaint(complaint_data)
-
-                    # Appointment Class
-                    appointment = Appointment(
-                        family_member["first_name"],
-                        family_member["last_name"],
-                        family_member["contact_number"],
-                        auth_data["user_id"],
-                        auth_data["email"],
-                    )
-                    appointment_data = appointment.create_appointment()
-                    appointment.save_appointment(appointment_data)
-
-                    # Announcement Class
-                    announcement = Announcement(
-                        auth_data["display_name"],
-                        auth_data["user_id"],
-                    )
-                    announcement_data = announcement.create_announcement()
-                    announcement.save_announcement(announcement_data)
-
-                rbi.save_rbi(house_data, family_data, user_list)
-                print(  # noqa: T001
-                    json.dumps(
-                        family_data,
-                        indent=4,
-                        sort_keys=True,
-                        default=str,
-                    )
-                )
+            elif option in ["-d", "--delete-db"]:
+                delete_all_data()
 
     except getopt.GetoptError:
         # Print something useful
@@ -722,9 +707,7 @@ def delete_all_data():  # noqa: C901
 
     rbi_docs = firestore_db.collection("rbi").stream()
     for rbi in rbi_docs:
-        family_docs = (
-            firestore_db.collection("rbi").document(rbi.id).collection("family").stream()
-        )
+        family_docs = firestore_db.collection("rbi").document(rbi.id).collection("family").stream()
         for family in family_docs:
             family.reference.delete()
 
@@ -745,9 +728,7 @@ def delete_all_data():  # noqa: C901
         appointments_user_docs = user_ref.document(user.id).collection("appointments").stream()
         complaints_user_docs = user_ref.document(user.id).collection("complaints").stream()
         notification_user_docs = user_ref.document(user.id).collection("notification").stream()
-        document_request_user_docs = (
-            user_ref.document(user.id).collection("document_request").stream()
-        )
+        document_request_user_docs = user_ref.document(user.id).collection("document_request").stream()
         family_user_docs = user_ref.document(user.id).collection("family").stream()
         account_user_docs = user_ref.document(user.id).collection("account").stream()
 
@@ -777,8 +758,9 @@ def delete_all_data():  # noqa: C901
         user.reference.delete()
 
     # Clear csv file.
-    with open("emails.csv", "r+", encoding="UTF-8") as csv_file:
-        csv_file.truncate(1)
+    with open("emails.csv", mode="w", encoding="UTF-8") as email_file:
+        email_writer = csv.writer(email_file, delimiter=",")
+        email_writer.writerow(["email", "password", "role"])
 
 
 STREET_CHOICES = [
