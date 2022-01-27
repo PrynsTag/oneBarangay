@@ -64,8 +64,7 @@ class ComplaintBaseForm(forms.Form):
     )
     contact_number = forms.CharField(
         validators=[phone_regex],
-        help_text="Phone number must be entered in the format: "
-        "'+999999999'. Up to 15 digits allowed.",
+        help_text="Phone number must be entered in the format: " "'+999999999'. Up to 15 digits allowed.",
         label="Phone Number",
         label_suffix="",
         max_length=17,
@@ -82,9 +81,7 @@ class ComplaintBaseForm(forms.Form):
         label_suffix="",
         label="Date of Incident",
         input_formats=["%A, %B %d %Y, %H:%M %p"],
-        widget=forms.DateTimeInput(
-            attrs={"class": "form-control text-black", "autocomplete": "off"}
-        ),
+        widget=forms.DateTimeInput(attrs={"class": "form-control text-black", "autocomplete": "off"}),
     )
     # TODO: Format address to chunks street, purok, etc.
     address = forms.CharField(
@@ -130,9 +127,7 @@ class ComplaintDetailForm(ComplaintBaseForm):
         widget=forms.TextInput(attrs={"class": "form-control text-black"}),
     )
 
-    image_url = forms.URLField(
-        required=False, widget=forms.URLInput(attrs={"class": "form-control text-black"})
-    )
+    image_url = forms.URLField(required=False, widget=forms.URLInput(attrs={"class": "form-control text-black"}))
 
     def __init__(self, *args, complaint=None, **kwargs):
         """Initialize ComplaintEditForm attributes."""
@@ -166,10 +161,7 @@ class ComplaintDetailForm(ComplaintBaseForm):
         self.data["contact_number"] = contact_number
         if self.errors.get("contact_number"):
             self.errors["contact_number"] = ErrorList(
-                [
-                    "Data has been corrected."
-                    "Click save again to confirm if these changes are OK."
-                ]
+                ["Data has been corrected." "Click save again to confirm if these changes are OK."]
             )
         return cleaned_data
 
@@ -204,9 +196,7 @@ class ComplaintCreateForm(ComplaintBaseForm):
         if user.get("display_name"):
             self.fields["complainant_name"].initial = user.get("display_name")
         else:
-            self.fields[
-                "complainant_name"
-            ].initial = f"{user.get('first_name', '')} {user.get('last_name', '')}"
+            self.fields["complainant_name"].initial = f"{user.get('first_name', '')} {user.get('last_name', '')}"
         self.fields["contact_number"].initial = user.get("contact_number")
         self.fields["address"].initial = user.get("address")
         self.fields["complaint_status"].initial = "For Review"
@@ -263,9 +253,7 @@ class ComplaintContactForm(forms.Form):
         label_suffix="",
         label="Appointment Date",
         input_formats=["%A, %B %d %Y, %H:%M %p"],
-        widget=forms.DateTimeInput(
-            attrs={"class": "form-control text-black", "autocomplete": "off"}
-        ),
+        widget=forms.DateTimeInput(attrs={"class": "form-control text-black", "autocomplete": "off"}),
     )
     message = forms.CharField(
         label_suffix="",

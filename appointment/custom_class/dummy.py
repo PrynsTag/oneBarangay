@@ -253,9 +253,7 @@ class Dummy:
         """
         select_document = document[cryptogen.randrange(0, len(document))]
         sentence = fake.sentence(nb_words=10)
-        appointment_image = (
-            "https://grit.ph/wp-content/uploads/2020/05/sss-umid-emv-card-1-1030x659.png"
-        )
+        appointment_image = "https://grit.ph/wp-content/uploads/2020/05/sss-umid-emv-card-1-1030x659.png"
         user_col = self.db.collection("users").stream()
 
         for user in user_col:
@@ -293,10 +291,7 @@ class Dummy:
             document_request_ref.set(document_request_data, merge=True)
 
             document_col = (
-                self.db.collection("users")
-                .document(user_data["user_id"])
-                .collection("document_request")
-                .document()
+                self.db.collection("users").document(user_data["user_id"]).collection("document_request").document()
             )
 
             document_col.set(document_request_data | {"document_id": document_col.id}, merge=True)
@@ -314,9 +309,7 @@ class Dummy:
         Returns:
           combined year, month, day, hour, and minute in document format
         """
-        full_datetime = datetime.datetime(
-            year=year, month=month, day=day, hour=hour, minute=minute, second=0
-        )
+        full_datetime = datetime.datetime(year=year, month=month, day=day, hour=hour, minute=minute, second=0)
 
         full_datetime_format = datetime.datetime.strftime(full_datetime, "%Y%m%d-%H%M")
 

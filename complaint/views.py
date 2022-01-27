@@ -302,11 +302,7 @@ class ComplaintDetailView(FormInvalidMixin, FormView):
                 )
             db = firestore.client(app=firebase_app)
             # Update complaints collection.
-            (
-                db.collection("complaints")
-                .document(form.cleaned_data["complaint_id"])
-                .update(changed_fields)
-            )
+            (db.collection("complaints").document(form.cleaned_data["complaint_id"]).update(changed_fields))
             try:
                 # Update users collection.
                 (

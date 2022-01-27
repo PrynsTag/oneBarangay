@@ -126,31 +126,17 @@ class AccountSetupFormView(FormInvalidMixin, FormView):
                 if rbi_data:
                     family_sub_col = rbi_doc.collection("family")
 
-                    date_of_birth_query = family_sub_col.where(
-                        "date_of_birth", "==", date_of_birth
-                    )
-                    birth_place_compound_query = date_of_birth_query.where(
-                        "birth_place", "==", birth_place
-                    )
-                    last_name_compound_query = birth_place_compound_query.where(
-                        "last_name", "==", last_name
-                    ).get()[0]
+                    date_of_birth_query = family_sub_col.where("date_of_birth", "==", date_of_birth)
+                    birth_place_compound_query = date_of_birth_query.where("birth_place", "==", birth_place)
+                    last_name_compound_query = birth_place_compound_query.where("last_name", "==", last_name).get()[0]
 
-                    first_name_query = family_sub_col.where("first_name", "==", first_name).get()[
-                        0
-                    ]
+                    first_name_query = family_sub_col.where("first_name", "==", first_name).get()[0]
                     if contact_number:
-                        contact_number_query = (
-                            family_sub_col.where("contact_number", "==", contact_number)
-                            .get()
-                            .exists
-                        )
+                        contact_number_query = family_sub_col.where("contact_number", "==", contact_number).get().exists
                     else:
                         contact_number_query = False
                     if middle_name:
-                        middle_name_query = (
-                            family_sub_col.where("middle_name", "==", middle_name).get()[0].exists
-                        )
+                        middle_name_query = family_sub_col.where("middle_name", "==", middle_name).get()[0].exists
                     else:
                         middle_name_query = False
 
@@ -208,8 +194,7 @@ class AccountSetupFormView(FormInvalidMixin, FormView):
                 self.request.session["user"]["not_resident"] = True
                 messages.info(
                     self.request,
-                    "User not found in the barangay's record! "
-                    "Limited functionality are observed.",
+                    "User not found in the barangay's record! " "Limited functionality are observed.",
                 )
 
         return super().form_valid(form)
@@ -258,9 +243,7 @@ class ForgotPasswordFormView(FormInvalidMixin, FormView):
         Returns:
           None: Redirects to login.
         """
-        reset_link = auth.generate_password_reset_link(
-            form.cleaned_data["email"], app=firebase_app
-        )
+        reset_link = auth.generate_password_reset_link(form.cleaned_data["email"], app=firebase_app)
         # TODO: Add html template.
         send_mail(
             subject="Password reset",
@@ -268,9 +251,7 @@ class ForgotPasswordFormView(FormInvalidMixin, FormView):
             from_email=os.getenv("ADMIN_EMAIL"),
             recipient_list=[form.cleaned_data["email"]],
         )
-        messages.success(
-            self.request, "Password reset link sent! Check your email for the reset link."
-        )
+        messages.success(self.request, "Password reset link sent! Check your email for the reset link.")
 
         return super().form_valid(form)
 
@@ -314,32 +295,33 @@ def login(request):
     user_data = user_col.where("email", "==", auth_data["email"]).get()[0].to_dict()
 
     rbi_col = firestore_db.collection("rbi")
-
-    # Query the user in rbi if it exits in RBI.
     family_name_query = rbi_col.where("family_name", "==", user_data["last_name"])
-    street_query = family_name_query.where("street", "==", user_data["street"]).get()[0]
 
-    # Query in family sub-col if it exists
-    family_col = rbi_col.document(street_query.id).collection("family")
-    last_name_query = family_col.where("last_name", "==", user_data["last_name"])
+    if list(family_name_query.stream()):
+        # Query the user in rbi if it exits in RBI.
+        street_query = family_name_query.where("street", "==", user_data["street"]).get()[0]
 
-    try:
-        date_of_birth_query = last_name_query.where(
-            "date_of_birth", "==", user_data["date_of_birth"]
-        ).get()[0]
+        # Query in family sub-col if it exists
+        family_col = rbi_col.document(street_query.id).collection("family")
+        last_name_query = family_col.where("last_name", "==", user_data["last_name"])
 
-        if date_of_birth_query.exists:
-            resident_data = family_col.document(date_of_birth_query.id).get().to_dict()
-        else:
-            resident_data = {}
-    except IndexError:
-        # date_of_birth_query = last_name_query.where(
-        #     "date_of_birth", "==", user_data["date_of_birth"]
-        # ).get()
-        user_id = last_name_query.get()[0]
-        resident_data = family_col.document(user_id.id).get().to_dict()
+        try:
+            date_of_birth_query = last_name_query.where("date_of_birth", "==", user_data["date_of_birth"]).get()[0]
 
-    request.session["user"] = resident_data | user_data
+            if date_of_birth_query.exists:
+                resident_data = family_col.document(date_of_birth_query.id).get().to_dict()
+            else:
+                resident_data = {}
+        except IndexError:
+            # date_of_birth_query = last_name_query.where(
+            #     "date_of_birth", "==", user_data["date_of_birth"]
+            # ).get()
+            user_id = last_name_query.get()[0]
+            resident_data = family_col.document(user_id.id).get().to_dict()
+
+        request.session["user"] = resident_data | user_data
+    else:
+        request.session["user"] = user_data
 
     # Replace firstname with email and lastname with blank
     first_name = request.session["user"].get("first_name")
@@ -394,9 +376,7 @@ def register(request):
     # print(request.session["user"])
     user_col = firestore_db.collection("users")
     firestore_user = list(user_col.where("email", "==", user_data["email"]).stream())[0]
-    request.session["user"] = user_col.document(firestore_user.id).get().to_dict() | {
-        "new_user": auth_data["newUser"]
-    }
+    request.session["user"] = user_col.document(firestore_user.id).get().to_dict() | {"new_user": auth_data["newUser"]}
     # user_col.document(user_id).set(user_data)
     # user_col.document(user_id).collection("account").add(account_data)
 

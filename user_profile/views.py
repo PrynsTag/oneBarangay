@@ -38,9 +38,7 @@ class UserProfileFormView(ContextPageMixin, FormInvalidMixin, FormView):
         context = self.get_context_data(**kwargs)
         if request.session.get("user"):
             complaint = (
-                firestore_db.collection("complaints")
-                .where("user_id", "==", request.session["user"]["user_id"])
-                .get()
+                firestore_db.collection("complaints").where("user_id", "==", request.session["user"]["user_id"]).get()
             )
             user_appointments = (
                 firestore_db.collection("document_request")
@@ -48,9 +46,7 @@ class UserProfileFormView(ContextPageMixin, FormInvalidMixin, FormView):
                 .get()
             )
             user_data = (
-                firestore_db.collection("users")
-                .where("user_id", "==", request.session["user"]["user_id"])
-                .get()
+                firestore_db.collection("users").where("user_id", "==", request.session["user"]["user_id"]).get()
             )
 
             context["complaints"] = [doc.to_dict() for doc in complaint]
@@ -92,21 +88,15 @@ class UserProfileFormView(ContextPageMixin, FormInvalidMixin, FormView):
         if form.has_changed():
             for field in form.changed_data:
                 if field == "date_of_birth":
-                    changed_fields[field] = form.cleaned_data["date_of_birth"].strftime(
-                        "%B %d, %Y"
-                    )
+                    changed_fields[field] = form.cleaned_data["date_of_birth"].strftime("%B %d, %Y")
                 else:
                     changed_fields[field] = form.cleaned_data[field]
 
         if changed_fields:
             self.request.session["user"].update(changed_fields)
-            change_result = AuthModel().update_user_data(
-                self.request.session["user"]["user_id"], changed_fields
-            )
+            change_result = AuthModel().update_user_data(self.request.session["user"]["user_id"], changed_fields)
             if change_result:
-                messages.success(
-                    self.request, "Profile updated successfully!\nYou are now logging out."
-                )
+                messages.success(self.request, "Profile updated successfully!\nYou are now logging out.")
                 logger.info("[UserProfileFormView.form_valid] Form successfully updated.")
             else:
                 messages.error(self.request, "Profile NOT updated!")

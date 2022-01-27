@@ -16,7 +16,7 @@
 {% endblock %}
 {% block content %}
     <div class="container w-50 py-5">
-        <form method="post" enctype="multipart/form-data">
+        <form id="announcement-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
 

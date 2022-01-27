@@ -64,9 +64,9 @@ class UserManagementHomeView(FormInvalidMixin, FormView):
             # Convert Unix Timestamp to Human Date.
             if user.get("creation_date"):
                 try:
-                    user["creation_date"] = datetime.fromtimestamp(
-                        user["creation_date"] / 1000
-                    ).strftime("%A, %B %d %Y, %H:%M %p")
+                    user["creation_date"] = datetime.fromtimestamp(user["creation_date"] / 1000).strftime(
+                        "%A, %B %d %Y, %H:%M %p"
+                    )
                 except ValueError:
                     user["creation_date"] = None
 
@@ -337,9 +337,7 @@ def reset(request, email) -> Union[HttpResponseRedirect, HttpResponsePermanentRe
             from_email=os.getenv("ADMIN_EMAIL"),
             recipient_list=[email],
         )
-        messages.success(
-            request, "Password reset link sent! Check your email for the reset link."
-        )
+        messages.success(request, "Password reset link sent! Check your email for the reset link.")
     except KeyError:
         messages.error(request, "Password reset failed!.")
         logger.exception("Password reset failed!")

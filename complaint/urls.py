@@ -13,16 +13,12 @@ urlpatterns = [
     ),
     path(
         "create",
-        views.ComplaintCreateView.as_view(
-            extra_context={"title": "Create complaint", "segment": "complaint"}
-        ),
+        views.ComplaintCreateView.as_view(extra_context={"title": "Create complaint", "segment": "complaint"}),
         name="create",
     ),
     path(
         "detail/<str:complaint_id>",
-        views.ComplaintDetailView.as_view(
-            extra_context={"title": "Complaint Detail", "segment": "complaint"}
-        ),
+        views.ComplaintDetailView.as_view(extra_context={"title": "Complaint Detail", "segment": "complaint"}),
         name="detail",
     ),
     path(

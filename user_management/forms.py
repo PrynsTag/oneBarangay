@@ -48,9 +48,7 @@ class UserManagementCreateForm(forms.Form):
             ("secretary", "Barangay Secretary"),
             ("worker", "Barangay Worker"),
         ],
-        widget=forms.Select(
-            attrs={"class": "form-select text-black", "aria-label": "User Role Select"}
-        ),
+        widget=forms.Select(attrs={"class": "form-select text-black", "aria-label": "User Role Select"}),
     )
 
     disabled = forms.ChoiceField(
@@ -60,9 +58,7 @@ class UserManagementCreateForm(forms.Form):
             (False, "Enable"),
             (True, "Disable"),
         ],
-        widget=forms.Select(
-            attrs={"class": "form-select text-black", "aria-label": "User Status Select"}
-        ),
+        widget=forms.Select(attrs={"class": "form-select text-black", "aria-label": "User Status Select"}),
     )
 
     phone_regex = RegexValidator(

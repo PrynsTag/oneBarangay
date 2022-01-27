@@ -53,9 +53,7 @@ def firestore_auth(name="firestore_app"):
 def gcloud_auth():
     """Authenticate to Google Cloud."""
     try:
-        dictionary_credential = service_account.Credentials.from_service_account_info(
-            decode_b64_to_dict()
-        )
+        dictionary_credential = service_account.Credentials.from_service_account_info(decode_b64_to_dict())
         return dictionary_credential
     except ValueError as e:
         logger.exception("Decoding failed. %s", e)

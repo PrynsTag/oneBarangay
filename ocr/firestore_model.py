@@ -28,9 +28,7 @@ class FirestoreModel:
         """First paginated query."""
         if os.getenv("GAE_ENV", "").startswith("standard"):
             formatted_data = json.loads(
-                requests.get(
-                    "https://onebaragay.blob.core.windows.net/json-data/rbi_data.json"
-                ).text
+                requests.get("https://onebaragay.blob.core.windows.net/json-data/rbi_data.json").text
             )
         else:
             doc_ref_limit = self.doc_ref_rbi.order_by("created_at", direction="DESCENDING")

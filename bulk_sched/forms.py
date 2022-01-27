@@ -96,16 +96,12 @@ class BulkSchedCreateForm(forms.Form):
     start_date = forms.DateTimeField(
         label_suffix="",
         label="Start Date",
-        widget=forms.DateTimeInput(
-            attrs={"class": "form-control rounded-end", "autocomplete": "off"}
-        ),
+        widget=forms.DateTimeInput(attrs={"class": "form-control rounded-end", "autocomplete": "off"}),
     )
     end_date = forms.DateTimeField(
         label_suffix="",
         label="End Date",
-        widget=forms.DateTimeInput(
-            attrs={"class": "form-control rounded-end rounded-end", "autocomplete": "off"}
-        ),
+        widget=forms.DateTimeInput(attrs={"class": "form-control rounded-end rounded-end", "autocomplete": "off"}),
     )
     title = forms.CharField(
         widget=forms.TextInput(attrs={"class": "form-control"}),
@@ -122,9 +118,7 @@ class DatePickerWidget(forms.DateInput):
     class Media:
         """Media files for DatePicker widget."""
 
-        css = {
-            "all": (static("/assets/vendor/xdsoft-datepicker/dist/xdsoft-datepicker.min.css"),)
-        }
+        css = {"all": (static("/assets/vendor/xdsoft-datepicker/dist/xdsoft-datepicker.min.css"),)}
         js = (
             static("/assets/vendor/jquery/dist/jquery.min.js"),
             static("/assets/vendor/xdsoft-datepicker/dist/xdsoft-datepicker.min.js"),

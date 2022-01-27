@@ -39,11 +39,7 @@ class UserManagementJSON:
         dictionary_file = self.read_auth_to_json()
 
         user_index = next(
-            (
-                idx
-                for idx, item in enumerate(dictionary_file["rows"])
-                if item["uid"] == user_info["uid"]
-            ),
+            (idx for idx, item in enumerate(dictionary_file["rows"]) if item["uid"] == user_info["uid"]),
             None,
         )
 
@@ -63,9 +59,7 @@ class UserManagementJSON:
         """
         dictionary_file = self.read_auth_to_json()
 
-        user_index = next(
-            (idx for idx, item in enumerate(dictionary_file["rows"]) if item["uid"] == uid), None
-        )
+        user_index = next((idx for idx, item in enumerate(dictionary_file["rows"]) if item["uid"] == uid), None)
 
         if user_index is not None:
             del dictionary_file["rows"][user_index]

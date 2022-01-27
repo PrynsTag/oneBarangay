@@ -251,9 +251,7 @@ class OcrFamilyForm(forms.Form):
             "%d %B %Y",
             "%d %B, %Y",
         ],
-        widget=DatePickerWidget(
-            attrs={"class": "form-control text-black date-picker", "autocomplete": "off"}
-        ),
+        widget=DatePickerWidget(attrs={"class": "form-control text-black date-picker", "autocomplete": "off"}),
     )
     sex = forms.ChoiceField(
         label="Gender",

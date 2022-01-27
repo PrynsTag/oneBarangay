@@ -29,11 +29,7 @@ class RecognizeCustomFormsSampleAsync:
 
             # Make sure your form's type is included in the
             # list of form types the custom model can recognize
-            form_url = (
-                f"https://storage.googleapis.com/"
-                f"{os.getenv('GS_MEDIA_BUCKET_NAME')}/"
-                f"{filename}"
-            )
+            form_url = f"https://storage.googleapis.com/" f"{os.getenv('GS_MEDIA_BUCKET_NAME')}/" f"{filename}"
             poller = await form_recognizer_client.begin_recognize_custom_forms_from_url(
                 model_id=model_id, form_url=form_url, include_field_elements=True
             )
@@ -56,11 +52,7 @@ class RecognizeCustomFormsSampleAsync:
                                         word_list = [word["text"] for word in words]
                                         confidence_list = [word["confidence"] for word in words]
                                         slug_name = (
-                                            val["name"]
-                                            .lower()
-                                            .replace(" ", "_")
-                                            .replace("(", "")
-                                            .replace(")", "")
+                                            val["name"].lower().replace(" ", "_").replace("(", "").replace(")", "")
                                         )
                                         row[slug_name] = {
                                             "text": " ".join(word_list),
@@ -68,24 +60,14 @@ class RecognizeCustomFormsSampleAsync:
                                         }
                                     else:
                                         slug_name = (
-                                            val["name"]
-                                            .lower()
-                                            .replace(" ", "_")
-                                            .replace("(", "")
-                                            .replace(")", "")
+                                            val["name"].lower().replace(" ", "_").replace("(", "").replace(")", "")
                                         )
                                         row[slug_name] = {
                                             "text": words[0]["text"],
                                             "confidence": words[0]["confidence"],
                                         }
                                 else:
-                                    slug_name = (
-                                        val["name"]
-                                        .lower()
-                                        .replace(" ", "_")
-                                        .replace("(", "")
-                                        .replace(")", "")
-                                    )
+                                    slug_name = val["name"].lower().replace(" ", "_").replace("(", "").replace(")", "")
                                     row[slug_name] = {
                                         "text": data,
                                         "confidence": data,
@@ -95,9 +77,7 @@ class RecognizeCustomFormsSampleAsync:
                                     table.append(row)
                                     row = {}
                     else:
-                        slug_name = (
-                            name.lower().replace(" ", "_").replace("(", "").replace(")", "")
-                        )
+                        slug_name = name.lower().replace(" ", "_").replace("(", "").replace(")", "")
                         header[slug_name] = {
                             "text": field.value,
                             "confidence": field.confidence,
@@ -123,14 +103,10 @@ async def form_recognizer_runner(filename):
         if not endpoint or not key:
             raise ValueError("Please provide endpoint and API key to run the samples.")
 
-        form_training_client = FormTrainingClient(
-            endpoint=endpoint, credential=AzureKeyCredential(key)
-        )
+        form_training_client = FormTrainingClient(endpoint=endpoint, credential=AzureKeyCredential(key))
         async with form_training_client:
             model = await (
-                await form_training_client.begin_training(
-                    os.getenv("CONTAINER_SAS_URL"), use_training_labels=True
-                )
+                await form_training_client.begin_training(os.getenv("CONTAINER_SAS_URL"), use_training_labels=True)
             ).result()
             model_id = model.model_id
         return await sample.recognize_custom_forms(model_id, filename)

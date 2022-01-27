@@ -100,9 +100,7 @@ class FirestoreData:
         for account_ref_result in doc_ref_account.stream():
             account_ids.append(account_ref_result.id)
 
-            doc_ref_appointment_id = doc_ref_appointment.where(
-                "user_uid", "==", account_ref_result.id
-            ).stream()
+            doc_ref_appointment_id = doc_ref_appointment.where("user_uid", "==", account_ref_result.id).stream()
 
             for appointment_result in doc_ref_appointment_id:
                 appointment_ids.append(appointment_result.id)
@@ -153,9 +151,7 @@ class FirestoreData:
 
         start_date_delta = start_date - datetime.timedelta(days=1, hours=utc_offset)
 
-        end_date = datetime.datetime.strptime(
-            f"{year}-{month}-{day} {23}:{11}:{59}", "%Y-%m-%d %H:%M:%S"
-        )
+        end_date = datetime.datetime.strptime(f"{year}-{month}-{day} {23}:{11}:{59}", "%Y-%m-%d %H:%M:%S")
 
         end_date_delta = end_date - datetime.timedelta(hours=utc_offset)
 
@@ -226,9 +222,7 @@ class FirestoreData:
 
         start_date_delta = start_date - datetime.timedelta(hours=utc_offset)
 
-        end_date = datetime.datetime.strptime(
-            f"{year}-{month}-{day} {23}:{11}:{59}", "%Y-%m-%d %H:%M:%S"
-        )
+        end_date = datetime.datetime.strptime(f"{year}-{month}-{day} {23}:{11}:{59}", "%Y-%m-%d %H:%M:%S")
 
         end_date_delta = end_date - datetime.timedelta(hours=utc_offset)
 
@@ -382,9 +376,7 @@ class FirestoreData:
         for appointment in results:
             data_appointment = appointment.to_dict()
 
-            appointment_info = DateFormatter(
-                full_date=full_date, date=date
-            ).datetime_firestore_utc(
+            appointment_info = DateFormatter(full_date=full_date, date=date).datetime_firestore_utc(
                 query_key=query_list,
                 data_dict=data_appointment,
                 utc_offset=utc_offset,
@@ -396,12 +388,8 @@ class FirestoreData:
         admin_ref = self.db.collection("admin_settings")
         query_admin = admin_ref.document("appointment").get()
         query_admin_result = query_admin.to_dict()
-        admin_start_appointment = query_admin_result["start_appointment"] + datetime.timedelta(
-            hours=utc_offset
-        )
-        admin_end_appointment = query_admin_result["end_appointment"] + datetime.timedelta(
-            hours=utc_offset
-        )
+        admin_start_appointment = query_admin_result["start_appointment"] + datetime.timedelta(hours=utc_offset)
+        admin_end_appointment = query_admin_result["end_appointment"] + datetime.timedelta(hours=utc_offset)
 
         start_datetime = datetime.datetime(
             year=year,
@@ -425,9 +413,7 @@ class FirestoreData:
 
         while start_datetime < end_datetime:
             datetime_list.append(start_datetime)
-            start_datetime = start_datetime + datetime.timedelta(
-                minutes=query_admin_result["time_interval"]
-            )
+            start_datetime = start_datetime + datetime.timedelta(minutes=query_admin_result["time_interval"])
 
         check_available = []
 
@@ -595,9 +581,7 @@ class FirestoreData:
         admin_settings = self.out_appointment_settings()
         admin_time_interval = admin_settings["time_interval"]
         data["start_appointment"] = start_appointment
-        data["end_appointment"] = start_appointment + datetime.timedelta(
-            minutes=admin_time_interval
-        )
+        data["end_appointment"] = start_appointment + datetime.timedelta(minutes=admin_time_interval)
         data["created_on"] = datetime.datetime.now()
         data["document_id"] = new_document_id
 
@@ -688,17 +672,13 @@ class FirestoreData:
 
         for data in document_data:
             if data["slugify"] == new_document_data["slugify"]:
-                document_collection.document(document_id).update(
-                    {array_name: firestore.ArrayRemove([data])}
-                )
+                document_collection.document(document_id).update({array_name: firestore.ArrayRemove([data])})
 
                 document_collection.document(document_id).update(
                     {array_name: firestore.ArrayUnion([new_document_data])}
                 )
 
-    def issue_get_document(
-        self, document_id: str, document_slug: str, collection_name: str, array_name: str
-    ):
+    def issue_get_document(self, document_id: str, document_slug: str, collection_name: str, array_name: str):
         """Get document that the array contains a value.
 
         Args:
@@ -735,9 +715,7 @@ class FirestoreData:
         Returns:
             List of document requests.
         """
-        document_ref = (
-            self.db.collection(collection_name).where("status", "==", "request").stream()
-        )
+        document_ref = self.db.collection(collection_name).where("status", "==", "request").stream()
 
         document_list = [document_data.to_dict() for document_data in document_ref]
 
@@ -768,6 +746,4 @@ class FirestoreData:
         Returns:
             Document status.
         """
-        self.db.collection(collection_name).document(document_id).update(
-            {"user_verified": user_verified}
-        )
+        self.db.collection(collection_name).document(document_id).update({"user_verified": user_verified})

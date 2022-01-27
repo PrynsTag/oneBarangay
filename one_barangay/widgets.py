@@ -10,9 +10,7 @@ class DatePickerWidget(forms.DateInput):
     class Media:
         """Media files for Datepicker widget."""
 
-        css = {
-            "all": (static("/assets/vendor/xdsoft-datepicker/dist/xdsoft-datepicker.min.css"),)
-        }
+        css = {"all": (static("/assets/vendor/xdsoft-datepicker/dist/xdsoft-datepicker.min.css"),)}
         js = (
             static("/assets/vendor/jquery/dist/jquery.min.js"),
             static("/assets/vendor/xdsoft-datepicker/dist/xdsoft-datepicker.min.js"),

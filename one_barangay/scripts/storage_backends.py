@@ -77,14 +77,8 @@ class AzureStorageBlob:
 
     def __init__(self, sas_token=None, container_name=None, blob_name=None):
         """Initialize Azure properties and credentials."""
-        self.sas_token = (
-            os.getenv("AZURE_STORAGE_CONTAINER_SAS") if sas_token is None else sas_token
-        )
-        self.container_name = (
-            os.getenv("AZURE_STORAGE_CONTAINER_NAME")
-            if container_name is None
-            else container_name
-        )
+        self.sas_token = os.getenv("AZURE_STORAGE_CONTAINER_SAS") if sas_token is None else sas_token
+        self.container_name = os.getenv("AZURE_STORAGE_CONTAINER_NAME") if container_name is None else container_name
         self.blob_name = os.getenv("AZURE_STORAGE_BLOB_NAME") if blob_name is None else blob_name
         self.account_url = "https://onebaragay.blob.core.windows.net"
         self.file_url = f"{self.account_url}/{self.container_name}/{self.blob_name}"

@@ -97,9 +97,7 @@ class FirebaseAuth:
             auth_model.store_user_data(auth_data["uid"], auth_and_resident_data)
 
             if user:
-                reset_link = auth.generate_password_reset_link(
-                    auth_data["email"], app=firebase_app
-                )
+                reset_link = auth.generate_password_reset_link(auth_data["email"], app=firebase_app)
                 send_mail(
                     subject="The oneBarangay app has created an account for you.",
                     message=(
@@ -191,7 +189,5 @@ class FirebaseAuth:
 
             return True
         except UserNotFoundError:
-            logger.exception(
-                "[FirebaseAuth.delete_user] User %s not found in Firebase Auth.", uid
-            )
+            logger.exception("[FirebaseAuth.delete_user] User %s not found in Firebase Auth.", uid)
             return False

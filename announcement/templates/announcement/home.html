@@ -37,7 +37,7 @@
 
         <div class="row row-cols-1 row-cols-sm-4 g-4 position-relative justify-content-center">
             {% for post in featured_announcements %}
-                <div class="col">
+                <div id="{{ post.announcement_id }}" class="col">
                     <div class="card text-center">
                         <h2 class="card-header badge bg-primary text-wrap p-2">Featured</h2>
                         <!-- Post thumbnail -->
@@ -99,7 +99,7 @@
 
         <div class="row row-cols-1 row-cols-sm-4 g-4 position-relative justify-content-center">
             {% for post in new_announcements %}
-                <div class="col">
+                <div id="{{ post.announcement_id }}" class="col">
                     <div class="card text-center">
                         <h2 class="card-header badge bg-primary text-wrap p-2">New</h2>
                         <!-- Post thumbnail -->
@@ -160,7 +160,7 @@
         </div>
         <div class="row row-cols-1 row-cols-sm-4 g-4 position-relative justify-content-center">
             {% for post in old_announcements %}
-                <div class="col">
+                <div id="{{ post.announcement_id }}" class="col">
                     <div class="card text-center">
                         <h2 class="card-header badge bg-primary text-wrap p-2">Old</h2>
                         <!-- Post thumbnail -->

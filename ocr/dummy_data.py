@@ -28,15 +28,11 @@ class RBIDummy:
             middle_name = self.fake.last_name()
             ext = self.fake.suffix()
             birth_place = self.fake.city()
-            birth_date = self.fake.date_of_birth(minimum_age=0, maximum_age=60).strftime(
-                "%B %d, %Y"
-            )
+            birth_date = self.fake.date_of_birth(minimum_age=0, maximum_age=60).strftime("%B %d, %Y")
             today = date.today()
             birth_date_dt = datetime.strptime(birth_date, "%B %d, %Y")
             age = (
-                today.year
-                - birth_date_dt.year
-                - ((today.month, today.day) < (birth_date_dt.month, birth_date_dt.day))
+                today.year - birth_date_dt.year - ((today.month, today.day) < (birth_date_dt.month, birth_date_dt.day))
             )
             sex = self.crypto_gen.choice(["M", "F"])
             civil_status = self.crypto_gen.choice(

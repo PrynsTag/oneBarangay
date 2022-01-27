@@ -45,9 +45,7 @@ class OcrApiView(APIView):
             else:
                 logger.info("OCR result is cached!")
 
-        return JsonResponse(
-            {"house_data": [ocr_result[0]], "family_data": ocr_result[1]}, safe=False
-        )
+        return JsonResponse({"house_data": [ocr_result[0]], "family_data": ocr_result[1]}, safe=False)
 
 
 class DataVizApiView(APIView):
@@ -66,21 +64,15 @@ class DataVizApiView(APIView):
         rbi_docs = firestore_db.collection("rbi").stream()
         data = {"rows": []}
         for rbi in rbi_docs:
-            family_docs = (
-                firestore_db.collection("rbi").document(rbi.id).collection("family").stream()
-            )
+            family_docs = firestore_db.collection("rbi").document(rbi.id).collection("family").stream()
             for family in family_docs:
                 data["rows"].append(rbi.to_dict() | family.to_dict())
 
         df = pd.DataFrame(data["rows"])
 
         # ### Convert Dates to Datetime
-        df["birth_date"] = pd.to_datetime(
-            df["date_of_birth"], errors="coerce", format="%B %d, %Y"
-        )
-        df["date_accomplished"] = pd.to_datetime(
-            df["date_accomplished"], errors="coerce", format="%Y-%m-%d", utc=True
-        )
+        df["birth_date"] = pd.to_datetime(df["date_of_birth"], errors="coerce", format="%B %d, %Y")
+        df["date_accomplished"] = pd.to_datetime(df["date_accomplished"], errors="coerce", format="%Y-%m-%d", utc=True)
 
         # ### Convert Monthly Income to Int
         try:
@@ -98,9 +90,7 @@ class DataVizApiView(APIView):
             logger.exception(e)
             logger.exception("Not Converted: %s", not_converted)
         finally:
-            df["monthly_income"] = pd.to_numeric(
-                df["monthly_income"], errors="coerce", downcast="float"
-            )
+            df["monthly_income"] = pd.to_numeric(df["monthly_income"], errors="coerce", downcast="float")
             df["monthly_income"].fillna(0, inplace=True)
 
         # ### Create Age Groups Given Age

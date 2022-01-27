@@ -204,9 +204,7 @@ def document_request(request):
 
             combine_user_document.append({"document_list": document_temp} | request_data)
 
-    return render(
-        request, "appointment/document_request.html", {"request_list": combine_user_document}
-    )
+    return render(request, "appointment/document_request.html", {"request_list": combine_user_document})
 
 
 def my_document_request(request):
@@ -220,11 +218,7 @@ def my_document_request(request):
     """
     session_user_data = request.session["user"]
 
-    my_request = (
-        db.collection("document_request")
-        .where("user_id", "==", session_user_data["user_id"])
-        .stream()
-    )
+    my_request = db.collection("document_request").where("user_id", "==", session_user_data["user_id"]).stream()
     my_request_list = []
 
     for data in my_request:
@@ -425,9 +419,7 @@ def document_request_verified(request, document_request_id):
     Returns:
         Change document status.
     """
-    firestoreQuery.update_appointment_status(
-        document_id=document_request_id, collection_name="document_request"
-    )
+    firestoreQuery.update_appointment_status(document_id=document_request_id, collection_name="document_request")
 
     return HttpResponseRedirect(
         reverse(
@@ -461,9 +453,7 @@ def user_verification_dt(request, document_id):
         document_data["document_id"]
     ).update(verification_status)
 
-    return HttpResponseRedirect(
-        reverse("appointment:user_issuing_list", kwargs={"document_id": document_id})
-    )
+    return HttpResponseRedirect(reverse("appointment:user_issuing_list", kwargs={"document_id": document_id}))
 
 
 def user_selection_data(request, document_request_id):
@@ -493,9 +483,7 @@ def user_selection_data(request, document_request_id):
         # json_user_data = json.dumps(request.POST.get("row_data"))
         json_user_data = json.loads(request.POST.get("row_data"))
 
-        json_user_data["Civil Status"] = get_key(
-            my_dict=civil_status, val=json_user_data["Civil Status"]
-        )
+        json_user_data["Civil Status"] = get_key(my_dict=civil_status, val=json_user_data["Civil Status"])
         json_user_data["Role"] = get_key(my_dict=role, val=json_user_data["Role"])
 
         fb_user_data = (
@@ -517,9 +505,7 @@ def user_selection_data(request, document_request_id):
         user_sess_data = request.session["user"]
         document_ref = db.collection("document_request")
         document_data = document_ref.document(document_request_id).get().to_dict()
-        document_ref.document(document_request_id).update(
-            {"user_verified": True, "status": "process"}
-        )
+        document_ref.document(document_request_id).update({"user_verified": True, "status": "process"})
 
         send_mail(
             subject="Barangay Malanday - Document Issuing Status",
@@ -622,10 +608,7 @@ def docu_issue_process(request, document_id, document_slugify):  # noqa: C901
     document_settings_ref = db.collection("admin_settings")
 
     document_settings = (
-        document_settings_ref.document("document")
-        .collection(document_slugify)
-        .where("active", "==", True)
-        .get()
+        document_settings_ref.document("document").collection(document_slugify).where("active", "==", True).get()
     )
 
     document_settings_data = [data.to_dict() for data in document_settings]
@@ -639,9 +622,7 @@ def docu_issue_process(request, document_id, document_slugify):  # noqa: C901
         raise Http404("Page not found.")
 
     else:
-        user_document_data = (
-            db.collection("document_request").document(document_id).get()
-        ).to_dict()
+        user_document_data = (db.collection("document_request").document(document_id).get()).to_dict()
 
         for document_data in user_document_data["document"]:
             if document_data["slugify"] == document_slugify:
@@ -650,25 +631,15 @@ def docu_issue_process(request, document_id, document_slugify):  # noqa: C901
                     form = None
 
                     if document_slugify == "barangay-certificate":
-                        form = BarangayCertificate(
-                            request.POST or None, initial=document_data["document_data"]
-                        )
+                        form = BarangayCertificate(request.POST or None, initial=document_data["document_data"])
                     elif document_slugify == "barangay-clearance":
-                        form = BarangayClearance(
-                            request.POST or None, initial=document_data["document_data"]
-                        )
+                        form = BarangayClearance(request.POST or None, initial=document_data["document_data"])
                     elif document_slugify == "barangay-local-employment":
-                        form = BarangayLocalEmployment(
-                            request.POST or None, initial=document_data["document_data"]
-                        )
+                        form = BarangayLocalEmployment(request.POST or None, initial=document_data["document_data"])
                     elif document_slugify == "barangay-verification":
-                        form = BarangayVerification(
-                            request.POST or None, initial=document_data["document_data"]
-                        )
+                        form = BarangayVerification(request.POST or None, initial=document_data["document_data"])
                     elif document_slugify == "certificate-of-indigency":
-                        form = BarangayIndigency(
-                            request.POST or None, initial=document_data["document_data"]
-                        )
+                        form = BarangayIndigency(request.POST or None, initial=document_data["document_data"])
 
                     combine_document_list = []
 
@@ -677,9 +648,7 @@ def docu_issue_process(request, document_id, document_slugify):  # noqa: C901
                         settings_data["value"] = data
                         combine_document_list.append(settings_data)
 
-                    paper_size = papersize.parse_papersize(
-                        document_settings_data["paper_size"], "mm"
-                    )
+                    paper_size = papersize.parse_papersize(document_settings_data["paper_size"], "mm")
 
                     return render(
                         request,
@@ -696,9 +665,7 @@ def docu_issue_process(request, document_id, document_slugify):  # noqa: C901
                         },
                     )
                 else:
-                    document_validity = (
-                        datetime.datetime.now() + relativedelta(months=+3)
-                    ).date()
+                    document_validity = (datetime.datetime.now() + relativedelta(months=+3)).date()
                     first_name = user_document_data["first_name"]
                     middle_name = user_document_data["middle_name"]
                     last_name = user_document_data["last_name"]
@@ -769,10 +736,7 @@ def request_update_document(request, document_id, document_slugify):
 
     docu_settings_ref = db.collection("admin_settings")
     docu_settings_data = (
-        docu_settings_ref.document("document")
-        .collection(document_slugify)
-        .where("active", "==", True)
-        .get()
+        docu_settings_ref.document("document").collection(document_slugify).where("active", "==", True).get()
     )
 
     docu_settings_data_list = [data.to_dict() for data in docu_settings_data]
@@ -793,9 +757,9 @@ def request_update_document(request, document_id, document_slugify):
 
         document_request_ref.document(document_id).update({"document": update_docu_data})
         user_ref = db.collection("users")
-        user_ref.document(user_docu_data["user_id"]).collection("document_request").document(
-            document_id
-        ).update({"document": update_docu_data})
+        user_ref.document(user_docu_data["user_id"]).collection("document_request").document(document_id).update(
+            {"document": update_docu_data}
+        )
 
         return HttpResponseRedirect(
             reverse(
@@ -823,10 +787,7 @@ def appointment_update_document(request, document_id, document_slugify):
     # Document settings collection
     document_settings_ref = db.collection("admin_settings")
     docu_settings_data = (
-        document_settings_ref.document("document")
-        .collection(document_slugify)
-        .where("active", "==", True)
-        .get()
+        document_settings_ref.document("document").collection(document_slugify).where("active", "==", True).get()
     )
 
     docu_settings_data_list = [data.to_dict() for data in docu_settings_data]
@@ -873,9 +834,9 @@ def document_process_change_status(request, document_request_id):
     document_ref.document(document_request_id).update({"status": "get"})
 
     user_ref = db.collection("users")
-    user_ref.document(document_data["user_id"]).collection("document_request").document(
-        document_request_id
-    ).update({"status": "get"})
+    user_ref.document(document_data["user_id"]).collection("document_request").document(document_request_id).update(
+        {"status": "get"}
+    )
 
     send_mail(
         subject="Barangay Malanday - Document Issuing Status",
@@ -954,9 +915,9 @@ def document_input_info(request, document_id, document_slugify):  # noqa: C901
 
             document_request_ref.document(document_id).update({"document": update_docu_data})
 
-            user_ref.document(user_docu_data["user_id"]).collection("document_request").document(
-                document_id
-            ).update({"document": update_docu_data})
+            user_ref.document(user_docu_data["user_id"]).collection("document_request").document(document_id).update(
+                {"document": update_docu_data}
+            )
 
             return HttpResponseRedirect(
                 reverse(
@@ -990,10 +951,7 @@ def docu_input_info(request, document_id, document_slugify):  # noqa: C901
     # Admin settings collection
     document_settings_ref = db.collection("admin_settings")
     docu_settings_data = (
-        document_settings_ref.document("document")
-        .collection(document_slugify)
-        .where("active", "==", True)
-        .get()
+        document_settings_ref.document("document").collection(document_slugify).where("active", "==", True).get()
     )
     docu_settings_data_list = [data.to_dict() for data in docu_settings_data]
 
@@ -1037,9 +995,7 @@ def docu_input_info(request, document_id, document_slugify):  # noqa: C901
                 else:
                     update_docu_data.append(docu_data)
 
-            document_ref.document(document_data["document_id"]).update(
-                {"document": update_docu_data}
-            )
+            document_ref.document(document_data["document_id"]).update({"document": update_docu_data})
 
             user_ref.document(document_data["user_id"]).collection("document_request").document(
                 document_data["document_id"]
@@ -1079,13 +1035,9 @@ def choose_document_request(request, document_request_id):
     Returns:
         Render user's document request information.
     """
-    request_data = firestoreQuery.get_document_data(
-        collection_name="document_request", document_id=document_request_id
-    )
+    request_data = firestoreQuery.get_document_data(collection_name="document_request", document_id=document_request_id)
 
-    return render(
-        request, "appointment/user_document_request.html", {"document_data": request_data}
-    )
+    return render(request, "appointment/user_document_request.html", {"document_data": request_data})
 
 
 def appointment_query_list(request):
@@ -1107,9 +1059,7 @@ def appointment_query_list(request):
 
     if user_sess_data["role"] in ["admin", "head_admin", "secretary", "worker"]:
         appointments = (
-            document_ref.where("status", "==", "get")
-            .order_by("start_appointment", direction="DESCENDING")
-            .stream()
+            document_ref.where("status", "==", "get").order_by("start_appointment", direction="DESCENDING").stream()
         )
     else:
         appointments = (
@@ -1133,9 +1083,7 @@ def appointment_query_list(request):
         data["document"] = document_data_list
         data["document_type_id"] = document_id_list
 
-        data["start_appointment"] = data["start_appointment"].astimezone(
-            pytz.timezone("Asia/Manila")
-        )
+        data["start_appointment"] = data["start_appointment"].astimezone(pytz.timezone("Asia/Manila"))
         data["end_appointment"] = data["end_appointment"].astimezone(pytz.timezone("Asia/Manila"))
 
         list_document_data.append(data)
@@ -1196,10 +1144,7 @@ def view_document_page(request, document_id, document_slugify):
     # Document settings collection
     document_settings_ref = db.collection("admin_settings")
     document_settings = (
-        document_settings_ref.document("document")
-        .collection(document_slugify)
-        .where("active", "==", True)
-        .get()
+        document_settings_ref.document("document").collection(document_slugify).where("active", "==", True).get()
     )
 
     document_settings_data = [data.to_dict() for data in document_settings]
@@ -1284,25 +1229,15 @@ def apt_edit_docu(request, document_id, document_slugify):  # noqa: C901
                     else:
 
                         if document_slugify == "barangay-certificate":
-                            form = BarangayCertificate(
-                                request.POST or None, initial=document_data["document_data"]
-                            )
+                            form = BarangayCertificate(request.POST or None, initial=document_data["document_data"])
                         elif document_slugify == "barangay-clearance":
-                            form = BarangayClearance(
-                                request.POST or None, initial=document_data["document_data"]
-                            )
+                            form = BarangayClearance(request.POST or None, initial=document_data["document_data"])
                         elif document_slugify == "barangay-local-employment":
-                            form = BarangayLocalEmployment(
-                                request.POST or None, initial=document_data["document_data"]
-                            )
+                            form = BarangayLocalEmployment(request.POST or None, initial=document_data["document_data"])
                         elif document_slugify == "barangay-verification":
-                            form = BarangayVerification(
-                                request.POST or None, initial=document_data["document_data"]
-                            )
+                            form = BarangayVerification(request.POST or None, initial=document_data["document_data"])
                         elif document_slugify == "certificate-of-indigency":
-                            form = BarangayIndigency(
-                                request.POST or None, initial=document_data["document_data"]
-                            )
+                            form = BarangayIndigency(request.POST or None, initial=document_data["document_data"])
 
                     combine_document_list = []
 
@@ -1317,9 +1252,7 @@ def apt_edit_docu(request, document_id, document_slugify):  # noqa: C901
                         settings_data["value"] = data
                         combine_document_list.append(settings_data)
 
-                    paper_size = papersize.parse_papersize(
-                        document_settings_data["paper_size"], "mm"
-                    )
+                    paper_size = papersize.parse_papersize(document_settings_data["paper_size"], "mm")
 
                     return render(
                         request,
@@ -1336,9 +1269,7 @@ def apt_edit_docu(request, document_id, document_slugify):  # noqa: C901
                         },
                     )
                 else:
-                    document_validity = (
-                        datetime.datetime.now() + relativedelta(months=+3)
-                    ).date()
+                    document_validity = (datetime.datetime.now() + relativedelta(months=+3)).date()
                     first_name = document_data["first_name"]
                     middle_name = document_data["middle_name"]
                     last_name = document_data["last_name"]
@@ -1362,13 +1293,9 @@ def apt_edit_docu(request, document_id, document_slugify):  # noqa: C901
                         elif document_slugify == "barangay-clearance":
                             form = BarangayClearance(request.POST or None, initial=initial_dict)
                         elif document_slugify == "barangay-local-employment":
-                            form = BarangayLocalEmployment(
-                                request.POST or None, initial=initial_dict
-                            )
+                            form = BarangayLocalEmployment(request.POST or None, initial=initial_dict)
                         elif document_slugify == "barangay-verification":
-                            form = BarangayVerification(
-                                request.POST or None, initial=initial_dict
-                            )
+                            form = BarangayVerification(request.POST or None, initial=initial_dict)
                         elif document_slugify == "certificate-of-indigency":
                             form = BarangayIndigency(request.POST or None, initial=initial_dict)
 
@@ -1433,9 +1360,9 @@ def reschedule_appointment(request, appointment_id):
 
             # User Collection
             user_ref = db.collection("users")
-            user_ref.document(document_data["user_id"]).collection("document_request").document(
-                appointment_id
-            ).update(document_data_dict)
+            user_ref.document(document_data["user_id"]).collection("document_request").document(appointment_id).update(
+                document_data_dict
+            )
 
             messages.success(
                 request,

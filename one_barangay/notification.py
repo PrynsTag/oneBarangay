@@ -46,9 +46,7 @@ class Notification:
         registration_list = list(filter(None, registration_id))
         return registration_list[0] if len(registration_list) == 1 else registration_list
 
-    def send_notification(
-        self, title: str, body: str, user_id: str = None, platform: str = "all"
-    ):
+    def send_notification(self, title: str, body: str, user_id: str = None, platform: str = "all"):
         """Send notification.
 
         Args:
@@ -72,9 +70,7 @@ class Notification:
 
             if platform == "all":
                 message = messaging.MulticastMessage(
-                    notification=messaging.Notification(
-                        title=title, body=body, image=message_data["icon"]
-                    ),
+                    notification=messaging.Notification(title=title, body=body, image=message_data["icon"]),
                     data=message_data,
                     tokens=registration_token,
                 )
@@ -116,9 +112,7 @@ class Notification:
         if isinstance(registration_token, list):
             for token in registration_token:
                 notification_query = (
-                    firestore_db.collection("users")
-                    .where(f"{device}_notification", "==", token)
-                    .stream()
+                    firestore_db.collection("users").where(f"{device}_notification", "==", token).stream()
                 )
                 for query in notification_query:
                     if query.exists:
@@ -127,18 +121,13 @@ class Notification:
                             firestore_db.collection("users")
                             .document(user_id)
                             .collection("notification")
-                            .add(
-                                notification_data
-                                | {"time": datetime.now(tz=pytz.timezone("Asia/Manila"))}
-                            )
+                            .add(notification_data | {"time": datetime.now(tz=pytz.timezone("Asia/Manila"))})
                         )
 
         else:
             try:
                 notification_query = (
-                    firestore_db.collection("users")
-                    .where(f"{device}_notification", "==", registration_token)
-                    .get()[0]
+                    firestore_db.collection("users").where(f"{device}_notification", "==", registration_token).get()[0]
                 )
 
                 if notification_query.exists:
@@ -147,10 +136,7 @@ class Notification:
                         firestore_db.collection("users")
                         .document(user_id)
                         .collection("notification")
-                        .add(
-                            notification_data
-                            | {"time": datetime.now(tz=pytz.timezone("Asia/Manila"))}
-                        )
+                        .add(notification_data | {"time": datetime.now(tz=pytz.timezone("Asia/Manila"))})
                     )
             except IndexError:
                 pass
@@ -171,9 +157,7 @@ class Notification:
         if isinstance(registration_token, list):
             for token in registration_token:
                 notification_query = (
-                    firestore_db.collection("users")
-                    .where(f"{device}_notification", "==", token)
-                    .get()[0]
+                    firestore_db.collection("users").where(f"{device}_notification", "==", token).get()[0]
                 )
 
                 if notification_query.exists:
@@ -197,9 +181,7 @@ class Notification:
                         )
         else:
             notification_query = (
-                firestore_db.collection("users")
-                .where(f"{device}_notification", "==", registration_token)
-                .get()[0]
+                firestore_db.collection("users").where(f"{device}_notification", "==", registration_token).get()[0]
             )
 
             if notification_query.exists:

@@ -254,32 +254,22 @@
                     const providerData = user.providerData;
                     const additionalInfo = response.additionalUserInfo;
 
-                    swalWithBootstrapButtons.fire({
-                        title: `${authBtn.innerText} Successfully!`,
-                        text: swalMsg,
-                        icon: 'success',
-                        confirmButtonText: swalBtnMsg,
-                    }).then((result) => {
-                        // TODO: sendToServer in login not signup
-                        if (result.isConfirmed && token) {
-                            if (authBtn.innerText === "Sign Up") {
-                                {#verifyEmail()#}
-                                sendToServer(user.uid, token, providerData, additionalInfo, loginLink, authBtn.innerText,);
-                            } else if (authBtn.innerText === "Sign In") {
-                                firestore_db.collection('users').where("user_id", "==", user.uid).get().then((querySnapshot) => {
-                                    querySnapshot.forEach((doc) => {
-                                        let userData = doc.data()
-                                        if (userData['new_user']) {
-                                            window.location.href = setupLink.replace(/0/, user.uid?.toString());
-                                        } else {
-                                            sendToServer(user.uid, token, providerData, additionalInfo, userProfileLink, authBtn.innerText, email.value);
-                                        }
-                                    });
-                                })
-                                sendToServer(user.uid, token, providerData, additionalInfo, userProfileLink, authBtn.innerText, email.value);
-                            }
-                        }
-                    })
+                    if (authBtn.innerText === "Sign Up") {
+                        {#verifyEmail()#}
+                        sendToServer(user.uid, token, providerData, additionalInfo, loginLink, authBtn.innerText,);
+                    } else if (authBtn.innerText === "Sign In") {
+                        firestore_db.collection('users').where("user_id", "==", user.uid).get().then((querySnapshot) => {
+                            querySnapshot.forEach((doc) => {
+                                let userData = doc.data()
+                                if (userData['new_user']) {
+                                    window.location.href = setupLink.replace(/0/, user.uid?.toString());
+                                } else {
+                                    sendToServer(user.uid, token, providerData, additionalInfo, userProfileLink, authBtn.innerText, email.value);
+                                }
+                            });
+                        })
+                        sendToServer(user.uid, token, providerData, additionalInfo, userProfileLink, authBtn.innerText, email.value);
+                    }
                 }).catch(function (error) {
                     authBtn.disabled = false
                     swalWithBootstrapButtons.fire(

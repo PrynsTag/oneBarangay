@@ -43,9 +43,7 @@ class AuthModel:
                         f"family_members.{user_data['first_name']}.photo": user_data["photo"]
                         if user_data.get("photo")
                         else user_data.get("photo_url"),
-                        f"family_members.{user_data['first_name']}.phone_number": user_data[
-                            "phone_number"
-                        ],
+                        f"family_members.{user_data['first_name']}.phone_number": user_data["phone_number"],
                     }
                 )
                 logger.info(
@@ -90,9 +88,7 @@ class AuthModel:
         try:
             user_data["updated_on"] = firestore.SERVER_TIMESTAMP
             self.user_ref.document(uid).set(user_data, merge=True)
-            logger.info(
-                "[AuthModel.store_user_data] User %s created in firestore users collection.", uid
-            )
+            logger.info("[AuthModel.store_user_data] User %s created in firestore users collection.", uid)
             return True
         except IndexError as e:
             logger.exception("[AuthModel.store_user_data] User %s not created. %s", uid, e)

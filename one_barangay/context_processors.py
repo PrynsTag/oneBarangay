@@ -21,6 +21,4 @@ def get_notification(request):
         )
     else:
         notification_data = []
-    return {
-        "notification_list": [notification.to_dict() for notification in list(notification_data)]
-    }
+    return {"notification_list": [notification.to_dict() for notification in list(notification_data)]}

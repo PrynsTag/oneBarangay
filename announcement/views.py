@@ -98,9 +98,7 @@ class AnnouncementCreateView(FormView):
         form.cleaned_data["thumbnail_name"] = thumbnail_name
         form.cleaned_data["thumbnail"] = default_storage.url(thumbnail_name)
 
-        db.collection("announcements").document(form.cleaned_data["announcement_id"]).set(
-            form.cleaned_data, merge=True
-        )
+        db.collection("announcements").document(form.cleaned_data["announcement_id"]).set(form.cleaned_data, merge=True)
         # TODO: Go back to home after finished creating
         messages.success(self.request, "Post has been saved!")
         notification = Notification()
@@ -188,9 +186,7 @@ class AnnouncementEditView(FormInvalidMixin, FormView):
                     default_storage.delete(form.cleaned_data["thumbnail_name"])
 
                     # Upload Thumbnail
-                    thumbnail_name = default_storage.generate_filename(
-                        form.cleaned_data["thumbnail"].name
-                    )
+                    thumbnail_name = default_storage.generate_filename(form.cleaned_data["thumbnail"].name)
                     default_storage.save(thumbnail_name, form.cleaned_data["thumbnail"])
 
                     form.cleaned_data["thumbnail_name"] = thumbnail_name
@@ -272,12 +268,7 @@ class AnnouncementDetailView(ContextPageMixin, TemplateView):
         context = self.get_context_data(**kwargs)
         db = firestore.client(app=firebase_app)
 
-        post = (
-            db.collection("announcements")
-            .document(self.kwargs["announcement_id"])
-            .get()
-            .to_dict()
-        )
+        post = db.collection("announcements").document(self.kwargs["announcement_id"]).get().to_dict()
         context["post"] = post
 
         return self.render_to_response(context)

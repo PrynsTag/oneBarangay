@@ -156,9 +156,7 @@ class UserProfileForm(forms.Form):
             self.fields["first_name"].initial = request.session["user"].get("first_name")
             self.fields["last_name"].initial = request.session["user"].get("last_name")
             self.fields["date_of_birth"].initial = (
-                parser.parse(request.session["user"].get("date_of_birth")).strftime(
-                    "%A, %b, %d %Y"
-                )
+                parser.parse(request.session["user"].get("date_of_birth")).strftime("%A, %b, %d %Y")
                 if request.session["user"].get("date_of_birth")
                 else None
             )

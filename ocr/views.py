@@ -244,9 +244,7 @@ class OcrResultView(ContextPageMixin, FormView):
             field_name = field.html_name
             if field_name in ["address", "date_accomplished", "house_num"]:
                 field_confidence = (
-                    round(float(house_confidence.get(field_name)) * 100, 2)
-                    if house_confidence.get(field_name)
-                    else 0.0
+                    round(float(house_confidence.get(field_name)) * 100, 2) if house_confidence.get(field_name) else 0.0
                 )
                 if field_confidence <= 66.0:
                     field.field.widget.attrs["class"] += " is-invalid text-danger"
@@ -259,9 +257,7 @@ class OcrResultView(ContextPageMixin, FormView):
             for field in form:
                 field_name = get_formset_field_name(field.html_name)
                 field_confidence = (
-                    round(float(confidence.get(field_name)) * 100, 2)
-                    if confidence.get(field_name)
-                    else 0.0
+                    round(float(confidence.get(field_name)) * 100, 2) if confidence.get(field_name) else 0.0
                 )
                 if field_confidence <= 66.0:
                     field.field.widget.attrs["class"] += " is-invalid text-danger"
@@ -353,12 +349,8 @@ class OcrResultView(ContextPageMixin, FormView):
                     date_of_birth.day,
                 )
 
-                first_name_query = family_col.where(
-                    "first_name", "==", family_data["first_name"]
-                ).get()[0]
-                middle_name_query = family_col.where(
-                    "middle_name", "==", family_data["middle_name"]
-                ).get()[0]
+                first_name_query = family_col.where("first_name", "==", family_data["first_name"]).get()[0]
+                middle_name_query = family_col.where("middle_name", "==", family_data["middle_name"]).get()[0]
 
                 # Add family data to family sub-collection
                 if first_name_query.exists and middle_name_query.exists:
@@ -505,11 +497,7 @@ class OcrEditView(FormInvalidMixin, ContextPageMixin, FormView):
             db = firestore.client(app=firebase_app)
             try:
                 # Update rbi collection.
-                (
-                    db.collection("rbi")
-                    .document(form.cleaned_data["house_num"])
-                    .update(changed_fields)
-                )
+                (db.collection("rbi").document(form.cleaned_data["house_num"]).update(changed_fields))
             except NotFound:
                 messages.info(
                     self.request,
@@ -570,9 +558,7 @@ class OcrDetailView(TemplateView):
 
             today = date.today()
             age = (
-                today.year
-                - birth_date_dt.year
-                - ((today.month, today.day) < (birth_date_dt.month, birth_date_dt.day))
+                today.year - birth_date_dt.year - ((today.month, today.day) < (birth_date_dt.month, birth_date_dt.day))
             )
             family_member["age"] = age
 

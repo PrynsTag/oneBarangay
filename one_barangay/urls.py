@@ -13,8 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf.urls import url
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views.decorators.cache import cache_control
 from django.views.generic import TemplateView
 
@@ -29,7 +28,7 @@ urlpatterns = [
     path("bulk-sched/", include("bulk_sched.urls")),
     path("complaint/", include("complaint.urls")),
     path("ckeditor/", include("ckeditor_uploader.urls")),
-    url(
+    re_path(
         r"^service-worker.js",
         cache_control(max_age=2592000)(
             TemplateView.as_view(
@@ -40,7 +39,7 @@ urlpatterns = [
         name="service-worker.js",
     ),
     path("appointment/", include("appointment.urls")),
-    url(
+    re_path(
         r"^firebase-messaging-sw.js",
         cache_control(max_age=2592000)(
             TemplateView.as_view(
