@@ -10,7 +10,8 @@ ci:
   autofix_prs: true
   autoupdate_commit_msg: "bump[pre-commit.ci]: auto-update pre-commit hooks"
   autoupdate_schedule: weekly
-  skip: [pylint, mypy, eslint]
+  #  skip: [pylint, mypy, eslint]
+  skip: [pylint, mypy]
   submodules: false
 
 repos:
@@ -92,21 +93,30 @@ repos:
       - id: pydocstyle
         additional_dependencies: ["toml"]
 
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.1.0
-    hooks:
-      - id: eslint
-        args: [--config, frontend/.eslintrc]
-        files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
-        types: [file]
-        additional_dependencies:
-          - eslint@7.32.0
-          - eslint-config-standard@latest
-        exclude: |
-            (?x)^(
-                .*\/vendor.*|
-                .*one_barangay\/static\/assets\/.*\.js
-            )$
+  #  - repo: https://github.com/pre-commit/mirrors-eslint
+  #    rev: v8.1.0
+  #    hooks:
+  #      - id: eslint
+  #        args: [--config, frontend/.eslintrc]
+  #        files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
+  #        types: [file]
+  #        additional_dependencies:
+  #          - eslint@7.32.0
+  #          - eslint-config-standard@latest
+  #        exclude: |
+  #            (?x)^(
+  #                .*\/vendor.*|
+  #                .*one_barangay\/static\/assets\/.*\.js
+  #            )$
+
+  #  - repo: local
+  #    hooks:
+  #      - id: pytest-check
+  #        name: pytest-check
+  #        entry: pytest
+  #        language: system
+  #        pass_filenames: false
+  #        always_run: true
 
   - repo: https://github.com/pycqa/pylint
     rev: v2.11.1
