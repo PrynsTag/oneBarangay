@@ -1,4 +1,5 @@
 """Custom class encrypter."""
+
 import base64
 
 from django.http import Http404

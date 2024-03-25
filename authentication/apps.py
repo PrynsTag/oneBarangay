@@ -1,4 +1,5 @@
 """File for authentication config."""
+
 from django.apps import AppConfig
 
 

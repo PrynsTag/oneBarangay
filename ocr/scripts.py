@@ -1,4 +1,5 @@
 """Helper functions for OCR."""
+
 import copy
 import json
 import math

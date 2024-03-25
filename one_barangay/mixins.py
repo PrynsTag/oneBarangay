@@ -1,4 +1,5 @@
 """Custom Mixins."""
+
 from django.contrib import messages
 
 

@@ -1,1 +1,1 @@
-"""init file for user_management app."""
+"""Init file for user_management app."""

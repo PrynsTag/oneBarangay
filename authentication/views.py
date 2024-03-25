@@ -1,4 +1,5 @@
 """Create your authentication views here."""
+
 import json
 import os
 from typing import Union

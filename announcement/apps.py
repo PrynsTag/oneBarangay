@@ -1,4 +1,5 @@
 """File for announcement config."""
+
 from django.apps import AppConfig
 
 

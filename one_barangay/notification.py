@@ -1,4 +1,5 @@
 """Module for sending notifications."""
+
 from datetime import datetime
 
 import pytz

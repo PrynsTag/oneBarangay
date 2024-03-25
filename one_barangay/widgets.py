@@ -1,4 +1,5 @@
 """Custom media widgets."""
+
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.templatetags.static import static

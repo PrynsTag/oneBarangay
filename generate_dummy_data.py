@@ -1,4 +1,5 @@
 """Generate fake user and rbi."""
+
 import csv
 import getopt
 import json

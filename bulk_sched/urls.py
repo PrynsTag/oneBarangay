@@ -1,4 +1,5 @@
 """Create your bulk_sched url routing here."""
+
 from django.urls import path
 
 from . import views

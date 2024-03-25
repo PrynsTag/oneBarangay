@@ -1,4 +1,5 @@
 """File for user_management config."""
+
 from django.apps import AppConfig
 
 

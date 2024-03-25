@@ -51,10 +51,10 @@ Select your document.
                                 {% else %}
                                     {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
                                         <a class="btn btn-secondary mx-2"
-                                            href="{% url "appointment:document_request" %}">Cancel</a>
+                                           href="{% url "appointment:document_request" %}">Cancel</a>
                                     {% else %}
                                         <a class="btn btn-secondary mx-2"
-                                            href="{% url "appointment:my_document_request" %}">Cancel</a>
+                                           href="{% url "appointment:my_document_request" %}">Cancel</a>
                                     {% endif %}
                                 {% endif %}
                                 <button class="btn btn-primary mx-2 btn-submit" id="submit" type="submit">Submit

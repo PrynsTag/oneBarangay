@@ -1,4 +1,5 @@
 """Custom context processors."""
+
 from one_barangay.settings import firestore_db
 
 

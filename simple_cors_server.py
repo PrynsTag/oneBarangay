@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""python3 -m http.server PORT for a CORS world."""
+"""Python3 -m http.server PORT for a CORS world."""
 import sys
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 

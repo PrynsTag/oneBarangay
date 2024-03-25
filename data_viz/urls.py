@@ -1,4 +1,5 @@
 """URLConfig for data_viz."""
+
 from django.urls import path
 
 from . import views

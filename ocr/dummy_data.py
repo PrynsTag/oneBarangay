@@ -1,4 +1,5 @@
 """Dummy class to generate dummy data."""
+
 from datetime import date, datetime
 from random import SystemRandom
 

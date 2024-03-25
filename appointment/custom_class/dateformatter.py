@@ -1,4 +1,5 @@
 """Custom class date formatter."""
+
 import datetime
 import math
 

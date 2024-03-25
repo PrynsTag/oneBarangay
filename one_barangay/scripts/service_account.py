@@ -1,4 +1,5 @@
 """Authenticate Google and Firebase Service Accounts."""
+
 import ast
 import base64
 import logging

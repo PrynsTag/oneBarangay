@@ -1,4 +1,5 @@
 """File for OCR Config."""
+
 from django.apps import AppConfig
 
 

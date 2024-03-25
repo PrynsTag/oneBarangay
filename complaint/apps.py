@@ -1,4 +1,5 @@
 """File for complaint config."""
+
 from django.apps import AppConfig
 
 

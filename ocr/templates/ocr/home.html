@@ -17,7 +17,7 @@
     </div>
     <!-- Modal Content -->
     <div class="modal fade" id="ocr-modal" tabindex="-1" role="dialog" aria-labelledby="ocr-modal"
-        aria-hidden="true">
+         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -121,24 +121,24 @@
                         </div>
                         <div class="col-12 col-lg-4 col-md-6 text-center">
                             <img id="proof-image" src="{{ default_image }}" alt="Profile Picture"
-                                class="mx-auto img-thumbnail img-fluid"
-                                style="height: 120px;">
+                                 class="mx-auto img-thumbnail img-fluid"
+                                 style="height: 120px;">
                             <br>
                             <span id="house-image" class="fw-extrabold form-text">House Image</span>
                         </div>
                         <div class="col-12 col-lg-12 pt-5 d-flex flex-row-reverse">
                             <a class="btn btn-outline-info" href="%FAMILY_TREE%"
-                                data-toggle="tooltip" data-placement="top" title="View Family Tree">
+                               data-toggle="tooltip" data-placement="top" title="View Family Tree">
                                 <span class="fas fa-house-user"></span>
                                 Family Tree
                             </a>
                             <a class="btn btn-outline-tertiary" onclick="redirectToEdit('{% url "ocr:edit" house_num=0 %}', '%HOUSE_NUM%')"
-                                data-toggle="tooltip" data-placement="top" title="Edit RBI">
+                               data-toggle="tooltip" data-placement="top" title="Edit RBI">
                                 <span class="fas fa-edit"></span>
                                 Edit
                             </a>
                             <button class="btn btn-outline-danger remove" name="delete" onclick="actionButton('%HOUSE_NUM%', 'delete')"
-                                data-toggle="tooltip" data-placement="top" title="Delete Account">
+                                    data-toggle="tooltip" data-placement="top" title="Delete Account">
                                 <span class="fas fa-trash"></span>
                                 Delete
                             </button>

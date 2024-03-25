@@ -1,4 +1,5 @@
 """Py file for data_viz views."""
+
 import os
 
 import requests

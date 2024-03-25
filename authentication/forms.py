@@ -1,4 +1,5 @@
 """Create your authentication forms here."""
+
 from django import forms
 from django.core.validators import RegexValidator
 
