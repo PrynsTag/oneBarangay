@@ -19,7 +19,7 @@
     {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
         <div class="mb-1">
             <a href="{% url "appointment:document_request" %}"><--Go back to document request</a>
-        </div>
+            </div>
     {% else %}
         <a href="{% url "services:index" %}"><--Go back to services</a>
     {% endif %}

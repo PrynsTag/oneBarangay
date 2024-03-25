@@ -1,4 +1,5 @@
 """Create your URL Routing for authentication here."""
+
 from django.urls import path
 
 from . import views

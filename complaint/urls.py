@@ -1,4 +1,5 @@
 """Create your complaint url routing here."""
+
 from django.urls import path
 
 from . import views

@@ -1,4 +1,5 @@
 """File for api config."""
+
 from django.apps import AppConfig
 
 

@@ -1,4 +1,5 @@
 """Create your App views here."""
+
 from django.shortcuts import render
 
 

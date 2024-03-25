@@ -30,7 +30,7 @@
                             <div class="user-profile">
                                 <div class="user-avatar">
                                     <img src="{{ user_document_data.photo_url }} %}"
-                                        alt="{{ user_document_data.first_name }} {{ user_document_data.last_name }}">
+                                         alt="{{ user_document_data.first_name }} {{ user_document_data.last_name }}">
                                 </div>
                                 <h5 class="user-name">{{ user_document_data.first_name }} {{ user_document_data.middle_name }} {{ user_document_data.last_name }}</h5>
                                 <h6 class="user-email">{{ user_document_data.role|capfirst }}</h6>
@@ -71,7 +71,7 @@
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-4">
                                 <div class="text-right d-flex justify-content-center">
                                     <a class="btn btn-secondary mx-3"
-                                        href="{% url "appointment:document_request" %}">Cancel</a>
+                                       href="{% url "appointment:document_request" %}">Cancel</a>
                                     {% if document_list_status %}
                                         <button class="btn btn-primary btn-done">Done</button>
                                     {% else %}

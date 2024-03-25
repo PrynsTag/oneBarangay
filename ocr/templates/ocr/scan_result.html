@@ -43,9 +43,9 @@
                             >
                                 <div
                                     class="mb-3
-                                    {% if "is-valid" in field.field.widget.attrs.class and field_name in house_data_field %}
-                                        text-success
-                                    {% endif %}"
+                                           {% if "is-valid" in field.field.widget.attrs.class and field_name in house_data_field %}
+                                               text-success
+                                           {% endif %}"
                                 >
                                     {{ field.label_tag }}
                                     {{ field }}
@@ -55,11 +55,11 @@
                                         <small
                                             id="{{ field.id_for_label }}"
                                             class="form-text
-                                            {% if "is-valid" in field.field.widget.attrs.class %}
-                                                valid-feedback text-success
-                                            {% else %}
-                                                invalid-feedback text-danger
-                                            {% endif %}"
+                                                   {% if "is-valid" in field.field.widget.attrs.class %}
+                                                       valid-feedback text-success
+                                                   {% else %}
+                                                       invalid-feedback text-danger
+                                                   {% endif %}"
                                         >
                                             Confidence Level: {{ field.help_text }}%
                                         </small>
@@ -84,9 +84,9 @@
                                     <div class="col-3">
                                         <div
                                             class="mb-3
-                                            {% if "is-valid" in field.field.widget.attrs.class %}
-                                                text-success
-                                            {% endif %}"
+                                                   {% if "is-valid" in field.field.widget.attrs.class %}
+                                                       text-success
+                                                   {% endif %}"
                                         >
                                             {{ field.label_tag }}
                                             {{ field }}
@@ -96,11 +96,11 @@
                                                 <small
                                                     id="{{ field.id_for_label }}"
                                                     class="form-text
-                                                    {% if "is-valid" in field.field.widget.attrs.class %}
-                                                        valid-feedback text-success
-                                                    {% else %}
-                                                        invalid-feedback text-danger
-                                                    {% endif %}"
+                                                           {% if "is-valid" in field.field.widget.attrs.class %}
+                                                               valid-feedback text-success
+                                                           {% else %}
+                                                               invalid-feedback text-danger
+                                                           {% endif %}"
                                                 >
                                                     Confidence Level: {{ field.help_text }}%
                                                 </small>
@@ -118,9 +118,9 @@
                                     <div class="col">
                                         <div
                                             class="mb-3
-                                            {% if "is-valid" in field.field.widget.attrs.class %}
-                                                text-success
-                                            {% endif %}"
+                                                   {% if "is-valid" in field.field.widget.attrs.class %}
+                                                       text-success
+                                                   {% endif %}"
                                         >
                                             {{ field.label_tag }}
                                             {{ field }}
@@ -130,11 +130,11 @@
                                                 <small
                                                     id="{{ field.id_for_label }}"
                                                     class="form-text
-                                                    {% if "is-valid" in field.field.widget.attrs.class %}
-                                                        valid-feedback text-success
-                                                    {% else %}
-                                                        invalid-feedback text-danger
-                                                    {% endif %}"
+                                                           {% if "is-valid" in field.field.widget.attrs.class %}
+                                                               valid-feedback text-success
+                                                           {% else %}
+                                                               invalid-feedback text-danger
+                                                           {% endif %}"
                                                 >
                                                     Confidence Level: {{ field.help_text }}%
                                                 </small>
@@ -152,9 +152,9 @@
                                     <div class="col-4">
                                         <div
                                             class="mb-3
-                                            {% if "is-valid" in field.field.widget.attrs.class %}
-                                                text-success
-                                            {% endif %}"
+                                                   {% if "is-valid" in field.field.widget.attrs.class %}
+                                                       text-success
+                                                   {% endif %}"
                                         >
                                             {{ field.label_tag }}
                                             {{ field }}
@@ -164,11 +164,11 @@
                                                 <small
                                                     id="{{ field.id_for_label }}"
                                                     class="form-text
-                                                    {% if "is-valid" in field.field.widget.attrs.class %}
-                                                        valid-feedback text-success
-                                                    {% else %}
-                                                        invalid-feedback text-danger
-                                                    {% endif %}"
+                                                           {% if "is-valid" in field.field.widget.attrs.class %}
+                                                               valid-feedback text-success
+                                                           {% else %}
+                                                               invalid-feedback text-danger
+                                                           {% endif %}"
                                                 >
                                                     Confidence Level: {{ field.help_text }}%
                                                 </small>
@@ -216,11 +216,11 @@
         </script>
     {% else %}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.2/viewer.css"
-            integrity="sha512-HGWrJz+Lr07phD0DNoLsSVwn3przno/eSLf1cGOrLzr6c7NUZROZJPhQdSPmLHNbsO0HP2UfUnpKTMiVxonEHw=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"/>
+              integrity="sha512-HGWrJz+Lr07phD0DNoLsSVwn3przno/eSLf1cGOrLzr6c7NUZROZJPhQdSPmLHNbsO0HP2UfUnpKTMiVxonEHw=="
+              crossorigin="anonymous" referrerpolicy="no-referrer"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.2/viewer.min.js"
-            integrity="sha512-lzNiA4Ry7CjL8ewMGFZ5XD4wIVaUhvV3Ct9BeFmWmyq6MFc42AdOCUiuUtQgkrVVELHA1kT7xfSLoihwssusQw=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                integrity="sha512-lzNiA4Ry7CjL8ewMGFZ5XD4wIVaUhvV3Ct9BeFmWmyq6MFc42AdOCUiuUtQgkrVVELHA1kT7xfSLoihwssusQw=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
             const viewer = new Viewer(document.getElementById('image'), {
                 inline: true,

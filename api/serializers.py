@@ -1,4 +1,5 @@
 """Create your api serializers here."""
+
 import numpy as np
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework import serializers

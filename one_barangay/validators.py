@@ -1,4 +1,5 @@
 """Validator functions for input fields."""
+
 import os
 
 import magic

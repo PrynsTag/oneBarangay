@@ -1,4 +1,5 @@
 """File for bulk_sched config."""
+
 from django.apps import AppConfig
 
 

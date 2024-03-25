@@ -1,4 +1,5 @@
 """URL Configuration for 'app'."""
+
 from django.urls import path
 
 from app import views

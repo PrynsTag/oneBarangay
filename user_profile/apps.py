@@ -1,4 +1,5 @@
 """File for user_profile config."""
+
 from django.apps import AppConfig
 
 

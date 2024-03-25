@@ -91,8 +91,8 @@
                                     </div>
                                     <div class="col-3 p-0 d-flex justify-content-end">
                                         <a class="btn mx-1 text-end"
-                                            onclick="redirectToUrl('{% url "appointment:view_appointment" document_id=0 %}', '%DOCUMENT_id%')"
-                                            data-toggle="tooltip" data-placement="top" title="View">
+                                           onclick="redirectToUrl('{% url "appointment:view_appointment" document_id=0 %}', '%DOCUMENT_id%')"
+                                           data-toggle="tooltip" data-placement="top" title="View">
                                             <i class="fas fa-eye fa-1x"></i>
                                         </a>
                                     </div>
@@ -145,20 +145,20 @@
                             {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
                                 <div class="col-12 col-lg-12 pt-5 d-flex justify-content-center">
                                     <a class="btn btn-outline-danger mx-1" id="btn-cancel"
-                                        onclick="redirectToUrl('{% url "appointment:appointment_cancel" document_id=0 %}', '%DOCUMENT_id%')"
-                                        data-toggle="tooltip" data-placement="top" title="Cancel">
+                                       onclick="redirectToUrl('{% url "appointment:appointment_cancel" document_id=0 %}', '%DOCUMENT_id%')"
+                                       data-toggle="tooltip" data-placement="top" title="Cancel">
                                         <i class="fas fa-calendar-times"></i>
                                         Cancel
                                     </a>
                                     <a class="btn btn-outline-primary mx-1"
-                                        onclick="redirectToUrl('{% url "appointment:reschedule_appointment" appointment_id=0 %}', '%DOCUMENT_id%')"
-                                        data-toggle="tooltip" data-placement="top" title="Reschedule">
+                                       onclick="redirectToUrl('{% url "appointment:reschedule_appointment" appointment_id=0 %}', '%DOCUMENT_id%')"
+                                       data-toggle="tooltip" data-placement="top" title="Reschedule">
                                         <i class="fas fa-calendar-alt"></i>
                                         Reschedule
                                     </a>
                                     <a class="btn btn-outline-info mx-1"
-                                        onclick="redirectToUrl('{% url "appointment:appointment_complete" appointment_id=0 %}', '%DOCUMENT_id%')"
-                                        data-toggle="tooltip" data-placement="top" title="Complete">
+                                       onclick="redirectToUrl('{% url "appointment:appointment_complete" appointment_id=0 %}', '%DOCUMENT_id%')"
+                                       data-toggle="tooltip" data-placement="top" title="Complete">
                                         <i class="fas fa-check"></i>
                                         Complete
                                     </a>

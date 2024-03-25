@@ -14,13 +14,13 @@
     <div class="pb-4">
         <a href="{% url "announcement:create" %}" class="btn btn-secondary">
             <svg class="icon icon-xs" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+                 stroke="currentColor" viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg"
             >
                 <path d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
                 >
                 </path>
             </svg>
@@ -57,7 +57,7 @@
                             <div class="mb-3">
                                 {% for category in post.categories %}
                                     <a class="badge bg-secondary text-decoration-none link-light"
-                                        href="#">{{ category|title }}</a>
+                                       href="#">{{ category|title }}</a>
                                 {% endfor %}
                             </div>
                             <!-- Post content -->
@@ -66,12 +66,12 @@
                             <div class="buttons text-end pt-4">
                                 {% if request.session.user.role != "resident" and request.session.user.role != "secretary" %}
                                     <a href="{% url "announcement:delete" post.announcement_id post.thumbnail_name %}"
-                                        class="btn btn-danger">Delete</a>
+                                       class="btn btn-danger">Delete</a>
                                     <a href="{% url "announcement:edit" post.announcement_id %}"
-                                        class="btn btn-primary">Edit</a>
+                                       class="btn btn-primary">Edit</a>
                                 {% endif %}
                                 <a href="{% url "announcement:view" post.announcement_id %}"
-                                    class="btn btn-info">View</a>
+                                   class="btn btn-info">View</a>
                             </div>
                         </div>
                         <!-- Post meta content-->
@@ -119,7 +119,7 @@
                             <div class="mb-3">
                                 {% for category in post.categories %}
                                     <a class="badge bg-secondary text-decoration-none link-light"
-                                        href="#">{{ category|title }}</a>
+                                       href="#">{{ category|title }}</a>
                                 {% endfor %}
                             </div>
                             <!-- Post content -->
@@ -128,12 +128,12 @@
                             <div class="buttons text-end pt-4">
                                 {% if request.session.user.role != "resident" and request.session.user.role != "secretary" %}
                                     <a href="{% url "announcement:delete" post.announcement_id post.thumbnail_name %}"
-                                        class="btn btn-danger">Delete</a>
+                                       class="btn btn-danger">Delete</a>
                                     <a href="{% url "announcement:edit" post.announcement_id %}"
-                                        class="btn btn-primary">Edit</a>
+                                       class="btn btn-primary">Edit</a>
                                 {% endif %}
                                 <a href="{% url "announcement:view" post.announcement_id %}"
-                                    class="btn btn-info">View</a>
+                                   class="btn btn-info">View</a>
                             </div>
                         </div>
                         <!-- Post meta content-->
@@ -180,7 +180,7 @@
                             <div class="mb-3">
                                 {% for category in post.categories %}
                                     <a class="badge bg-secondary text-decoration-none link-light"
-                                        href="#">{{ category|title }}</a>
+                                       href="#">{{ category|title }}</a>
                                 {% endfor %}
                             </div>
                             <!-- Post content -->
@@ -189,12 +189,12 @@
                             <div class="buttons text-end pt-4">
                                 {% if request.session.user.role != "resident" and request.session.user.role != "secretary" %}
                                     <a href="{% url "announcement:delete" post.announcement_id post.thumbnail_name %}"
-                                        class="btn btn-danger">Delete</a>
+                                       class="btn btn-danger">Delete</a>
                                     <a href="{% url "announcement:edit" post.announcement_id %}"
-                                        class="btn btn-primary">Edit</a>
+                                       class="btn btn-primary">Edit</a>
                                 {% endif %}
                                 <a href="{% url "announcement:view" post.announcement_id %}"
-                                    class="btn btn-info">View</a>
+                                   class="btn btn-info">View</a>
                             </div>
                         </div>
                         <!-- Post meta content-->

@@ -1,4 +1,5 @@
 """File for working with json."""
+
 import json
 from typing import Any
 

@@ -16,7 +16,7 @@
 {% block back_button %}
     <div class="mb-3">
         <a href="{% url "appointment:appointment_query_list" %}"><--Go back to appointments</a>
-    </div>
+        </div>
 {% endblock %}
 
 {% block page_title %}
@@ -36,8 +36,8 @@
                     <div class="side-bar">
                         <div class="user-info">
                             <img class="img-profile img-circle img-responsive center-block rounded-circle"
-                                src="{{ document_data.photo_url }}"
-                                alt="{{ document_data.first_name }} {{ document_data.last_name }}">
+                                 src="{{ document_data.photo_url }}"
+                                 alt="{{ document_data.first_name }} {{ document_data.last_name }}">
                             <ul class="meta list list-unstyled">
                                 <li class="name">
                                     <p class="mb-0">{{ document_data.first_name }} {{ document_data.last_name }}</p>
@@ -62,7 +62,7 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <textarea class="form-control" rows="3" disabled
-                                                    readonly>{{ document_data.appointment_purpose }}</textarea>
+                                                          readonly>{{ document_data.appointment_purpose }}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -86,10 +86,10 @@
                                             <div class="drive-item-footer module-footer">
                                                 {% if user_sess_data.role in 'admin, head_admin, secretary, worker ' %}
                                                     <a class="btn btn-primary mx-1"
-                                                        href="{% url "appointment:view_document_page" document_data.document_id data.slugify %}"
-                                                        target="_blank">View</a>
+                                                       href="{% url "appointment:view_document_page" document_data.document_id data.slugify %}"
+                                                       target="_blank">View</a>
                                                     <a class="btn btn-secondary mx-1"
-                                                        href="{% url "appointment:apt_edit_docu" document_data.document_id data.slugify %}">Edit</a>
+                                                       href="{% url "appointment:apt_edit_docu" document_data.document_id data.slugify %}">Edit</a>
                                                 {% else %}
                                                     {% if document_data.status == "get" %}
                                                         {#                                                        <a class="btn btn-primary mx-1"#}
@@ -97,8 +97,8 @@
                                                         {#                                                           target="_blank">View</a>#}
                                                     {% else %}
                                                         <a class="btn btn-primary mx-1"
-                                                            href="{% url "appointment:view_document_page" document_data.document_id data.slugify %}"
-                                                            target="_blank">View</a>
+                                                           href="{% url "appointment:view_document_page" document_data.document_id data.slugify %}"
+                                                           target="_blank">View</a>
                                                     {% endif %}
                                                 {% endif %}
                                             </div>
@@ -110,7 +110,7 @@
                             {% if user_sess_data.role in 'admin, head_admin, secretary, worker' %}
                                 <div class="drive-grid-view d-flex justify-content-center py-4">
                                     <a class="btn btn-secondary mx-2"
-                                        href="{% url "appointment:appointment_query_list" %}">Cancel</a>
+                                       href="{% url "appointment:appointment_query_list" %}">Cancel</a>
 
                                     <button class="btn btn-primary mx-2" id="btn-complete">
                                         Complete

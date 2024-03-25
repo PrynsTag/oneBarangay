@@ -1,4 +1,5 @@
 """Custom class dummy."""
+
 import datetime
 import uuid
 from random import SystemRandom

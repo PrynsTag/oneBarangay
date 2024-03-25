@@ -1,4 +1,5 @@
 """Create your authentication models here."""
+
 from firebase_admin import firestore
 from google.api_core.exceptions import NotFound
 
@@ -40,9 +41,9 @@ class AuthModel:
                     {
                         f"family_members.{user_data['first_name']}.uid": user_data["uid"],
                         f"family_members.{user_data['first_name']}.email": user_data["email"],
-                        f"family_members.{user_data['first_name']}.photo": user_data["photo"]
-                        if user_data.get("photo")
-                        else user_data.get("photo_url"),
+                        f"family_members.{user_data['first_name']}.photo": (
+                            user_data["photo"] if user_data.get("photo") else user_data.get("photo_url")
+                        ),
                         f"family_members.{user_data['first_name']}.phone_number": user_data["phone_number"],
                     }
                 )

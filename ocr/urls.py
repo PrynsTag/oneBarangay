@@ -1,4 +1,5 @@
 """URL Routing for OCR."""
+
 from django.urls import path
 
 from . import views

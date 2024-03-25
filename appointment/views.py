@@ -1,4 +1,5 @@
 """Create your Appointment views here."""
+
 # Firebase
 import datetime
 import decimal
@@ -1446,6 +1447,7 @@ def appointment_cancel(request, document_id):
 
 # Custom Function
 # =====================================================
+
 
 # Get Key Value
 def get_key(my_dict: dict, val):
